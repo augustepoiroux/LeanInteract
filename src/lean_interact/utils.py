@@ -93,11 +93,9 @@ def install_lean():
             dl_cmd = "curl -O --location https://raw.githubusercontent.com/leanprover/elan/master/elan-init.ps1"
             subprocess.run(dl_cmd, shell=True, check=True)
 
-            # Run the PowerShell script with bypass execution policy and without prompts
-            ps_cmd = "powershell -ExecutionPolicy Bypass -File elan-init.ps1 -NoPrompt 1 -DefaultToolchain stable"
+            ps_cmd = "powershell -ExecutionPolicy Bypass -Command \"& './elan-init.ps1' -NoPrompt $true -DefaultToolchain stable\""
             subprocess.run(ps_cmd, shell=True, check=True)
 
-            # Clean up the script file
             cleanup_cmd = "del elan-init.ps1"
             subprocess.run(cleanup_cmd, shell=True, check=True)
 
