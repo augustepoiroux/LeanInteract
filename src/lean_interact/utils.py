@@ -44,13 +44,16 @@ def _limit_memory(max_mb: int | None):
         import resource
 
         resource.setrlimit(resource.RLIMIT_AS, (max_mb * 1024 * 1024, max_mb * 1024 * 1024))
-        logger.info("Memory usage limited to %d MB", max_mb)
+        # logger.info("Memory usage limited to %d MB", max_mb)
     except ValueError:
-        logger.warning("Failed to set memory limit to %d MB.", max_mb)
+        # logger.warning("Failed to set memory limit to %d MB.", max_mb)
+        pass
     except ImportError:
-        logger.warning("Memory limits not supported on this platform.")
+        # logger.warning("Memory limits not supported on this platform.")
+        pass
     except Exception as e:
-        logger.warning("Error while setting memory limit: %s", e)
+        # logger.warning("Error while setting memory limit: %s", e)
+        pass
 
 
 def clear_cache():
@@ -90,8 +93,8 @@ def install_lean():
             dl_cmd = "curl -O --location https://raw.githubusercontent.com/leanprover/elan/master/elan-init.ps1"
             subprocess.run(dl_cmd, shell=True, check=True)
 
-            # Run the PowerShell script with bypass execution policy
-            ps_cmd = "powershell -ExecutionPolicy Bypass -File elan-init.ps1"
+            # Run the PowerShell script with bypass execution policy and without prompts
+            ps_cmd = "powershell -ExecutionPolicy Bypass -File elan-init.ps1 -NoPrompt 1 -DefaultToolchain stable"
             subprocess.run(ps_cmd, shell=True, check=True)
 
             # Clean up the script file
@@ -103,10 +106,8 @@ def install_lean():
             )
 
         else:  # Unix-like systems
-            if os_name == "Linux":
+            if os_name in ["Linux", "Darwin"]:
                 command = "curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain stable"
-            elif os_name == "Darwin":  # macOS
-                command = '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/leanprover-community/mathlib4/master/scripts/install_macos.sh)"'
             else:
                 raise RuntimeError(
                     f"Unsupported operating system: {os_name}. Please install elan manually: "

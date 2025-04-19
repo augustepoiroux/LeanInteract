@@ -209,7 +209,7 @@ class TempRequireProject(BaseTempProject):
 
         normalized_require: list[LeanRequire] = []
         for req in require:
-            if isinstance(req, Literal["mathlib"]):
+            if req == "mathlib":
                 normalized_require.append(
                     LeanRequire("mathlib", "https://github.com/leanprover-community/mathlib4.git", lean_version)
                 )

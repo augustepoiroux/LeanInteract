@@ -129,18 +129,14 @@ class LeanServer:
             raise BrokenPipeError("The Lean server returned no output.")
 
     def _parse_repl_output(self, raw_output: str, verbose: bool) -> dict:
-        """Clean up raw REPL output and parse JSON response."""
+        """Parse JSON response."""
         if verbose:
-            logger.info("Server raw output: `%s", raw_output)
-        output = raw_output.replace("\r\n", "\n")
-        output = output[output.find('{"') :] if '{"' in output else ""
-        if verbose:
-            logger.info("Server cleaned output: `%s", output)
+            logger.info("Server output: `%s`", raw_output)
         try:
-            return json.loads(output)
+            return json.loads(raw_output)
         except json.JSONDecodeError as e:
             raise json.JSONDecodeError(
-                msg=f"Could not parse the Lean server output: `{repr(output)}`.", doc=e.doc, pos=e.pos
+                msg=f"Could not parse the Lean server output: `{repr(raw_output)}`.", doc=e.doc, pos=e.pos
             ) from e
 
     def run_dict(self, request: dict, verbose: bool = False, timeout: float | None = DEFAULT_TIMEOUT) -> dict:
