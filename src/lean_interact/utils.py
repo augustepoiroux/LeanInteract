@@ -2,14 +2,13 @@ import logging
 import os
 import platform
 import re
-import resource
 import shutil
 import subprocess
 
 import psutil
 from rich.logging import RichHandler
 
-logger = logging.getLogger("document_autoformalization")
+logger = logging.getLogger("lean_interact")
 logger.setLevel("INFO")
 handler = RichHandler(rich_tracebacks=True)
 handler.setLevel("NOTSET")
@@ -42,9 +41,16 @@ def _limit_memory(max_mb: int | None):
     if max_mb is None:
         return
     try:
+        import resource
+
         resource.setrlimit(resource.RLIMIT_AS, (max_mb * 1024 * 1024, max_mb * 1024 * 1024))
+        logger.info("Memory usage limited to %d MB", max_mb)
     except ValueError:
-        logger.warning(f"Failed to set memory limit to {max_mb} MB.")
+        logger.warning("Failed to set memory limit to %d MB.", max_mb)
+    except ImportError:
+        logger.warning("Memory limits not supported on this platform.")
+    except Exception as e:
+        logger.warning("Error while setting memory limit: %s", e)
 
 
 def clear_cache():
@@ -68,43 +74,77 @@ def get_project_lean_version(project_dir: str) -> str | None:
 
 
 def install_lean():
+    """
+    Install Lean 4 version manager (elan) in a cross-platform compatible way.
+    Uses platform-specific methods for Windows, macOS, and Linux.
+    """
     try:
         os_name = platform.system()
-        print(f"Detected operating system: {os_name}")
-        if os_name == "Linux":
-            command = "curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain stable && . ~/.profile"
-        elif os_name == "Darwin":
-            command = '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/leanprover-community/mathlib4/master/scripts/install_macos.sh)" && source ~/.profile'
-        elif os_name == "Windows":
-            command = (
-                "curl -O --location https://raw.githubusercontent.com/leanprover/elan/master/elan-init.ps1"
-                " && powershell -ExecutionPolicy Bypass -f elan-init.ps1"
-                " && del elan-init.ps1"
+        logger.info("Detected operating system: %s", os_name)
+
+        if os_name == "Windows":
+            # Windows installation - use PowerShell with proper error handling
+            logger.info("Installing elan for Windows...")
+
+            # Download the PowerShell script
+            dl_cmd = "curl -O --location https://raw.githubusercontent.com/leanprover/elan/master/elan-init.ps1"
+            subprocess.run(dl_cmd, shell=True, check=True)
+
+            # Run the PowerShell script with bypass execution policy
+            ps_cmd = "powershell -ExecutionPolicy Bypass -File elan-init.ps1"
+            subprocess.run(ps_cmd, shell=True, check=True)
+
+            # Clean up the script file
+            cleanup_cmd = "del elan-init.ps1"
+            subprocess.run(cleanup_cmd, shell=True, check=True)
+
+            logger.info(
+                "Elan has been installed. You may need to restart your terminal for the PATH changes to take effect."
             )
-        else:
-            raise RuntimeError(
-                "Unsupported operating system. Please install elan manually: https://leanprover-community.github.io/get_started.html"
-            )
-        subprocess.run(command, shell=True, check=True)
-        if os_name in ["Linux", "Darwin"]:
-            # add `export PATH="$HOME/.elan/bin:$PATH"` to ~/.bashrc and ~/.zshrc if they exist
-            paths = ["~/.bashrc", "~/.zshrc"]
-            for path in paths:
-                path = os.path.expanduser(path)
-                try:
-                    with open(path, "a") as file:
-                        file.write('\nexport PATH="$HOME/.elan/bin:$PATH"\n')
-                    print(f"Added `elan` to {path}")
-                except FileNotFoundError:
-                    print(f"{path} not found, skipping.")
-            print(
-                "Please restart your terminal or run 'source ~/.profile' to update your shell with the new environment variables."
-            )
-        print("Lean installation completed successfully.")
+
+        else:  # Unix-like systems
+            if os_name == "Linux":
+                command = "curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain stable"
+            elif os_name == "Darwin":  # macOS
+                command = '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/leanprover-community/mathlib4/master/scripts/install_macos.sh)"'
+            else:
+                raise RuntimeError(
+                    f"Unsupported operating system: {os_name}. Please install elan manually: "
+                    "https://leanprover-community.github.io/get_started.html"
+                )
+
+            subprocess.run(command, shell=True, check=True)
+
+            # Add to PATH in common shell config files
+            user_home = os.path.expanduser("~")
+            shell_configs = [".bashrc", ".zshrc", ".bash_profile", ".profile"]
+            for config in shell_configs:
+                config_path = os.path.join(user_home, config)
+                if os.path.exists(config_path):
+                    try:
+                        with open(config_path, "a", encoding="utf-8") as file:
+                            file.write('\nexport PATH="$HOME/.elan/bin:$PATH"\n')
+                        logger.info("Added elan to PATH in %s", config_path)
+                    except Exception as e:
+                        logger.warning("Could not modify %s: %s", config_path, e)
+
+            logger.info("Please restart your terminal or run 'source ~/.profile' to update your PATH")
+
+        logger.info("Lean installation completed successfully.")
+
     except subprocess.CalledProcessError as e:
-        print(
-            f"An error occurred during Lean installation: {e}. Please check https://leanprover-community.github.io/get_started.html for more information."
+        logger.warning(
+            "An error occurred during Lean installation: %s\n"
+            "Please check https://leanprover-community.github.io/get_started.html for more information.",
+            e,
         )
+        raise e
+    except Exception as e:
+        logger.warning(
+            "Unexpected error during Lean installation: %s\nPlease try installing manually: https://leanprover-community.github.io/get_started.html",
+            e,
+        )
+        raise e
 
 
 def indent_code(code: str, nb_spaces: int = 2) -> str:

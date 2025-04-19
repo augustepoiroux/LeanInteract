@@ -58,8 +58,11 @@ class LocalProject(BaseProject):
         stderr = None if verbose else subprocess.DEVNULL
 
         with FileLock(f"{self.directory}.lock"):
-            # check that the project is buildable
-            subprocess.run(["lake", "build"], cwd=self.directory, check=True, stdout=stdout, stderr=stderr)
+            try:
+                subprocess.run(["lake", "build"], cwd=self.directory, check=True, stdout=stdout, stderr=stderr)
+            except subprocess.CalledProcessError as e:
+                logger.error("Failed to build local project: %s", e)
+                raise
 
 
 @dataclass(frozen=True)
@@ -70,8 +73,15 @@ class GitProject(BaseProject):
     rev: str | None = None
 
     def _get_directory(self, cache_dir: str, lean_version: str | None = None) -> str:
-        repo_name = "/".join(self.url.split("/")[-2:]).replace(".git", "")
-        return os.path.join(cache_dir, "git_projects", repo_name, self.rev or "latest")
+        repo_parts = self.url.split("/")
+        if len(repo_parts) >= 2:
+            owner = repo_parts[-2]
+            repo = repo_parts[-1].replace(".git", "")
+            return os.path.join(cache_dir, "git_projects", owner, repo, self.rev or "latest")
+        else:
+            # Fallback for malformed URLs
+            repo_name = self.url.replace(".git", "").split("/")[-1]
+            return os.path.join(cache_dir, "git_projects", repo_name, self.rev or "latest")
 
     def _instantiate(self, cache_dir: str, lean_version: str, verbose: bool = True):
         """Instantiate the git project."""
@@ -91,8 +101,11 @@ class GitProject(BaseProject):
 
             repo.submodule_update(init=True, recursive=True)
 
-            # check that the project is buildable
-            subprocess.run(["lake", "build"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
+            try:
+                subprocess.run(["lake", "build"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
+            except subprocess.CalledProcessError as e:
+                logger.error("Failed to build the git project: %s", e)
+                raise
 
 
 @dataclass(frozen=True)
@@ -127,18 +140,29 @@ class BaseTempProject(BaseProject):
                 cmd_init = ["lake", f"+{lean_version}", "init", "dummy", "exe.lean"]
                 if lean_version.startswith("v4") and int(lean_version.split(".")[1]) <= 7:
                     cmd_init = ["lake", f"+{lean_version}", "init", "dummy", "exe"]
-                subprocess.run(cmd_init, cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
+
+                try:
+                    subprocess.run(cmd_init, cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
+                except subprocess.CalledProcessError as e:
+                    logger.error("Failed to initialize Lean project: %s", e)
+                    raise
 
                 # Create or modify the lakefile
                 self._modify_lakefile(tmp_project_dir, lean_version)
 
                 logger.info("Preparing Lean environment with dependencies (may take a while the first time)...")
-                subprocess.run(["lake", "update"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
-                # in case mathlib is used as a dependency, we try to get the cache
-                subprocess.run(
-                    ["lake", "exe", "cache", "get"], cwd=tmp_project_dir, check=False, stdout=stdout, stderr=stderr
-                )
-                subprocess.run(["lake", "build"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
+
+                # Run lake commands with appropriate platform handling
+                try:
+                    subprocess.run(["lake", "update"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
+                    # in case mathlib is used as a dependency, we try to get the cache
+                    subprocess.run(
+                        ["lake", "exe", "cache", "get"], cwd=tmp_project_dir, check=False, stdout=stdout, stderr=stderr
+                    )
+                    subprocess.run(["lake", "build"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
+                except subprocess.CalledProcessError as e:
+                    logger.error("Failed during Lean project setup: %s", e)
+                    raise
 
     def _get_hash_content(self, lean_version: str) -> str:
         """Return a unique hash for the project content."""
@@ -175,15 +199,26 @@ class TempRequireProject(BaseTempProject):
     [MiniF2F](https://github.com/yangky11/miniF2F-lean4)) without having to manually set up a Lean project.
     """
 
-    require: Literal["mathlib"] | list[LeanRequire]
+    require: Literal["mathlib"] | LeanRequire | list[LeanRequire | Literal["mathlib"]]
 
     def _normalize_require(self, lean_version: str) -> list[LeanRequire]:
         """Normalize the require field to always be a list."""
         require = self.require
-        if require == "mathlib":
-            return [LeanRequire("mathlib", "https://github.com/leanprover-community/mathlib4.git", lean_version)]
-        assert isinstance(require, list)
-        return sorted(require, key=lambda x: x.name)
+        if not isinstance(require, list):
+            require = [require]
+
+        normalized_require: list[LeanRequire] = []
+        for req in require:
+            if isinstance(req, Literal["mathlib"]):
+                normalized_require.append(
+                    LeanRequire("mathlib", "https://github.com/leanprover-community/mathlib4.git", lean_version)
+                )
+            elif isinstance(req, LeanRequire):
+                normalized_require.append(req)
+            else:
+                raise ValueError(f"Invalid requirement type: {type(req)}")
+
+        return sorted(normalized_require, key=lambda x: x.name)
 
     def _get_hash_content(self, lean_version: str) -> str:
         """Return a unique hash based on dependencies."""
@@ -245,7 +280,14 @@ class LeanREPLConfig:
         self._stdout = None if self.verbose else subprocess.DEVNULL
         self._stderr = None if self.verbose else subprocess.DEVNULL
 
-        self.repo_name = "/".join(self.repl_git.split("/")[-2:]).replace(".git", "")
+        repo_parts = self.repl_git.split("/")
+        if len(repo_parts) >= 2:
+            owner = repo_parts[-2]
+            repo = repo_parts[-1].replace(".git", "")
+            self.repo_name = os.path.join(owner, repo)
+        else:
+            self.repo_name = self.repl_git.replace(".git", "")
+
         self.cache_clean_repl_dir = os.path.join(self.cache_dir, self.repo_name, "repl_clean_copy")
 
         # check if lake is installed
@@ -324,10 +366,13 @@ class LeanREPLConfig:
                 f"Please open an issue on GitHub if you think this is a bug."
             )
 
-            # build the repl
-            subprocess.run(
-                ["lake", "build"], cwd=self._cache_repl_dir, check=True, stdout=self._stdout, stderr=self._stderr
-            )
+            try:
+                subprocess.run(
+                    ["lake", "build"], cwd=self._cache_repl_dir, check=True, stdout=self._stdout, stderr=self._stderr
+                )
+            except subprocess.CalledProcessError as e:
+                logger.error("Failed to build the REPL: %s", e)
+                raise
 
     def _get_available_lean_versions_sha(self) -> list[tuple[str, str]]:
         """

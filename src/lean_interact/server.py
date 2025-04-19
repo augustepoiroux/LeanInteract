@@ -3,13 +3,13 @@ import gc
 import hashlib
 import json
 import os
+import subprocess
 import threading
 from copy import deepcopy
 from dataclasses import dataclass
 from time import sleep
 from typing import overload
 
-import pexpect
 import psutil
 from filelock import FileLock
 
@@ -35,7 +35,7 @@ DEFAULT_TIMEOUT: int | None = None
 
 class LeanServer:
     config: LeanREPLConfig
-    _proc: pexpect.spawn | None
+    _proc: subprocess.Popen | None
     _lock: threading.Lock
 
     def __init__(self, config: LeanREPLConfig):
@@ -61,26 +61,31 @@ class LeanServer:
         return self.config.lean_version
 
     def start(self) -> None:
-        self._proc = pexpect.spawn(
-            "/bin/bash",
+        self._proc = subprocess.Popen(
+            ["lake", "env", os.path.join(self.config._cache_repl_dir, ".lake", "build", "bin", "repl")],
             cwd=self.config.working_dir,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             encoding="utf-8",
-            codec_errors="replace",
-            echo=False,
+            text=True,
+            bufsize=1,
             preexec_fn=lambda: _limit_memory(self.config.memory_hard_limit_mb),
         )
-        self._proc.delaybeforesend = None
-        # `stty -icanon` is required to handle arbitrary long inputs in the Lean REPL
-        self._proc.sendline("stty -icanon")
-        self._proc.sendline(f"lake env {self.config.cache_repl_dir}/.lake/build/bin/repl || exit")
+
+    def _sendline(self, line: str) -> None:
+        assert self._proc is not None and self._proc.stdin is not None
+        self._proc.stdin.write(line + "\n")
+        self._proc.stdin.flush()
 
     def is_alive(self) -> bool:
-        return hasattr(self, "_proc") and self._proc is not None and self._proc.isalive()
+        return self._proc is not None and self._proc.poll() is None
 
     def kill(self) -> None:
-        if hasattr(self, "_proc") and self._proc:
-            self._proc.terminate(force=True)
-            del self._proc
+        if self._proc:
+            self._proc.kill()
+            self._proc.wait()
+            self._proc = None
         gc.collect()
 
     def restart(self) -> None:
@@ -92,13 +97,36 @@ class LeanServer:
 
     def _execute_cmd_in_repl(self, json_query: str, verbose: bool, timeout: float | None) -> str:
         """Send JSON queries to the Lean REPL and wait for the standard delimiter."""
-        assert self._proc is not None
+        assert self._proc is not None and self._proc.stdin is not None and self._proc.stdout is not None
         with self._lock:
             if verbose:
                 logger.info("Sending query: %s", json_query)
-            self._proc.send(json_query + "\n\n")
-            self._proc.expect_exact("\r\n\r\n", timeout=timeout)
-        return self._proc.before or ""
+            self._proc.stdin.write(json_query + "\n\n")
+            self._proc.stdin.flush()
+
+            output: str = ""
+
+            def reader():
+                # Read until delimiter "\n\n" or timeout
+                nonlocal output
+                assert self._proc is not None and self._proc.stdout is not None
+                while True:
+                    line = self._proc.stdout.readline()
+                    if not line:
+                        break  # EOF
+                    output += line
+                    if output.endswith("\n\n"):
+                        break
+
+            t = threading.Thread(target=reader)
+            t.start()
+            t.join(timeout)
+            if t.is_alive():
+                self.kill()
+                raise TimeoutError(f"The Lean server did not respond in time ({timeout=}) and is now killed.")
+            if output:
+                return output
+            raise BrokenPipeError("The Lean server returned no output.")
 
     def _parse_repl_output(self, raw_output: str, verbose: bool) -> dict:
         """Clean up raw REPL output and parse JSON response."""
@@ -131,10 +159,10 @@ class LeanServer:
         json_query = json.dumps(request, ensure_ascii=False)
         try:
             raw_output = self._execute_cmd_in_repl(json_query, verbose, timeout)
-        except pexpect.exceptions.TIMEOUT as e:
+        except TimeoutError as e:
             self.kill()
             raise TimeoutError(f"The Lean server did not respond in time ({timeout=}) and is now killed.") from e
-        except pexpect.exceptions.EOF as e:
+        except BrokenPipeError as e:
             self.kill()
             raise ConnectionAbortedError(
                 "The Lean server closed unexpectedly. Possible reasons (not exhaustive):\n"
