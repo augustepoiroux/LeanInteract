@@ -108,13 +108,9 @@ package "dummy" where
 @[default_target]
 lean_exe "dummy" where
   root := `Main
-
-require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "v4.18.0"
-        """
-
+"""
         project = TemporaryProject(temp_content)
-        config = LeanREPLConfig(lean_version="v4.18.0", project=project, verbose=True)
+        config = LeanREPLConfig(lean_version="v4.14.0", project=project, verbose=True)
         server = AutoLeanServer(config=config)
         server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
 
@@ -447,7 +443,7 @@ require mathlib from git
         with self.assertRaises(ConnectionAbortedError):
             for i in range(1000):
                 cmd = Command(cmd=f"theorem womp{i} (a{i} b c : Nat) : (a{i} + b) + c = c + a{i} + b := by sorry")
-                server.run(cmd, verbose=True)
+                server.run(cmd)
 
     def test_run_lots_of_commands(self):
         # Test this issue: https://github.com/leanprover-community/repl/issues/77
@@ -459,7 +455,7 @@ require mathlib from git
             cmd = Command(
                 cmd=f"theorem womp{i} (a{i} b c : Nat) : (a{i} + b) + c = c + a{i} + b := by sorry", env=init_env.env
             )
-            result = server.run(cmd, verbose=True)
+            result = server.run(cmd)
             self.assertIsInstance(result, CommandResponse)
 
     def test_bug_increasing_memory(self):
