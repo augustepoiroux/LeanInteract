@@ -3,6 +3,7 @@ import gc
 import hashlib
 import json
 import os
+import platform
 import subprocess
 import threading
 from copy import deepcopy
@@ -70,7 +71,9 @@ class LeanServer:
             encoding="utf-8",
             text=True,
             bufsize=1,
-            preexec_fn=lambda: _limit_memory(self.config.memory_hard_limit_mb),
+            preexec_fn=None
+            if platform.system() == "Windows"
+            else lambda: _limit_memory(self.config.memory_hard_limit_mb),
         )
 
     def _sendline(self, line: str) -> None:
