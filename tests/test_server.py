@@ -1,4 +1,5 @@
 import os
+import platform
 import tempfile
 import time
 import unittest
@@ -42,21 +43,22 @@ from lean_interact.server import (
 
 class TestLeanServer(unittest.TestCase):
     maxDiff = None
+    oldestVersion = "v4.8.0-rc1" if platform.system() == "Windows" else "v4.7.0"
 
     @classmethod
     def setUpClass(cls):
         # Pre-run configs for all available versions to get the cache
         lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
-        for version in ["v4.7.0", "v4.14.0", lean_versions[-1]]:
+        for version in [cls.oldestVersion, "v4.14.0", lean_versions[-1]]:
             LeanREPLConfig(lean_version=version, verbose=True)
 
         # prepare Mathlib for the last version
-        LeanREPLConfig(lean_version="v4.7.0", project=TempRequireProject("mathlib"), verbose=True)
+        LeanREPLConfig(lean_version=cls.oldestVersion, project=TempRequireProject("mathlib"), verbose=True)
         LeanREPLConfig(lean_version=lean_versions[-1], project=TempRequireProject("mathlib"), verbose=True)
 
     def test_init_with_lean_version(self):
         lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
-        for version in ["v4.7.0", "v4.14.0", lean_versions[-1]]:
+        for version in [self.oldestVersion, "v4.14.0", lean_versions[-1]]:
             server = AutoLeanServer(config=LeanREPLConfig(lean_version=version, verbose=True))
             self.assertEqual(server.lean_version, version)
             self.assertEqual(
@@ -88,7 +90,9 @@ class TestLeanServer(unittest.TestCase):
     def test_init_with_project_dir_fail(self):
         project_dir = "/tmp/path/to/project"
         with self.assertRaises(FileNotFoundError):
-            AutoLeanServer(LeanREPLConfig(project=LocalProject(project_dir), lean_version="v4.7.0", verbose=True))
+            AutoLeanServer(
+                LeanREPLConfig(project=LocalProject(project_dir), lean_version=self.oldestVersion, verbose=True)
+            )
 
     def test_init_with_project_dir(self):
         base_config = LeanREPLConfig(project=TempRequireProject("mathlib"), verbose=True)
@@ -437,6 +441,9 @@ lean_exe "dummy" where
         self.assertIsNone(result.infotree)
 
     def test_run_multiple_commands(self):
+        if platform.system() != "Linux":
+            self.skipTest("This test is only relevant on Linux")
+
         # Test this issue: https://github.com/leanprover-community/repl/issues/77
         server = AutoLeanServer(config=LeanREPLConfig(memory_hard_limit_mb=4096, verbose=True))
 
@@ -459,6 +466,9 @@ lean_exe "dummy" where
             self.assertIsInstance(result, CommandResponse)
 
     def test_bug_increasing_memory(self):
+        if platform.system() != "Linux":
+            self.skipTest("This test is only relevant on Linux")
+
         mem_limit = 512
         server = AutoLeanServer(config=LeanREPLConfig(memory_hard_limit_mb=mem_limit, verbose=True))
 

@@ -72,7 +72,7 @@ class LeanServer:
             text=True,
             bufsize=1,
             preexec_fn=None
-            if platform.system() == "Windows"
+            if platform.system() != "Linux"
             else lambda: _limit_memory(self.config.memory_hard_limit_mb),
         )
 

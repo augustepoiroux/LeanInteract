@@ -265,6 +265,7 @@ class LeanREPLConfig:
                 Default is inside the package directory.
             memory_hard_limit_mb:
                 The maximum memory usage in MB for the Lean server. Setting this value too low may lead to more command processing failures.
+                Only available on Linux platforms.
                 Default is `None`, which means no limit.
             verbose:
                 Whether to print additional information during the setup process.
