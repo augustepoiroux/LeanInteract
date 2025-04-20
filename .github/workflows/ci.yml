@@ -36,6 +36,10 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          # Fix long path issue on Windows
+          New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -Value 1 -PropertyType DWord -Force
+          git config --system core.longpaths true
+
           install-lean
           echo "$env:USERPROFILE\.elan\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 

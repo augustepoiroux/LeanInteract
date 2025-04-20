@@ -442,6 +442,22 @@ Common issues and their solutions:
 
 3. **Long waiting times during first run**: This is expected as Lean REPL is being downloaded and built. Additionally, if you are importing Mathlib it will take even more time. Subsequent runs will be much faster.
 
+4. **(Windows) Path too long error**: Windows has a maximum path length limitation of 260 characters.
+If you get an error similar to the following one, you are likely affected by this problem:
+
+    ```
+    error: external command 'git' exited with code 128
+    ERROR    Failed during Lean project setup: Command '['lake', 'update']' returned non-zero exit status 1.
+    ```
+
+    To resolve this, you can enable long paths in Windows 10 and later versions. For more information, refer to the [Microsoft documentation](https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation).
+    Alternatively, run the following command in a terminal with administrator privileges:
+
+    ```bash
+    New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -Value 1 -PropertyType DWord -Force
+    git config --system core.longpaths true
+    ```
+
 ## Contributing
 
 Contributions are welcome! Here's how you can help:

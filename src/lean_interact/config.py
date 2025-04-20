@@ -130,8 +130,8 @@ class BaseTempProject(BaseProject):
 
         # Lock the temporary project directory during setup
         with FileLock(f"{tmp_project_dir}.lock"):
-            # check if the Lean project is already built
-            if not os.path.exists(os.path.join(tmp_project_dir, "lakefile.lean")):
+            # check if the Lean project already exists
+            if not os.path.exists(os.path.join(tmp_project_dir, "lake-manifest.json")):
                 # clean the content of the folder in case of a previous aborted build
                 shutil.rmtree(tmp_project_dir, ignore_errors=True)
                 os.makedirs(tmp_project_dir, exist_ok=True)
@@ -162,6 +162,8 @@ class BaseTempProject(BaseProject):
                     subprocess.run(["lake", "build"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
                 except subprocess.CalledProcessError as e:
                     logger.error("Failed during Lean project setup: %s", e)
+                    # delete the project directory to avoid conflicts
+                    shutil.rmtree(tmp_project_dir, ignore_errors=True)
                     raise
 
     def _get_hash_content(self, lean_version: str) -> str:
