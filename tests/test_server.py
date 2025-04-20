@@ -88,8 +88,8 @@ class TestLeanServer(unittest.TestCase):
         self.assertEqual(project._normalize_require(latest_version), require)
 
     def test_init_with_project_dir_fail(self):
-        project_dir = "/tmp/path/to/project"
-        with self.assertRaises(FileNotFoundError):
+        project_dir = os.path.join("tmp", "path", "to", "project")
+        with self.assertRaises((FileNotFoundError, NotADirectoryError)):
             AutoLeanServer(
                 LeanREPLConfig(project=LocalProject(project_dir), lean_version=self.oldestVersion, verbose=True)
             )

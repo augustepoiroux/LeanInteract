@@ -76,6 +76,47 @@ def get_project_lean_version(project_dir: str) -> str | None:
     return None
 
 
+def check_windows_long_paths():
+    """Check if long paths are enabled if running on Windows."""
+    if platform.system() != "Windows":
+        return
+
+    # Try to check if long paths are enabled via registry key
+    try:
+        import winreg
+
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem")
+        value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
+        if value == 1:
+            logger.info("Windows long paths already enabled")
+        else:
+            logger.info("For optimal use on Windows, enable long paths by running this command as administrator:")
+            logger.info(
+                'New-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem" -Name LongPathsEnabled -Value 1 -PropertyType DWord -Force'
+            )
+    except Exception as e:
+        logger.warning(f"Could not check Windows long path setting: {e}")
+
+    # Check if git core.longpaths is already configured
+    result = subprocess.run(
+        ["git", "config", "--get", "core.longpaths"],
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+    if result.returncode == 0 and result.stdout.strip() == "true":
+        logger.info("Git already configured for long paths")
+    else:
+        logger.info("For optimal use on Windows, configure git for long paths by running:")
+        logger.info("git config --global core.longpaths true")
+
+
+if platform.system() == "Windows":
+    check_windows_long_paths()
+
+
 def install_lean():
     """
     Install Lean 4 version manager (elan) in a cross-platform compatible way.
@@ -86,6 +127,9 @@ def install_lean():
         logger.info("Detected operating system: %s", os_name)
 
         if os_name == "Windows":
+            # Check long path support on Windows before installing Lean
+            check_windows_long_paths()
+
             # Windows installation - use PowerShell with proper error handling
             logger.info("Installing elan for Windows...")
 

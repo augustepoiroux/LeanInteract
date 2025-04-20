@@ -247,16 +247,18 @@ class LeanREPLConfig:
         verbose: bool = False,
     ):
         """
-        Configuration class used to specify the Lean environment we wish to use.
+        Initialize the Lean REPL configuration.
 
         Args:
-            lean_version: Lean version you want to use with the REPL.
-                If `None`, `LeanREPLConfig` will try to infer `lean_version` from `project`, otherwise
-                the latest version available in the Lean REPL repository will be used.
-            project: Source configuration for the Lean project. Use one of:
-                - `LocalProject`: A directory where a local Lean project is stored.
-                - `GitProject`: A git repository with a Lean project.
-                - `TemporaryProject`: A temporary Lean project with a custom lakefile that will be created.
+            lean_version:
+                The Lean version you want to use.
+                Default is `None`, which means the latest version compatible with the project will be selected.
+            project:
+                The project you want to use. There are 4 options:
+                - `None`: The project will only depend on Lean and its standard library.
+                - `LocalProject`: An existing local Lean project.
+                - `GitProject`: A git repository with a Lean project that will be cloned.
+                - `TemporaryProject`: A temporary Lean project with a custom lakefile.lean that will be created.
                 - `TempRequireProject`: A temporary Lean project with dependencies that will be created.
             repl_rev:
                 The REPL version you want to use. It is not recommended to change this value unless you know what you are doing.
@@ -276,7 +278,7 @@ class LeanREPLConfig:
         self.project = project
         self.repl_git = repl_git
         self.repl_rev = repl_rev
-        self.cache_dir = cache_dir
+        self.cache_dir = os.path.normpath(cache_dir)
         self.memory_hard_limit_mb = memory_hard_limit_mb
 
         self.verbose = verbose

@@ -26,6 +26,23 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .
 
+      - name: Configure Windows for long paths
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # Enable long paths in registry
+          New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+          # Configure Git for long paths
+          git config --system core.longpaths true
+          # Verify settings
+          Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled"
+          git config --get core.longpaths
+          # Refresh environment paths
+          $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+          # Create a PowerShell profile to ensure settings persist in all shells
+          New-Item -Path $PROFILE -ItemType File -Force
+          Add-Content -Path $PROFILE -Value '$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")'
+
       - name: Install Lean (Linux/macOS)
         if: runner.os != 'Windows'
         run: |
@@ -36,10 +53,6 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          # Fix long path issue on Windows
-          New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -Value 1 -PropertyType DWord -Force
-          git config --system core.longpaths true
-
           install-lean
           echo "$env:USERPROFILE\.elan\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
