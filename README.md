@@ -11,6 +11,7 @@
 
 - **🔗 Interactivity**: Execute Lean code and files directly from Python.
 - **🚀 Ease of Use**: LeanInteract abstracts the complexities of Lean setup and interaction.
+- **💻 Cross-platform**: Works on Windows, macOS, and Linux operating systems.
 - **🔧 Compatibility**: Supports all Lean versions between `v4.7.0-rc1` and `v4.19.0-rc2`.
   - We backport the latest features of Lean REPL to older versions of Lean.
 - **📦 Temporary Projects**: Easily instantiate temporary Lean environments.
