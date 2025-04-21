@@ -21,14 +21,6 @@ jobs:
           New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
           # Configure Git for long paths
           git config --system core.longpaths true
-          # Verify settings
-          Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled"
-          git config --get core.longpaths
-          # Refresh environment paths
-          $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-          # Create a PowerShell profile to ensure settings persist in all shells
-          New-Item -Path $PROFILE -ItemType File -Force
-          Add-Content -Path $PROFILE -Value '$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")'
 
       - name: Checkout
         uses: actions/checkout@v3
