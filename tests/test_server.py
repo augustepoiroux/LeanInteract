@@ -83,7 +83,7 @@ class TestLeanServer(unittest.TestCase):
     def test_init_with_require(self):
         # (Temporary) Skip mathlib tests on Windows to avoid long path issues in CI
         if platform.system() == "Windows":
-            return
+            self.skipTest("(Temporary) Skipping mathlib test on Windows due to long path issues")
 
         lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
         latest_version = lean_versions[-1]
@@ -105,7 +105,7 @@ class TestLeanServer(unittest.TestCase):
     def test_init_with_project_dir(self):
         # (Temporary) Skip mathlib tests on Windows to avoid long path issues in CI
         if platform.system() == "Windows":
-            return
+            self.skipTest("(Temporary) Skipping mathlib test on Windows due to long path issues")
 
         base_config = LeanREPLConfig(project=TempRequireProject("mathlib"), verbose=True)
         new_config = LeanREPLConfig(project=LocalProject(base_config._working_dir), verbose=True)
@@ -548,7 +548,8 @@ lean_exe "dummy" where
         env_id = result.env
 
         # Pickle the environment
-        temp_pickle_file = tempfile.mkstemp(suffix=".olean")[1]
+        temp_pickle_file = tempfile.NamedTemporaryFile(suffix=".olean", delete=False).name
+
         pickle_result = server.run(PickleEnvironment(env=env_id, pickle_to=temp_pickle_file), verbose=True)
         self.assertIsInstance(pickle_result, CommandResponse)
 
@@ -595,7 +596,7 @@ lean_exe "dummy" where
         assert isinstance(proof_state_id, int)
 
         # Pickle the proof state
-        temp_pickle_file = tempfile.mkstemp(suffix=".olean")[1]
+        temp_pickle_file = tempfile.NamedTemporaryFile(suffix=".olean", delete=False).name
         pickle_result = server.run(
             PickleProofState(proof_state=proof_state_id, pickle_to=temp_pickle_file), verbose=True
         )
@@ -613,11 +614,14 @@ lean_exe "dummy" where
         tactic_result = new_server.run(ProofStep(tactic="rfl", proof_state=unpickled_proof_state_id), verbose=True)
         self.assertEqual(tactic_result, ProofStepResponse(proof_state=1, goals=[], proof_status="Completed"))
 
+        # Delete the temp file
+        os.remove(temp_pickle_file)
+
     def test_pickle_fails_with_invalid_env(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
 
         # Try to pickle a non-existent environment
-        temp_pickle_file = tempfile.mkstemp(suffix=".olean")[1]
+        temp_pickle_file = tempfile.NamedTemporaryFile(suffix=".olean", delete=False).name
         result = server.run(PickleEnvironment(env=999, pickle_to=temp_pickle_file), verbose=True)
         assert isinstance(result, LeanError)
         self.assertEqual("unknown environment.", result.message.lower())
@@ -628,7 +632,7 @@ lean_exe "dummy" where
     def test_unpickle_fails_with_invalid_data(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
         # Try to unpickle invalid data
-        temp_pickle_file = tempfile.mkstemp(suffix=".olean")[1]
+        temp_pickle_file = tempfile.NamedTemporaryFile(suffix=".olean", delete=False).name
 
         # Try to unpickle invalid data
         with self.assertRaises(ConnectionAbortedError):
@@ -644,7 +648,6 @@ lean_exe "dummy" where
 
         # Create a more complex environment with multiple definitions and imports
         cmds = [
-            "import Lean",
             "def add_one (n : Nat) : Nat := n + 1",
             "def double (n : Nat) : Nat := n * 2",
             "def compute (n : Nat) : Nat := double (add_one n)",
@@ -671,7 +674,7 @@ lean_exe "dummy" where
         )
 
         # Pickle the environment
-        temp_pickle_file = tempfile.mkstemp(suffix=".olean")[1]
+        temp_pickle_file = tempfile.NamedTemporaryFile(suffix=".olean", delete=False).name
         pickle_result = server.run(PickleEnvironment(env=env_id, pickle_to=temp_pickle_file), verbose=True)
         self.assertIsInstance(pickle_result, CommandResponse)
 
