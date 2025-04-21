@@ -52,6 +52,10 @@ class TestLeanServer(unittest.TestCase):
         for version in [cls.oldestVersion, "v4.14.0", lean_versions[-1]]:
             LeanREPLConfig(lean_version=version, verbose=True)
 
+        # (Temporary) Skip mathlib setup on Windows to avoid long path issues in CI
+        if platform.system() == "Windows":
+            return
+
         # prepare Mathlib for the last version
         LeanREPLConfig(lean_version=cls.oldestVersion, project=TempRequireProject("mathlib"), verbose=True)
         LeanREPLConfig(lean_version=lean_versions[-1], project=TempRequireProject("mathlib"), verbose=True)
@@ -244,6 +248,9 @@ lean_exe "dummy" where
         )
 
     def test_mathlib(self):
+        if platform.system() == "Windows":
+            self.skipTest("(Temporary) Skipping mathlib test on Windows due to long path issues")
+
         server = AutoLeanServer(config=LeanREPLConfig(project=TempRequireProject("mathlib"), verbose=True))
         result = server.run(Command(cmd="import Mathlib"), add_to_session_cache=True, verbose=True)
         self.assertEqual(result, CommandResponse(env=-1))
