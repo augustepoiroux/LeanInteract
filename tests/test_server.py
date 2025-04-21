@@ -81,6 +81,10 @@ class TestLeanServer(unittest.TestCase):
             )
 
     def test_init_with_require(self):
+        # (Temporary) Skip mathlib tests on Windows to avoid long path issues in CI
+        if platform.system() == "Windows":
+            return
+
         lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
         latest_version = lean_versions[-1]
         require = [
@@ -99,6 +103,10 @@ class TestLeanServer(unittest.TestCase):
             )
 
     def test_init_with_project_dir(self):
+        # (Temporary) Skip mathlib tests on Windows to avoid long path issues in CI
+        if platform.system() == "Windows":
+            return
+
         base_config = LeanREPLConfig(project=TempRequireProject("mathlib"), verbose=True)
         new_config = LeanREPLConfig(project=LocalProject(base_config._working_dir), verbose=True)
         server = AutoLeanServer(new_config)
