@@ -55,7 +55,7 @@ class TestFileLocks(unittest.TestCase):
     """Tests for file locking functionality."""
 
     def setUp(self):
-        self.temp_dir = tempfile.TemporaryDirectory(delete=False).name
+        self.temp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         # Clean up temporary directory
@@ -138,7 +138,7 @@ class TestAutoLeanServerConcurrency(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Use a dedicated cache dir for concurrency tests
-        cls.cache_dir = tempfile.TemporaryDirectory(prefix="lean_concurrency_cache_", delete=False).name
+        cls.cache_dir = tempfile.mkdtemp(prefix="lean_concurrency_cache_")
         # Pre-instantiate config to avoid race in REPL setup
         cls.config = LeanREPLConfig(cache_dir=cls.cache_dir, verbose=True)
 

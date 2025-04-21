@@ -83,7 +83,7 @@ class TestLeanServer(unittest.TestCase):
     def test_init_with_require(self):
         # (Temporary) Skip mathlib tests on Windows to avoid long path issues in CI
         if platform.system() == "Windows":
-            self.skipTest("(Temporary) Skipping mathlib test on Windows due to long path issues")
+            self.skipTest("(Temporary) Skipping test on Windows due to long path issues in the CI")
 
         lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
         latest_version = lean_versions[-1]
@@ -105,7 +105,7 @@ class TestLeanServer(unittest.TestCase):
     def test_init_with_project_dir(self):
         # (Temporary) Skip mathlib tests on Windows to avoid long path issues in CI
         if platform.system() == "Windows":
-            self.skipTest("(Temporary) Skipping mathlib test on Windows due to long path issues")
+            self.skipTest("(Temporary) Skipping test on Windows due to long path issues in the CI")
 
         base_config = LeanREPLConfig(project=TempRequireProject("mathlib"), verbose=True)
         new_config = LeanREPLConfig(project=LocalProject(base_config._working_dir), verbose=True)
@@ -131,6 +131,9 @@ lean_exe "dummy" where
         server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
 
     def test_init_with_git_project(self):
+        if platform.system() == "Windows":
+            self.skipTest("(Temporary) Skipping test on Windows due to long path issues in the CI")
+
         git_url = "https://github.com/yangky11/lean4-example"
         config = LeanREPLConfig(project=GitProject(git_url), verbose=True)
         server = AutoLeanServer(config=config)
@@ -257,7 +260,7 @@ lean_exe "dummy" where
 
     def test_mathlib(self):
         if platform.system() == "Windows":
-            self.skipTest("(Temporary) Skipping mathlib test on Windows due to long path issues")
+            self.skipTest("(Temporary) Skipping test on Windows due to long path issues in the CI")
 
         server = AutoLeanServer(config=LeanREPLConfig(project=TempRequireProject("mathlib"), verbose=True))
         result = server.run(Command(cmd="import Mathlib"), add_to_session_cache=True, verbose=True)
@@ -581,7 +584,10 @@ lean_exe "dummy" where
         # )
 
         # delete the temp file
-        os.remove(temp_pickle_file)
+        try:
+            os.remove(temp_pickle_file)
+        except (FileNotFoundError, PermissionError):
+            pass
 
     def test_pickle_unpickle_proof_state(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
@@ -615,7 +621,10 @@ lean_exe "dummy" where
         self.assertEqual(tactic_result, ProofStepResponse(proof_state=1, goals=[], proof_status="Completed"))
 
         # Delete the temp file
-        os.remove(temp_pickle_file)
+        try:
+            os.remove(temp_pickle_file)
+        except (FileNotFoundError, PermissionError):
+            pass
 
     def test_pickle_fails_with_invalid_env(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
@@ -641,7 +650,10 @@ lean_exe "dummy" where
             server.run(UnpickleProofState(unpickle_proof_state_from=temp_pickle_file), verbose=True)
 
         # delete the temp file
-        os.remove(temp_pickle_file)
+        try:
+            os.remove(temp_pickle_file)
+        except (FileNotFoundError, PermissionError):
+            pass
 
     def test_pickle_unpickle_with_complex_environment(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
@@ -700,7 +712,10 @@ lean_exe "dummy" where
         # )
 
         # delete the temp file
-        os.remove(temp_pickle_file)
+        try:
+            os.remove(temp_pickle_file)
+        except (FileNotFoundError, PermissionError):
+            pass
 
 
 if __name__ == "__main__":
