@@ -48,7 +48,15 @@ jobs:
           install-lean
           echo "$env:USERPROFILE\.elan\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Run tests
+      - name: Run tests (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: python -m unittest discover -s ./tests
+        env:
+          PYTHONIOENCODING: utf-8
+
+      - name: Run tests (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: python -m unittest discover -s ./tests
         env:
           PYTHONIOENCODING: utf-8
