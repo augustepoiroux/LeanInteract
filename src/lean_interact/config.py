@@ -59,6 +59,7 @@ class LocalProject(BaseProject):
 
         with FileLock(f"{self.directory}.lock"):
             try:
+                subprocess.run(["lake", "exe", "cache", "get"], cwd=self.directory, check=False, stdout=stdout, stderr=stderr)
                 subprocess.run(["lake", "build"], cwd=self.directory, check=True, stdout=stdout, stderr=stderr)
             except subprocess.CalledProcessError as e:
                 logger.error("Failed to build local project: %s", e)
@@ -102,6 +103,7 @@ class GitProject(BaseProject):
             repo.submodule_update(init=True, recursive=True)
 
             try:
+                subprocess.run(["lake", "exe", "cache", "get"], cwd=project_dir, check=False, stdout=stdout, stderr=stderr)
                 subprocess.run(["lake", "build"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
             except subprocess.CalledProcessError as e:
                 logger.error("Failed to build the git project: %s", e)
