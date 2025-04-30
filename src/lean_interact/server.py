@@ -86,15 +86,11 @@ class LeanServer:
 
     def kill(self) -> None:
         if self._proc:
-            # Close file handles before killing the process
-            if self._proc.stdin:
-                self._proc.stdin.close()
-            if self._proc.stdout:
-                self._proc.stdout.close()
-            if self._proc.stderr:
-                self._proc.stderr.close()
             self._proc.kill()
-            self._proc.wait()
+            try:
+                self._proc.communicate(timeout=0)
+            except subprocess.TimeoutExpired:
+                pass
             self._proc = None
         gc.collect()
 

@@ -416,6 +416,32 @@ lean_exe "dummy" where
         with self.assertRaises(ChildProcessError):
             server.run(Command(cmd="def z := 3"), verbose=True)
 
+    def test_timeout_respected(self):
+        if platform.system() == "Windows":
+            self.skipTest("(Temporary) Skipping test on Windows due to long path issues in the CI")
+
+        config = LeanREPLConfig(project=TempRequireProject("mathlib"))
+        server = AutoLeanServer(config)
+
+        response = server.run(
+            Command(cmd="import Mathlib\nset_option maxHeartbeats 0\nset_option maxRecDepth 100000"),
+            add_to_session_cache=True,
+        )
+        assert isinstance(response, CommandResponse)
+        root_env = response.env
+
+        # check that the next command takes less than 3 seconds
+        start = time.time()
+        with self.assertRaises(TimeoutError):
+            server.run(
+                Command(
+                    cmd="theorem amc12a_2003_p1 (u v : ℕ → ℕ) (h₀ : ∀ n, u n = 2 * n + 2) (h₁ : ∀ n, v n = 2 * n + 1) :\n    ((∑ k in Finset.range 2003, u k) - ∑ k in Finset.range 2003, v k) = 2003 := by simp only [h₀, h₁, Finset.sum_range_succ, Finset.sum_range_zero]; rfl",
+                    env=root_env,
+                ),
+                timeout=2,
+            )
+        self.assertLess(time.time() - start, 3)
+
     # def test_run_proof(self):
     #     server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
     #     result = server.run(
