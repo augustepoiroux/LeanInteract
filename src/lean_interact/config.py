@@ -312,7 +312,7 @@ class LeanREPLConfig:
 
         if working_dir:
             self._working_dir = working_dir
-        if self.project is None:
+        elif self.project is None:
             self._working_dir = self._cache_repl_dir
         else:
             self.project._instantiate(
@@ -394,7 +394,7 @@ class LeanREPLConfig:
         """
         Get the available Lean versions for the selected REPL.
         """
-        from git Repo
+        from git import Repo
         repo = Repo(self.cache_clean_repl_dir)
         return [
             (str(commit.message.strip()), commit.hexsha)

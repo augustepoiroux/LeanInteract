@@ -134,6 +134,7 @@ class LeanServer:
                     line = self._proc.stdout.readline()
                     if not line:
                         break  # EOF
+                    print(repr(line))
                     output += line
                     if output.endswith("\n\n"):
                         break
