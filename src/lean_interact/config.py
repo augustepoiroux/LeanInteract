@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from typing import Literal
 
 from filelock import FileLock
-from git import GitCommandError, Repo
 
 from lean_interact.utils import (
     DEFAULT_CACHE_DIR,
@@ -247,6 +246,9 @@ class LeanREPLConfig:
         cache_dir: str = DEFAULT_CACHE_DIR,
         memory_hard_limit_mb: int | None = None,
         verbose: bool = False,
+        setup: bool = True,
+        lake_env_repl_path : str | None = None,
+        working_dir : str | None = None,
     ):
         """
         Initialize the Lean REPL configuration.
@@ -303,10 +305,13 @@ class LeanREPLConfig:
                 "Lean 4 build system (`lake`) is not installed. You can try to run `install-lean` or find installation instructions here: https://leanprover-community.github.io/get_started.html"
             )
 
-        self._setup_repl()
+        if setup:
+            self._setup_repl()
 
         assert isinstance(self.lean_version, str)
 
+        if working_dir:
+            self._working_dir = working_dir
         if self.project is None:
             self._working_dir = self._cache_repl_dir
         else:
@@ -316,8 +321,12 @@ class LeanREPLConfig:
                 verbose=self.verbose,
             )
             self._working_dir = self.project._get_directory(cache_dir=self.cache_dir, lean_version=self.lean_version)
+        
+        self.lake_env_repl_path = lake_env_repl_path or os.path.join(self._cache_repl_dir, ".lake", "build", "bin", "repl")
 
     def _setup_repl(self) -> None:
+        from git import GitCommandError, Repo
+        
         assert isinstance(self.repl_rev, str)
 
         # Lock the clean REPL directory during setup to prevent race conditions
@@ -385,6 +394,7 @@ class LeanREPLConfig:
         """
         Get the available Lean versions for the selected REPL.
         """
+        from git Repo
         repo = Repo(self.cache_clean_repl_dir)
         return [
             (str(commit.message.strip()), commit.hexsha)
