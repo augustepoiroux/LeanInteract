@@ -63,7 +63,7 @@ class LeanServer:
 
     def start(self) -> None:
         self._proc = subprocess.Popen(
-            ["lake", "env", self.config.lake_env_repl_path],
+            [self.config.lake_path, self.config.lake_command, self.config.lake_env_repl_path],
             cwd=self.config.working_dir,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -121,7 +121,8 @@ class LeanServer:
         with self._lock:
             if verbose:
                 logger.info("Sending query: %s", json_query)
-            self._proc.stdin.write(json_query + "\n\n")
+            print(json_query)
+            self._proc.stdin.write(json_query + "\n\n\n\n")
             self._proc.stdin.flush()
 
             output: str = ""
@@ -134,7 +135,6 @@ class LeanServer:
                     line = self._proc.stdout.readline()
                     if not line:
                         break  # EOF
-                    print(repr(line))
                     output += line
                     if output.endswith("\n\n"):
                         break

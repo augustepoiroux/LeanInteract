@@ -234,8 +234,7 @@ class TempRequireProject(BaseTempProject):
         with open(os.path.join(project_dir, "lakefile.lean"), "a", encoding="utf-8") as f:
             for req in require:
                 f.write(f'\n\nrequire {req.name} from git\n  "{req.git}"' + (f' @ "{req.rev}"' if req.rev else ""))
-
-
+            
 class LeanREPLConfig:
     def __init__(
         self,
@@ -249,6 +248,8 @@ class LeanREPLConfig:
         setup: bool = True,
         lake_env_repl_path : str | None = None,
         working_dir : str | None = None,
+        lake_path : str = "lake",
+        lake_command : str = "env",
     ):
         """
         Initialize the Lean REPL configuration.
@@ -323,6 +324,8 @@ class LeanREPLConfig:
             self._working_dir = self.project._get_directory(cache_dir=self.cache_dir, lean_version=self.lean_version)
         
         self.lake_env_repl_path = lake_env_repl_path or os.path.join(self._cache_repl_dir, ".lake", "build", "bin", "repl")
+        self.lake_path = lake_path
+        self.lake_command = lake_command
 
     def _setup_repl(self) -> None:
         from git import GitCommandError, Repo
