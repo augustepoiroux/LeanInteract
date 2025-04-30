@@ -121,7 +121,6 @@ class LeanServer:
         with self._lock:
             if verbose:
                 logger.info("Sending query: %s", json_query)
-            print(json_query)
             self._proc.stdin.write(json_query + "\n\n\n\n")
             self._proc.stdin.flush()
 
