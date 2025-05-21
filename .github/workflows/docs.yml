@@ -38,7 +38,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -e ".[dev]"
+          pip install --upgrade pip
+          pip install . --group dev
 
       - name: Build documentation
         run: mkdocs build
