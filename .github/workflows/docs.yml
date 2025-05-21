@@ -41,6 +41,11 @@ jobs:
           pip install --upgrade pip
           pip install . --group dev
 
+      - name: Install Lean
+        run: |
+          install-lean
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
       - name: Build documentation
         run: mkdocs build
 
