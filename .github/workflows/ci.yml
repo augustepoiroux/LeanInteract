@@ -60,3 +60,6 @@ jobs:
         run: python -m unittest discover -s ./tests
         env:
           PYTHONIOENCODING: utf-8
+
+      - name: Build documentation
+        run: mkdocs build

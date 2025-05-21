@@ -376,7 +376,7 @@ class AutoLeanServer(LeanServer):
         Remove an environment from the session cache.
 
         Args:
-            env_id: The environment id to remove.
+            session_state_id: The session state id to remove.
         """
         if (state_cache := self._restart_persistent_session_cache.pop(session_state_id, None)) is not None:
             pickle_file = state_cache.pickle_file

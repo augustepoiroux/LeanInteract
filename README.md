@@ -1,5 +1,6 @@
 # LeanInteract
 
+[![Docs](https://img.shields.io/badge/docs-latest-blue.svg)](https://augustepoiroux.github.io/LeanInteract/)
 [![PyPI version](https://img.shields.io/pypi/v/lean-interact.svg)](https://pypi.org/project/lean-interact/)
 [![PyPI downloads](https://img.shields.io/pepy/dt/lean-interact.svg)](https://pypi.org/project/lean-interact/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -71,6 +72,8 @@ In the [`examples`](examples) directory, you will find a few scripts demonstrati
 - [`type_check.py`](examples/type_check.py): optimize type checking using environment states.
 
 ## Usage
+
+Full documentation is available at [augustepoiroux.github.io/LeanInteract](https://augustepoiroux.github.io/LeanInteract/).
 
 ### Basic example
 

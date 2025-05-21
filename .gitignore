@@ -12,3 +12,6 @@ __pycache__
 
 sandbox*
 .vscode
+
+# Doc build
+site
