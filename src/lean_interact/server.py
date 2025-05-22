@@ -28,7 +28,7 @@ from lean_interact.interface import (
     UnpickleProofState,
 )
 from lean_interact.utils import _limit_memory, get_total_memory_usage, logger
-from lean_interact.sessioncache import BaseSessionCache, DictSessionCache
+from lean_interact.sessioncache import BaseSessionCache, PickleSessionCache
 
 DEFAULT_TIMEOUT: int | None = None
 
@@ -316,8 +316,8 @@ class AutoLeanServer(LeanServer):
             max_restart_attempts: The maximum number of consecutive restart attempts allowed before raising a `MemoryError` exception. Default is 5. The server uses exponential backoff between restart attempts.
             session_cache: The session cache to use, if specified.
         """
-        session_cache = session_cache if session_cache is not None else DictSessionCache(working_dir=self.config.working_dir)
-        self._session_cache = session_cache
+        session_cache = session_cache if session_cache is not None else PickleSessionCache(working_dir=config.working_dir)
+        self._session_cache: BaseSessionCache = session_cache
         self._max_total_memory = max_total_memory
         self._max_process_memory = max_process_memory
         self._max_restart_attempts = max_restart_attempts

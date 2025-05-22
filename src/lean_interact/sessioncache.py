@@ -52,7 +52,7 @@ class BaseSessionCache(ABC):
         pass
 
 
-class DictSessionCache(BaseSessionCache):
+class PickleSessionCache(BaseSessionCache):
     """A session cache based on the local file storage.
 
     Will maintain a separate session cache per server."""
@@ -61,7 +61,7 @@ class DictSessionCache(BaseSessionCache):
         self._state_counter = 0
         self._working_dir = working_dir
 
-    def add(self, server, hash_key: str, repl_id: int, is_proof_state: bool = False, verbose: bool = False) -> None:
+    def add(self, server, hash_key: str, repl_id: int, is_proof_state: bool = False, verbose: bool = False) -> int:
         self._state_counter -= 1
         process_id = os.getpid()  # use process id to avoid conflicts in multiprocessing
         pickle_file = os.path.join(
@@ -89,6 +89,7 @@ class DictSessionCache(BaseSessionCache):
                 pickle_file=pickle_file,
                 is_proof_state=is_proof_state,
             )
+        return self._state_counter
 
     def remove(self, session_state_id: int, verbose: bool = False) -> None:
         if (state_cache := self._cache.pop(session_state_id, None)) is not None:
@@ -98,7 +99,7 @@ class DictSessionCache(BaseSessionCache):
                     os.remove(pickle_file)
 
     def clear(self, verbose: bool = False) -> None:
-        for state_data in self:
+        for state_data in list(self):
             self.remove(session_state_id=state_data.session_id)
         assert not self._cache
 
