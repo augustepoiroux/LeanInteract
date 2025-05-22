@@ -78,15 +78,15 @@ plugins:
             show_category_heading: true
             members_order: source
   - execute:
-      execute_without_tag: []  # Don't execute any files by default
+      execute_without_tag: [] # Don't execute any files by default
       include:
-        - '*.md'
+        - "*.md"
       exclude: []
       tags:
-        execute: 'execute'
-        hide_cell: 'hide-cell'
-        hide_input: 'hide-input'
-        hide_output: 'hide-output'
+        execute: "execute"
+        hide_cell: "hide-cell"
+        hide_input: "hide-input"
+        hide_output: "hide-output"
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -113,15 +113,16 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - User Guide:
-    - Getting Started: user-guide/getting-started.md
-    - Basic Usage: user-guide/basic-usage.md
-    - Tactic Mode: user-guide/tactic-mode.md
-    - Custom Lean Configuration: user-guide/custom-lean-configuration.md
+      - Getting Started: user-guide/getting-started.md
+      - Basic Usage: user-guide/basic-usage.md
+      - Tactic Mode: user-guide/tactic-mode.md
+      - Custom Lean Configuration: user-guide/custom-lean-configuration.md
   - API Reference:
-    - LeanREPLConfig: api/config.md
-    - LeanServer: api/server.md
-    - Interface: api/interface.md
-    - Utils: api/utils.md
+      - LeanREPLConfig: api/config.md
+      - LeanServer: api/server.md
+      - Session Cache: api/sessioncache.md
+      - Interface: api/interface.md
+      - Utils: api/utils.md
   - Examples: examples.md
   - Troubleshooting: troubleshooting.md
   - Contributing: contributing.md

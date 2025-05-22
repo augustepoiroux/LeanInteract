@@ -10,7 +10,6 @@ from time import sleep
 from typing import overload
 
 import psutil
-from filelock import FileLock
 
 from lean_interact.config import LeanREPLConfig
 from lean_interact.interface import (
@@ -27,8 +26,8 @@ from lean_interact.interface import (
     UnpickleEnvironment,
     UnpickleProofState,
 )
-from lean_interact.utils import _limit_memory, get_total_memory_usage, logger
 from lean_interact.sessioncache import BaseSessionCache, PickleSessionCache
+from lean_interact.utils import _limit_memory, get_total_memory_usage, logger
 
 DEFAULT_TIMEOUT: int | None = None
 
@@ -277,7 +276,6 @@ class LeanServer:
         return await asyncio.to_thread(self.run, request, verbose=verbose, timeout=timeout, **kwargs)  # type: ignore
 
 
-
 class AutoLeanServer(LeanServer):
     def __init__(
         self,
@@ -316,7 +314,9 @@ class AutoLeanServer(LeanServer):
             max_restart_attempts: The maximum number of consecutive restart attempts allowed before raising a `MemoryError` exception. Default is 5. The server uses exponential backoff between restart attempts.
             session_cache: The session cache to use, if specified.
         """
-        session_cache = session_cache if session_cache is not None else PickleSessionCache(working_dir=config.working_dir)
+        session_cache = (
+            session_cache if session_cache is not None else PickleSessionCache(working_dir=config.working_dir)
+        )
         self._session_cache: BaseSessionCache = session_cache
         self._max_total_memory = max_total_memory
         self._max_process_memory = max_process_memory
@@ -330,40 +330,9 @@ class AutoLeanServer(LeanServer):
             return self._session_cache[state_id].repl_id
         return state_id
 
-    def _reload_session_cache(self, verbose: bool = False) -> None:
-        """
-        Reload the session cache. This method should be called only after a restart of the Lean REPL.
-        """
-        for state_data in self._session_cache:
-            # Use file lock when accessing the pickle file to prevent cache invalidation
-            # from multiple concurrent processes
-            with FileLock(f"{state_data.pickle_file}.lock", timeout=60):
-                if state_data.is_proof_state:
-                    cmd = UnpickleProofState(unpickle_proof_state_from=state_data.pickle_file, env=state_data.repl_id)
-                else:
-                    cmd = UnpickleEnvironment(unpickle_env_from=state_data.pickle_file)
-                result = self.run(
-                    cmd,
-                    verbose=verbose,
-                    timeout=DEFAULT_TIMEOUT,
-                    add_to_session_cache=False,
-                )
-                if isinstance(result, LeanError):
-                    raise ValueError(
-                        f"Could not reload the session cache. The Lean server returned an error: {result.message}"
-                    )
-                elif isinstance(result, CommandResponse):
-                    state_data.repl_id = result.env
-                elif isinstance(result, ProofStepResponse):
-                    state_data.repl_id = result.proof_state
-                else:
-                    raise ValueError(
-                        f"Could not reload the session cache. The Lean server returned an unexpected response: {result}"
-                    )
-
     def restart(self, verbose: bool = False) -> None:
         super().restart()
-        self._reload_session_cache(verbose=verbose)
+        self._session_cache.reload(self, timeout_per_state=DEFAULT_TIMEOUT, verbose=verbose)
 
     def remove_from_session_cache(self, session_state_id: int) -> None:
         """
@@ -392,7 +361,6 @@ class AutoLeanServer(LeanServer):
         self._session_cache.clear()
         super().__del__()
 
-
     def _run_dict_backoff(self, request: dict, verbose: bool, timeout: float | None, restart_counter: int = 0) -> dict:
         if (psutil.virtual_memory().percent >= 100 * self._max_total_memory) or (
             self.is_alive()
@@ -416,7 +384,7 @@ class AutoLeanServer(LeanServer):
 
         if not self.is_alive():
             self.start()
-            self._reload_session_cache(verbose=verbose)
+            self._session_cache.reload(self, timeout_per_state=DEFAULT_TIMEOUT, verbose=verbose)
 
         # Replace the negative environment / proof state ids with the corresponding REPL ids
         if request.get("env", 0) < 0:
@@ -487,25 +455,21 @@ class AutoLeanServer(LeanServer):
         result_dict = self._run_dict_backoff(request=request_dict, verbose=verbose, timeout=timeout)
 
         if set(result_dict.keys()) == {"message"} or result_dict == {}:
-            result = LeanError.model_validate(result_dict)
+            response = LeanError.model_validate(result_dict)
         elif isinstance(request, (Command, FileCommand, PickleEnvironment, UnpickleEnvironment)):
-            result = CommandResponse.model_validate(result_dict)
+            response = CommandResponse.model_validate(result_dict)
             if add_to_session_cache:
-                env_id = result.env
-                hash_key = f"request_{type(request).__name__}_{id(request)}"
-                new_env_id = self._session_cache.add(self, hash_key, env_id, is_proof_state=False, verbose=verbose)
-                result = result.model_copy(update={"env": new_env_id})
+                new_env_id = self._session_cache.add(self, request, response, verbose=verbose)
+                response = response.model_copy(update={"env": new_env_id})
         elif isinstance(request, (ProofStep, PickleProofState, UnpickleProofState)):
-            result = ProofStepResponse.model_validate(result_dict)
+            response = ProofStepResponse.model_validate(result_dict)
             if add_to_session_cache:
-                proof_state_id = result.proof_state
-                hash_key = f"proofstep_{type(request).__name__}_{id(request)}"
-                new_proof_state_id = self._session_cache.add(self, hash_key, proof_state_id, is_proof_state=True, verbose=verbose)
-                result = result.model_copy(update={"proofState": new_proof_state_id})
+                new_proof_state_id = self._session_cache.add(self, request, response, verbose=verbose)
+                response = response.model_copy(update={"proofState": new_proof_state_id})
         else:
-            result = BaseREPLResponse.model_validate(result_dict)
+            response = BaseREPLResponse.model_validate(result_dict)
 
-        return result
+        return response
 
     # Type hints for IDE and static analysis
     @overload

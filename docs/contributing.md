@@ -23,6 +23,7 @@ Install the package in development mode:
 - Include **type hints** where appropriate.
 - Follow the **existing code structure**.
 - Write **unit tests** for new features.
+- Update the **documentation** if necessary.
 
 ## Submitting Contributions
 

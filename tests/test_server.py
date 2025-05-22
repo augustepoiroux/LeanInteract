@@ -33,12 +33,8 @@ from lean_interact.interface import (
     UnpickleEnvironment,
     UnpickleProofState,
 )
-from lean_interact.server import (
-    DEFAULT_TIMEOUT,
-    AutoLeanServer,
-    LeanServer
-)
-from lean_interact.sessioncache import SessionState
+from lean_interact.server import DEFAULT_TIMEOUT, AutoLeanServer, LeanServer
+from lean_interact.sessioncache import PickleSessionCache, PickleSessionState
 
 
 class TestLeanServer(unittest.TestCase):
@@ -212,7 +208,7 @@ lean_exe "dummy" where
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
         server.run(Command(cmd="def x := 1"), add_to_session_cache=True, verbose=True)
         server.clear_session_cache()
-        self.assertEqual(len(server._session_cache._cache), 0)
+        self.assertTrue(server._session_cache.is_empty())
 
     def test_init_with_invalid_rev(self):
         with self.assertRaises(Exception):
@@ -315,7 +311,7 @@ lean_exe "dummy" where
         server.restart()
         result = server.run(Command(cmd="noncomputable def y := x + 1", env=env_id), verbose=True)
         self.assertEqual(result, CommandResponse(env=1))
-        self.assertEqual(list(server._session_cache._cache.keys()), [env_id])
+        self.assertEqual(list(server._session_cache.keys()), [env_id])
 
     def test_process_request_memory_restart(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True), max_total_memory=0.01, max_restart_attempts=2)
@@ -331,7 +327,8 @@ lean_exe "dummy" where
     def test_process_request_with_negative_env_id(self, mock_super):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
         # Prepare restart_persistent_session_cache
-        server._session_cache._cache[-1] = SessionState(-1, 10, "", False)
+        assert isinstance(server._session_cache, PickleSessionCache)
+        server._session_cache._cache[-1] = PickleSessionState(-1, 10, False, "")
         with unittest.mock.patch.object(server, "_get_repl_state_id", return_value=10):
             mock_super.return_value = {"env": 10}
             result = server.run(Command(cmd="test", env=-1))
@@ -342,7 +339,8 @@ lean_exe "dummy" where
     def test_process_request_with_negative_proof_state_id(self, mock_super):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
         # Prepare restart_persistent_session_cache
-        server._session_cache._cache[-1] = SessionState(-2, 20, "", True)
+        assert isinstance(server._session_cache, PickleSessionCache)
+        server._session_cache._cache[-1] = PickleSessionState(-2, 20, True, "")
         with unittest.mock.patch.object(server, "_get_repl_state_id", return_value=20):
             mock_super.return_value = {"proofState": 20, "goals": [], "proofStatus": "Completed"}
             result = server.run(ProofStep(proof_state=-2, tactic="test"))
