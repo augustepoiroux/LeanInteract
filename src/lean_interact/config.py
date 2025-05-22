@@ -1,8 +1,9 @@
 import hashlib
-import os
 import shutil
 import subprocess
 from dataclasses import dataclass
+from os import PathLike
+from pathlib import Path
 from typing import Literal
 
 from filelock import FileLock
@@ -33,11 +34,11 @@ class LeanRequire:
 class BaseProject:
     """Base class for Lean projects"""
 
-    def _get_directory(self, cache_dir: str, lean_version: str | None = None) -> str:
+    def _get_directory(self, cache_dir: str | PathLike, lean_version: str | None = None) -> Path:
         """Get the project directory."""
         raise NotImplementedError("Subclasses must implement this method")
 
-    def _instantiate(self, cache_dir: str, lean_version: str, verbose: bool = True) -> None:
+    def _instantiate(self, cache_dir: str | PathLike, lean_version: str, verbose: bool = True) -> None:
         """Instantiate the project."""
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -46,26 +47,27 @@ class BaseProject:
 class LocalProject(BaseProject):
     """Use an existing local Lean project directory"""
 
-    directory: str
+    directory: str | PathLike
     build: bool = True
 
-    def _get_directory(self, cache_dir: str, lean_version: str | None = None) -> str:
+    def _get_directory(self, cache_dir: str | PathLike, lean_version: str | None = None) -> Path:
         """Get the project directory."""
-        return self.directory
+        return Path(self.directory)
 
-    def _instantiate(self, cache_dir: str, lean_version: str, verbose: bool = True):
+    def _instantiate(self, cache_dir: str | PathLike, lean_version: str, verbose: bool = True):
         """Instantiate the local project."""
         if not self.build:
             return
         stdout = None if verbose else subprocess.DEVNULL
         stderr = None if verbose else subprocess.DEVNULL
 
-        with FileLock(f"{self.directory}.lock"):
+        directory = Path(self.directory)
+        with FileLock(f"{directory}.lock"):
             try:
                 subprocess.run(
-                    ["lake", "exe", "cache", "get"], cwd=self.directory, check=False, stdout=stdout, stderr=stderr
+                    ["lake", "exe", "cache", "get"], cwd=directory, check=False, stdout=stdout, stderr=stderr
                 )
-                subprocess.run(["lake", "build"], cwd=self.directory, check=True, stdout=stdout, stderr=stderr)
+                subprocess.run(["lake", "build"], cwd=directory, check=True, stdout=stdout, stderr=stderr)
             except subprocess.CalledProcessError as e:
                 logger.error("Failed to build local project: %s", e)
                 raise
@@ -78,27 +80,26 @@ class GitProject(BaseProject):
     url: str
     rev: str | None = None
 
-    def _get_directory(self, cache_dir: str, lean_version: str | None = None) -> str:
+    def _get_directory(self, cache_dir: str | PathLike, lean_version: str | None = None) -> Path:
+        cache_dir = Path(cache_dir)
         repo_parts = self.url.split("/")
         if len(repo_parts) >= 2:
             owner = repo_parts[-2]
             repo = repo_parts[-1].replace(".git", "")
-            return os.path.join(cache_dir, "git_projects", owner, repo, self.rev or "latest")
+            return cache_dir / "git_projects" / owner / repo / (self.rev or "latest")
         else:
             # Fallback for malformed URLs
             repo_name = self.url.replace(".git", "").split("/")[-1]
-            return os.path.join(cache_dir, "git_projects", repo_name, self.rev or "latest")
+            return cache_dir / "git_projects" / repo_name / (self.rev or "latest")
 
-    def _instantiate(self, cache_dir: str, lean_version: str, verbose: bool = True):
+    def _instantiate(self, cache_dir: str | PathLike, lean_version: str, verbose: bool = True):
         """Instantiate the git project."""
         stdout = None if verbose else subprocess.DEVNULL
         stderr = None if verbose else subprocess.DEVNULL
-
-        project_dir = self._get_directory(cache_dir)
-
+        project_dir = self._get_directory(cache_dir, lean_version)
         with FileLock(f"{project_dir}.lock"):
             # check if the git repository is already cloned
-            repo = Repo(project_dir) if os.path.exists(project_dir) else Repo.clone_from(self.url, project_dir)
+            repo = Repo(project_dir) if project_dir.exists() else Repo.clone_from(self.url, project_dir)
 
             if self.rev:
                 repo.git.checkout(self.rev)
@@ -121,16 +122,17 @@ class GitProject(BaseProject):
 class BaseTempProject(BaseProject):
     """Base class for temporary Lean projects"""
 
-    def _get_directory(self, cache_dir: str, lean_version: str | None = None) -> str:
+    def _get_directory(self, cache_dir: str | PathLike, lean_version: str | None = None) -> Path:
         if lean_version is None:
             raise ValueError("`lean_version` cannot be `None`")
+        cache_dir = Path(cache_dir)
         # create a unique hash to allow for caching
         hash_content = self._get_hash_content(lean_version)
-        tmp_project_dir = os.path.join(cache_dir, "tmp_projects", lean_version, hash_content)
-        os.makedirs(tmp_project_dir, exist_ok=True)
+        tmp_project_dir = cache_dir / "tmp_projects" / lean_version / hash_content
+        tmp_project_dir.mkdir(parents=True, exist_ok=True)
         return tmp_project_dir
 
-    def _instantiate(self, cache_dir: str, lean_version: str, verbose: bool = True):
+    def _instantiate(self, cache_dir: str | PathLike, lean_version: str, verbose: bool = True):
         """Instantiate the temporary project."""
         stdout = None if verbose else subprocess.DEVNULL
         stderr = None if verbose else subprocess.DEVNULL
@@ -140,10 +142,10 @@ class BaseTempProject(BaseProject):
         # Lock the temporary project directory during setup
         with FileLock(f"{tmp_project_dir}.lock"):
             # check if the Lean project already exists
-            if not os.path.exists(os.path.join(tmp_project_dir, "lake-manifest.json")):
+            if not (tmp_project_dir / "lake-manifest.json").exists():
                 # clean the content of the folder in case of a previous aborted build
                 shutil.rmtree(tmp_project_dir, ignore_errors=True)
-                os.makedirs(tmp_project_dir, exist_ok=True)
+                tmp_project_dir.mkdir(parents=True, exist_ok=True)
 
                 # initialize the Lean project
                 cmd_init = ["lake", f"+{lean_version}", "init", "dummy", "exe.lean"]
@@ -179,7 +181,7 @@ class BaseTempProject(BaseProject):
         """Return a unique hash for the project content."""
         raise NotImplementedError("Subclasses must implement this method")
 
-    def _modify_lakefile(self, project_dir: str, lean_version: str) -> None:
+    def _modify_lakefile(self, project_dir: str | PathLike, lean_version: str) -> None:
         """Modify the lakefile according to project needs."""
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -194,9 +196,10 @@ class TemporaryProject(BaseTempProject):
         """Return a unique hash based on the content."""
         return hashlib.sha256(self.content.encode()).hexdigest()
 
-    def _modify_lakefile(self, project_dir: str, lean_version: str) -> None:
+    def _modify_lakefile(self, project_dir: str | PathLike, lean_version: str) -> None:
         """Write the content to the lakefile."""
-        with open(os.path.join(project_dir, "lakefile.lean"), "w", encoding="utf-8") as f:
+        project_dir = Path(project_dir)
+        with (project_dir / "lakefile.lean").open("w", encoding="utf-8") as f:
             f.write(self.content)
 
 
@@ -236,10 +239,11 @@ class TempRequireProject(BaseTempProject):
         require = self._normalize_require(lean_version)
         return hashlib.sha256(str(require).encode()).hexdigest()
 
-    def _modify_lakefile(self, project_dir: str, lean_version: str) -> None:
+    def _modify_lakefile(self, project_dir: str | PathLike, lean_version: str) -> None:
         """Add requirements to the lakefile."""
+        project_dir = Path(project_dir)
         require = self._normalize_require(lean_version)
-        with open(os.path.join(project_dir, "lakefile.lean"), "a", encoding="utf-8") as f:
+        with (project_dir / "lakefile.lean").open("a", encoding="utf-8") as f:
             for req in require:
                 f.write(f'\n\nrequire {req.name} from git\n  "{req.git}"' + (f' @ "{req.rev}"' if req.rev else ""))
 
@@ -251,7 +255,7 @@ class LeanREPLConfig:
         project: BaseProject | None = None,
         repl_rev: str = DEFAULT_REPL_VERSION,
         repl_git: str = DEFAULT_REPL_GIT_URL,
-        cache_dir: str = DEFAULT_CACHE_DIR,
+        cache_dir: str | PathLike = DEFAULT_CACHE_DIR,
         memory_hard_limit_mb: int | None = None,
         verbose: bool = False,
     ):
@@ -287,7 +291,7 @@ class LeanREPLConfig:
         self.project = project
         self.repl_git = repl_git
         self.repl_rev = repl_rev
-        self.cache_dir = os.path.normpath(cache_dir)
+        self.cache_dir = Path(cache_dir)
         self.memory_hard_limit_mb = memory_hard_limit_mb
 
         self.verbose = verbose
@@ -298,11 +302,11 @@ class LeanREPLConfig:
         if len(repo_parts) >= 2:
             owner = repo_parts[-2]
             repo = repo_parts[-1].replace(".git", "")
-            self.repo_name = os.path.join(owner, repo)
+            self.repo_name = Path(owner) / repo
         else:
-            self.repo_name = self.repl_git.replace(".git", "")
+            self.repo_name = Path(self.repl_git.replace(".git", ""))
 
-        self.cache_clean_repl_dir = os.path.join(self.cache_dir, self.repo_name, "repl_clean_copy")
+        self.cache_clean_repl_dir = self.cache_dir / self.repo_name / "repl_clean_copy"
 
         # check if lake is installed
         if shutil.which("lake") is None:
@@ -330,8 +334,8 @@ class LeanREPLConfig:
         # Lock the clean REPL directory during setup to prevent race conditions
         with FileLock(f"{self.cache_clean_repl_dir}.lock", timeout=300):
             # check if the repl is already cloned
-            if not os.path.exists(self.cache_clean_repl_dir):
-                os.makedirs(self.cache_clean_repl_dir, exist_ok=True)
+            if not self.cache_clean_repl_dir.exists():
+                self.cache_clean_repl_dir.mkdir(parents=True, exist_ok=True)
                 Repo.clone_from(self.repl_git, self.cache_clean_repl_dir)
 
             repo = Repo(self.cache_clean_repl_dir)
@@ -362,13 +366,13 @@ class LeanREPLConfig:
                 )
 
         # check if the repl revision is already in the cache
-        self._cache_repl_dir = os.path.join(self.cache_dir, self.repo_name, f"repl_{self.repl_rev}_{self.lean_version}")
+        self._cache_repl_dir = self.cache_dir / self.repo_name / f"repl_{self.repl_rev}_{self.lean_version}"
 
         # Lock the version-specific REPL directory during setup
         with FileLock(f"{self._cache_repl_dir}.lock", timeout=300):  # 5 minute timeout for long-running operations
-            if not os.path.exists(self._cache_repl_dir):
+            if not self._cache_repl_dir.exists():
                 # copy the repository to the version directory and checkout the required revision
-                os.makedirs(self._cache_repl_dir, exist_ok=True)
+                self._cache_repl_dir.mkdir(parents=True, exist_ok=True)
                 shutil.copytree(self.cache_clean_repl_dir, self._cache_repl_dir, dirs_exist_ok=True)
                 cached_repo = Repo(self._cache_repl_dir)
                 cached_repo.git.checkout(lean_versions_sha_dict[self.lean_version])
@@ -408,12 +412,12 @@ class LeanREPLConfig:
     @property
     def working_dir(self) -> str:
         """Get the working directory for the Lean environment."""
-        return self._working_dir
+        return str(self._working_dir)
 
     @property
     def cache_repl_dir(self) -> str:
         """Get the cache directory for the Lean REPL."""
-        return self._cache_repl_dir
+        return str(self._cache_repl_dir)
 
     def is_setup(self) -> bool:
         return hasattr(self, "_working_dir")

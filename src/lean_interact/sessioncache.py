@@ -3,6 +3,7 @@ import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from os import PathLike
+from pathlib import Path
 from typing import Iterator
 
 from filelock import FileLock
@@ -102,25 +103,24 @@ class PickleSessionCache(BaseSessionCache):
     def __init__(self, working_dir: str | PathLike):
         self._cache: dict[int, PickleSessionState] = {}
         self._state_counter = 0
-        self._working_dir = working_dir
+        self._working_dir = Path(working_dir)
 
     def add(self, lean_server, request: BaseREPLQuery, response: BaseREPLResponse, verbose: bool = False) -> int:
         self._state_counter -= 1
         process_id = os.getpid()  # use process id to avoid conflicts in multiprocessing
         hash_key = f"request_{type(request).__name__}_{id(request)}"
-        pickle_file = os.path.join(
-            self._working_dir,
-            f"session_cache/{hashlib.sha256(hash_key.encode()).hexdigest()}_{process_id}.olean",
+        pickle_file = (
+            self._working_dir / "session_cache" / f"{hashlib.sha256(hash_key.encode()).hexdigest()}_{process_id}.olean"
         )
-        os.makedirs(os.path.dirname(pickle_file), exist_ok=True)
+        pickle_file.parent.mkdir(parents=True, exist_ok=True)
         if isinstance(response, ProofStepResponse):
             repl_id = response.proof_state
             is_proof_state = True
-            request = PickleProofState(proof_state=response.proof_state, pickle_to=pickle_file)
+            request = PickleProofState(proof_state=response.proof_state, pickle_to=str(pickle_file))
         elif isinstance(response, CommandResponse):
             repl_id = response.env
             is_proof_state = False
-            request = PickleEnvironment(env=response.env, pickle_to=pickle_file)
+            request = PickleEnvironment(env=response.env, pickle_to=str(pickle_file))
         else:
             raise NotImplementedError(
                 f"Cannot pickle the session state for unsupported request of type {type(request).__name__}."
@@ -138,7 +138,7 @@ class PickleSessionCache(BaseSessionCache):
             self._cache[self._state_counter] = PickleSessionState(
                 session_id=self._state_counter,
                 repl_id=repl_id,
-                pickle_file=pickle_file,
+                pickle_file=str(pickle_file),
                 is_proof_state=is_proof_state,
             )
         return self._state_counter

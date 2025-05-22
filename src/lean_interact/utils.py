@@ -4,6 +4,8 @@ import platform
 import re
 import shutil
 import subprocess
+from os import PathLike
+from pathlib import Path
 
 import psutil
 from rich.logging import RichHandler
@@ -17,8 +19,8 @@ logger.handlers = []
 logger.addHandler(handler)
 
 
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_CACHE_DIR = os.path.join(ROOT_DIR, "cache")
+ROOT_DIR = Path(__file__).resolve().parent
+DEFAULT_CACHE_DIR = ROOT_DIR / "cache"
 DEFAULT_REPL_GIT_URL = "https://github.com/augustepoiroux/repl"
 DEFAULT_REPL_VERSION = "v1.0.8"
 
@@ -28,10 +30,7 @@ os.makedirs(DEFAULT_CACHE_DIR, exist_ok=True)
 def get_total_memory_usage(proc: psutil.Process):
     """Get total resident memory usage of a process and its children (in bytes)."""
     try:
-        total = proc.memory_info().rss
-        for child in proc.children(recursive=True):
-            total += child.memory_info().rss
-        return total
+        return proc.memory_info().rss + sum(child.memory_info().rss for child in proc.children(recursive=True))
     except psutil.NoSuchProcess:
         return 0
 
@@ -60,12 +59,13 @@ def clear_cache():
     shutil.rmtree(DEFAULT_CACHE_DIR, ignore_errors=True)
 
 
-def get_project_lean_version(project_dir: str) -> str | None:
+def get_project_lean_version(project_dir: str | PathLike) -> str | None:
     """
     Get the Lean version used in a project.
     """
-    toolchain_file = os.path.join(project_dir, "lean-toolchain")
-    if os.path.isfile(toolchain_file):
+    project_dir = Path(project_dir)
+    toolchain_file = project_dir / "lean-toolchain"
+    if toolchain_file.is_file():
         with open(toolchain_file, "r", encoding="utf-8") as f:
             content = f.read().strip()
             if content:
@@ -159,11 +159,11 @@ def install_lean():
             subprocess.run(command, shell=True, check=True)
 
             # Add to PATH in common shell config files
-            user_home = os.path.expanduser("~")
+            user_home = Path.home()
             shell_configs = [".bashrc", ".zshrc", ".bash_profile", ".profile"]
-            for config in shell_configs:
-                config_path = os.path.join(user_home, config)
-                if os.path.exists(config_path):
+            for config_name in shell_configs:
+                config_path = user_home / config_name
+                if config_path.exists():
                     try:
                         with open(config_path, "a", encoding="utf-8") as file:
                             file.write('\nexport PATH="$HOME/.elan/bin:$PATH"\n')

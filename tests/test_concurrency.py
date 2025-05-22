@@ -1,6 +1,7 @@
 import asyncio
 import multiprocessing as mp
 import os
+from os import PathLike
 import shutil
 import tempfile
 import threading
@@ -18,7 +19,7 @@ from lean_interact.utils import DEFAULT_REPL_GIT_URL
 
 
 # Helper function for testing config creation in a separate process
-def create_config_process(cache_dir, lean_version="v4.18.0", verbose=False):
+def create_config_process(cache_dir: str | PathLike, lean_version: str = "v4.18.0", verbose: bool = False):
     """Function that attempts to create a LeanREPLConfig instance."""
     try:
         # This should timeout if another process is already holding the lock
@@ -29,7 +30,7 @@ def create_config_process(cache_dir, lean_version="v4.18.0", verbose=False):
 
 
 # Function to access/modify a cache file with locking
-def access_cache_file(file_path, process_id, timeout=1):
+def access_cache_file(file_path: str | PathLike, process_id: int, timeout: int = 1):
     """Function to simulate a process accessing and modifying a cache file."""
     try:
         lock_path = f"{file_path}.lock"
@@ -98,7 +99,7 @@ class TestFileLocks(unittest.TestCase):
                 """Return a fixed hash."""
                 return "test_hash"
 
-            def _modify_lakefile(self, project_dir: str, lean_version: str) -> None:
+            def _modify_lakefile(self, project_dir: str | PathLike, lean_version: str) -> None:
                 """Do nothing."""
                 pass
 
@@ -116,10 +117,10 @@ class TestFileLocks(unittest.TestCase):
             with self.assertRaises(Exception):
                 # Use a short timeout to avoid test hanging
                 with mock.patch("lean_interact.config.FileLock", return_value=FileLock(lock_file, timeout=0.1)):
-                    test_project._instantiate(str(cache_dir), "v4.18.0", verbose=False)
+                    test_project._instantiate(cache_dir, "v4.18.0", verbose=False)
 
 
-def _worker(idx, result_queue, config):
+def _worker(idx, result_queue, config: LeanREPLConfig):
     try:
         # Each process gets its own server instance
         server = AutoLeanServer(config)

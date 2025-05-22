@@ -73,7 +73,7 @@ In the [`examples`](examples) directory, you will find a few scripts demonstrati
 
 ## Usage
 
-Full documentation is available at [augustepoiroux.github.io/LeanInteract](https://augustepoiroux.github.io/LeanInteract/).
+Full documentation is available [here](https://augustepoiroux.github.io/LeanInteract/).
 
 ### Basic example
 
