@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Literal
 
 from filelock import FileLock
-from git import GitCommandError, Repo
 
 from lean_interact.utils import (
     DEFAULT_CACHE_DIR,
@@ -246,8 +245,7 @@ class TempRequireProject(BaseTempProject):
         with (project_dir / "lakefile.lean").open("a", encoding="utf-8") as f:
             for req in require:
                 f.write(f'\n\nrequire {req.name} from git\n  "{req.git}"' + (f' @ "{req.rev}"' if req.rev else ""))
-
-
+            
 class LeanREPLConfig:
     def __init__(
         self,
@@ -258,6 +256,11 @@ class LeanREPLConfig:
         cache_dir: str | PathLike = DEFAULT_CACHE_DIR,
         memory_hard_limit_mb: int | None = None,
         verbose: bool = False,
+        setup: bool = True,
+        lake_env_repl_path : str | None = None,
+        working_dir : str | None = None,
+        lake_path : str = "lake",
+        lake_command : str = "env",
     ):
         """
         Initialize the Lean REPL configuration.
@@ -314,11 +317,14 @@ class LeanREPLConfig:
                 "Lean 4 build system (`lake`) is not installed. You can try to run `install-lean` or find installation instructions here: https://leanprover-community.github.io/get_started.html"
             )
 
-        self._setup_repl()
+        if setup:
+            self._setup_repl()
 
         assert isinstance(self.lean_version, str)
 
-        if self.project is None:
+        if working_dir:
+            self._working_dir = working_dir
+        elif self.project is None:
             self._working_dir = self._cache_repl_dir
         else:
             self.project._instantiate(
@@ -327,8 +333,14 @@ class LeanREPLConfig:
                 verbose=self.verbose,
             )
             self._working_dir = self.project._get_directory(cache_dir=self.cache_dir, lean_version=self.lean_version)
+        
+        self.lake_env_repl_path = lake_env_repl_path or os.path.join(self._cache_repl_dir, ".lake", "build", "bin", "repl")
+        self.lake_path = lake_path
+        self.lake_command = lake_command
 
     def _setup_repl(self) -> None:
+        from git import GitCommandError, Repo
+        
         assert isinstance(self.repl_rev, str)
 
         # Lock the clean REPL directory during setup to prevent race conditions
@@ -396,6 +408,7 @@ class LeanREPLConfig:
         """
         Get the available Lean versions for the selected REPL.
         """
+        from git import Repo
         repo = Repo(self.cache_clean_repl_dir)
         return [
             (str(commit.message.strip()), commit.hexsha)
