@@ -2,7 +2,7 @@
 
 This page documents the session cache classes responsible for storing and retrieving Lean proof states and environments.
 Session cache is used internally by the `AutoLeanServer` class.
-It enables efficient resumption of proofs and environments after server restarts, timeouts, and automated recover from crashes. While by default `AutoLeanServer` instantiates a fresh `LeanServer` instance, you can also use a custom one. It can be useful to share a session cache between multiple `LeanServer` instances, or to use a custom session cache implementation.
+It enables efficient resumption of proofs and environments after server restarts, timeouts, and automated recover from crashes. While by default `AutoLeanServer` instantiates a fresh `PickleSessionCache` instance, you can also use a custom one. It can be useful to share a session cache between multiple `LeanServer` instances, or to use a custom session cache implementation.
 
 ```python
 from lean_interact.sessioncache import PickleSessionCache
