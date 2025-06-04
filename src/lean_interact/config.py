@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Literal
 
 from filelock import FileLock
-from git import GitCommandError, Repo
 
 from lean_interact.utils import (
     DEFAULT_CACHE_DIR,
@@ -38,7 +37,9 @@ class BaseProject:
         """Get the project directory."""
         raise NotImplementedError("Subclasses must implement this method")
 
-    def _instantiate(self, cache_dir: str | PathLike, lean_version: str, verbose: bool = True) -> None:
+    def _instantiate(
+        self, cache_dir: str | PathLike, lean_version: str, lake_path: str | PathLike, verbose: bool = True
+    ) -> None:
         """Instantiate the project."""
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -54,7 +55,9 @@ class LocalProject(BaseProject):
         """Get the project directory."""
         return Path(self.directory)
 
-    def _instantiate(self, cache_dir: str | PathLike, lean_version: str, verbose: bool = True):
+    def _instantiate(
+        self, cache_dir: str | PathLike, lean_version: str, lake_path: str | PathLike, verbose: bool = True
+    ):
         """Instantiate the local project."""
         if not self.build:
             return
@@ -65,9 +68,9 @@ class LocalProject(BaseProject):
         with FileLock(f"{directory}.lock"):
             try:
                 subprocess.run(
-                    ["lake", "exe", "cache", "get"], cwd=directory, check=False, stdout=stdout, stderr=stderr
+                    [lake_path, "exe", "cache", "get"], cwd=directory, check=False, stdout=stdout, stderr=stderr
                 )
-                subprocess.run(["lake", "build"], cwd=directory, check=True, stdout=stdout, stderr=stderr)
+                subprocess.run([lake_path, "build"], cwd=directory, check=True, stdout=stdout, stderr=stderr)
             except subprocess.CalledProcessError as e:
                 logger.error("Failed to build local project: %s", e)
                 raise
@@ -92,8 +95,13 @@ class GitProject(BaseProject):
             repo_name = self.url.replace(".git", "").split("/")[-1]
             return cache_dir / "git_projects" / repo_name / (self.rev or "latest")
 
-    def _instantiate(self, cache_dir: str | PathLike, lean_version: str, verbose: bool = True):
+    def _instantiate(
+        self, cache_dir: str | PathLike, lean_version: str, lake_path: str | PathLike, verbose: bool = True
+    ):
         """Instantiate the git project."""
+
+        from git import Repo
+
         stdout = None if verbose else subprocess.DEVNULL
         stderr = None if verbose else subprocess.DEVNULL
         project_dir = self._get_directory(cache_dir, lean_version)
@@ -110,9 +118,9 @@ class GitProject(BaseProject):
 
             try:
                 subprocess.run(
-                    ["lake", "exe", "cache", "get"], cwd=project_dir, check=False, stdout=stdout, stderr=stderr
+                    [lake_path, "exe", "cache", "get"], cwd=project_dir, check=False, stdout=stdout, stderr=stderr
                 )
-                subprocess.run(["lake", "build"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
+                subprocess.run([lake_path, "build"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
             except subprocess.CalledProcessError as e:
                 logger.error("Failed to build the git project: %s", e)
                 raise
@@ -132,7 +140,9 @@ class BaseTempProject(BaseProject):
         tmp_project_dir.mkdir(parents=True, exist_ok=True)
         return tmp_project_dir
 
-    def _instantiate(self, cache_dir: str | PathLike, lean_version: str, verbose: bool = True):
+    def _instantiate(
+        self, cache_dir: str | PathLike, lean_version: str, lake_path: str | PathLike, verbose: bool = True
+    ):
         """Instantiate the temporary project."""
         stdout = None if verbose else subprocess.DEVNULL
         stderr = None if verbose else subprocess.DEVNULL
@@ -148,9 +158,9 @@ class BaseTempProject(BaseProject):
                 tmp_project_dir.mkdir(parents=True, exist_ok=True)
 
                 # initialize the Lean project
-                cmd_init = ["lake", f"+{lean_version}", "init", "dummy", "exe.lean"]
+                cmd_init = [lake_path, f"+{lean_version}", "init", "dummy", "exe.lean"]
                 if lean_version.startswith("v4") and int(lean_version.split(".")[1]) <= 7:
-                    cmd_init = ["lake", f"+{lean_version}", "init", "dummy", "exe"]
+                    cmd_init = [lake_path, f"+{lean_version}", "init", "dummy", "exe"]
 
                 try:
                     subprocess.run(cmd_init, cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
@@ -165,12 +175,16 @@ class BaseTempProject(BaseProject):
 
                 # Run lake commands with appropriate platform handling
                 try:
-                    subprocess.run(["lake", "update"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
+                    subprocess.run([lake_path, "update"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
                     # in case mathlib is used as a dependency, we try to get the cache
                     subprocess.run(
-                        ["lake", "exe", "cache", "get"], cwd=tmp_project_dir, check=False, stdout=stdout, stderr=stderr
+                        [lake_path, "exe", "cache", "get"],
+                        cwd=tmp_project_dir,
+                        check=False,
+                        stdout=stdout,
+                        stderr=stderr,
                     )
-                    subprocess.run(["lake", "build"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
+                    subprocess.run([lake_path, "build"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
                 except subprocess.CalledProcessError as e:
                     logger.error("Failed during Lean project setup: %s", e)
                     # delete the project directory to avoid conflicts
@@ -188,9 +202,10 @@ class BaseTempProject(BaseProject):
 
 @dataclass(frozen=True)
 class TemporaryProject(BaseTempProject):
-    """Use custom lakefile.lean content to create a temporary Lean project"""
+    """Use custom lakefile.lean / lakefile.toml content to create a temporary Lean project"""
 
     content: str
+    lakefile_type: Literal["lean", "toml"] = "lean"
 
     def _get_hash_content(self, lean_version: str) -> str:
         """Return a unique hash based on the content."""
@@ -199,7 +214,8 @@ class TemporaryProject(BaseTempProject):
     def _modify_lakefile(self, project_dir: str | PathLike, lean_version: str) -> None:
         """Write the content to the lakefile."""
         project_dir = Path(project_dir)
-        with (project_dir / "lakefile.lean").open("w", encoding="utf-8") as f:
+        filename = "lakefile.lean" if self.lakefile_type == "lean" else "lakefile.toml"
+        with (project_dir / filename).open("w", encoding="utf-8") as f:
             f.write(self.content)
 
 
@@ -256,6 +272,9 @@ class LeanREPLConfig:
         repl_rev: str = DEFAULT_REPL_VERSION,
         repl_git: str = DEFAULT_REPL_GIT_URL,
         cache_dir: str | PathLike = DEFAULT_CACHE_DIR,
+        local_repl_path: str | PathLike | None = None,
+        build_repl: bool = True,
+        lake_path: str | PathLike = "lake",
         memory_hard_limit_mb: int | None = None,
         verbose: bool = False,
     ):
@@ -275,11 +294,21 @@ class LeanREPLConfig:
                 - `TempRequireProject`: A temporary Lean project with dependencies that will be created.
             repl_rev:
                 The REPL version you want to use. It is not recommended to change this value unless you know what you are doing.
+                Note: Ignored when `local_repl_path` is provided.
             repl_git:
                 The git repository of the Lean REPL. It is not recommended to change this value unless you know what you are doing.
+                Note: Ignored when `local_repl_path` is provided.
             cache_dir:
                 The directory where the Lean REPL and temporary Lean projects with dependencies will be cached.
                 Default is inside the package directory.
+            local_repl_path:
+                A local path to the Lean REPL. This is useful if you want to use a local copy of the REPL.
+                When provided, the REPL will not be downloaded from the git repository.
+                This is particularly useful during REPL development.
+            build_repl:
+                Whether to build the local REPL before running it. This option is ignored when `local_repl_path` is not provided.
+            lake_path:
+                The path to the `lake` executable. This is the Lean 4 build system.
             memory_hard_limit_mb:
                 The maximum memory usage in MB for the Lean server. Setting this value too low may lead to more command processing failures.
                 Only available on Linux platforms.
@@ -287,31 +316,38 @@ class LeanREPLConfig:
             verbose:
                 Whether to print additional information during the setup process.
         """
+        # Initialize basic configuration
         self.lean_version = lean_version
         self.project = project
         self.repl_git = repl_git
         self.repl_rev = repl_rev
         self.cache_dir = Path(cache_dir)
+        self.local_repl_path = Path(local_repl_path) if local_repl_path else None
+        self.build_repl = build_repl
         self.memory_hard_limit_mb = memory_hard_limit_mb
-
+        self.lake_path = Path(lake_path)
         self.verbose = verbose
+
+        # Configure output streams based on verbosity
         self._stdout = None if self.verbose else subprocess.DEVNULL
         self._stderr = None if self.verbose else subprocess.DEVNULL
 
-        repo_parts = self.repl_git.split("/")
-        if len(repo_parts) >= 2:
-            owner = repo_parts[-2]
-            repo = repo_parts[-1].replace(".git", "")
-            self.repo_name = Path(owner) / repo
-        else:
-            self.repo_name = Path(self.repl_git.replace(".git", ""))
+        # Set up repository information for Git-based setup
+        if not self.local_repl_path:
+            repo_parts = self.repl_git.split("/")
+            if len(repo_parts) >= 2:
+                owner = repo_parts[-2]
+                repo = repo_parts[-1].replace(".git", "")
+                self.repo_name = Path(owner) / repo
+            else:
+                self.repo_name = Path(self.repl_git.replace(".git", ""))
+            self.cache_clean_repl_dir = self.cache_dir / self.repo_name / "repl_clean_copy"
 
-        self.cache_clean_repl_dir = self.cache_dir / self.repo_name / "repl_clean_copy"
-
-        # check if lake is installed
-        if shutil.which("lake") is None:
+        # Check if the specified lake executable is available
+        if shutil.which(str(self.lake_path)) is None:
             raise RuntimeError(
-                "Lean 4 build system (`lake`) is not installed. You can try to run `install-lean` or find installation instructions here: https://leanprover-community.github.io/get_started.html"
+                f"Lean 4 build system (`{self.lake_path}`) is not installed or not found in PATH. "
+                "You can try to run `install-lean` or find installation instructions here: https://leanprover-community.github.io/get_started.html"
             )
 
         self._setup_repl()
@@ -324,16 +360,59 @@ class LeanREPLConfig:
             self.project._instantiate(
                 cache_dir=self.cache_dir,
                 lean_version=self.lean_version,
+                lake_path=self.lake_path,
                 verbose=self.verbose,
             )
             self._working_dir = self.project._get_directory(cache_dir=self.cache_dir, lean_version=self.lean_version)
 
     def _setup_repl(self) -> None:
+        """Set up the REPL either from a local path or from a Git repository."""
+        if self.local_repl_path:
+            self._prepare_local_repl()
+            if self.build_repl:
+                self._build_repl()
+        else:
+            self._prepare_git_repl()
+            self._build_repl()
+
+    def _prepare_local_repl(self) -> None:
+        """Prepare a local REPL installation."""
+        assert self.local_repl_path is not None
+
+        if not self.local_repl_path.exists():
+            raise ValueError(f"Local REPL path '{self.local_repl_path}' does not exist")
+
+        # Get the Lean version from the local REPL
+        local_lean_version = get_project_lean_version(self.local_repl_path)
+        if not local_lean_version:
+            logger.warning("Could not determine Lean version from local REPL at '%s'", self.local_repl_path)
+        else:
+            # If lean_version is specified, confirm compatibility
+            if self.lean_version is not None and self.lean_version != local_lean_version:
+                logger.warning(
+                    "Requested Lean version '%s' does not match version in local REPL '%s'.",
+                    self.lean_version,
+                    local_lean_version,
+                )
+
+        if self.lean_version is None:
+            self.lean_version = local_lean_version
+
+        # Set the working REPL directory to the local path
+        self._cache_repl_dir = self.local_repl_path
+
+        if self.verbose:
+            logger.info("Using local REPL at %s", self.local_repl_path)
+
+    def _prepare_git_repl(self) -> None:
+        """Prepare a Git-based REPL installation."""
         assert isinstance(self.repl_rev, str)
 
-        # Lock the clean REPL directory during setup to prevent race conditions
+        from git import GitCommandError, Repo
+
+        # First, ensure we have the clean repository with the correct revision
         with FileLock(f"{self.cache_clean_repl_dir}.lock", timeout=300):
-            # check if the repl is already cloned
+            # Check if the repl is already cloned
             if not self.cache_clean_repl_dir.exists():
                 self.cache_clean_repl_dir.mkdir(parents=True, exist_ok=True)
                 Repo.clone_from(self.repl_git, self.cache_clean_repl_dir)
@@ -348,54 +427,79 @@ class LeanREPLConfig:
                 except GitCommandError as e:
                     raise ValueError(f"Lean REPL version `{self.repl_rev}` is not available.") from e
 
-            # check if the Lean version is available in the repository
+            # Determine Lean version if not specified
             lean_versions_sha = self._get_available_lean_versions_sha()
             lean_versions_sha_dict = dict(lean_versions_sha)
+
             if not lean_versions_sha:
                 raise ValueError("No Lean versions are available in the Lean REPL repository.")
+
             if self.lean_version is None:
                 if self.project is None or isinstance(self.project, (TemporaryProject, TempRequireProject)):
                     self.lean_version = lean_versions_sha[-1][0]
                 elif isinstance(self.project, (LocalProject, GitProject)):
-                    # get the Lean version from the project
+                    # Get the Lean version from the project
                     inferred_ver = get_project_lean_version(self.project._get_directory(self.cache_dir))
                     self.lean_version = inferred_ver if inferred_ver else lean_versions_sha[-1][0]
+
             if self.lean_version not in lean_versions_sha_dict:
                 raise ValueError(
                     f"Lean version `{self.lean_version}` is required but not available in the Lean REPL repository."
                 )
 
-        # check if the repl revision is already in the cache
+        # Set up the version-specific REPL directory
         self._cache_repl_dir = self.cache_dir / self.repo_name / f"repl_{self.repl_rev}_{self.lean_version}"
 
-        # Lock the version-specific REPL directory during setup
-        with FileLock(f"{self._cache_repl_dir}.lock", timeout=300):  # 5 minute timeout for long-running operations
+        # Prepare the version-specific REPL checkout
+        with FileLock(f"{self._cache_repl_dir}.lock", timeout=300):
             if not self._cache_repl_dir.exists():
-                # copy the repository to the version directory and checkout the required revision
+                # Copy the repository to the version directory and checkout the required revision
                 self._cache_repl_dir.mkdir(parents=True, exist_ok=True)
                 shutil.copytree(self.cache_clean_repl_dir, self._cache_repl_dir, dirs_exist_ok=True)
                 cached_repo = Repo(self._cache_repl_dir)
                 cached_repo.git.checkout(lean_versions_sha_dict[self.lean_version])
 
-            # check that the lean version is correct
-            assert self.lean_version == get_project_lean_version(self._cache_repl_dir), (
-                f"An error occured while preparing the Lean REPL. The requested Lean version `{self.lean_version}` "
-                f"does not match the fetched Lean version in the repository `{get_project_lean_version(self._cache_repl_dir)}`."
-                f"Please open an issue on GitHub if you think this is a bug."
-            )
-
-            try:
-                subprocess.run(
-                    ["lake", "build"], cwd=self._cache_repl_dir, check=True, stdout=self._stdout, stderr=self._stderr
+            # Verify the Lean version
+            repl_lean_version = get_project_lean_version(self._cache_repl_dir)
+            if not repl_lean_version or self.lean_version != repl_lean_version:
+                raise ValueError(
+                    f"An error occurred while preparing the Lean REPL. The requested Lean version `{self.lean_version}` "
+                    f"does not match the fetched Lean version in the repository `{repl_lean_version or 'unknown'}`."
+                    f"Please open an issue on GitHub if you think this is a bug."
                 )
-            except subprocess.CalledProcessError as e:
-                logger.error("Failed to build the REPL: %s", e)
-                raise
+
+    def _build_repl(self) -> None:
+        """Build the REPL."""
+        try:
+            subprocess.run(
+                [self.lake_path, "build"],
+                cwd=self._cache_repl_dir,
+                check=True,
+                stdout=self._stdout,
+                stderr=self._stderr,
+            )
+        except subprocess.CalledProcessError as e:
+            logger.error("Failed to build the REPL at %s: %s", self._cache_repl_dir, e)
+            raise
 
     def _get_available_lean_versions_sha(self) -> list[tuple[str, str]]:
         """
         Get the available Lean versions for the selected REPL.
+
+        Returns:
+            A list of tuples (lean_version, commit_sha) for available versions.
+            For local REPL path, returns only the detected version with "local" as sha.
         """
+        # If using local REPL, there's only one version available
+        if self.local_repl_path:
+            version = get_project_lean_version(self.local_repl_path)
+            if version:
+                return [(version, "local")]
+            return []
+
+        # For Git-based REPL, get versions from commit history
+        from git import Repo
+
         repo = Repo(self.cache_clean_repl_dir)
         return [
             (str(commit.message.strip()), commit.hexsha)
@@ -420,4 +524,5 @@ class LeanREPLConfig:
         return str(self._cache_repl_dir)
 
     def is_setup(self) -> bool:
+        """Check if the REPL is set up."""
         return hasattr(self, "_working_dir")

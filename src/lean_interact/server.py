@@ -61,7 +61,7 @@ class LeanServer:
 
     def start(self) -> None:
         self._proc = subprocess.Popen(
-            ["lake", "env", os.path.join(self.config._cache_repl_dir, ".lake", "build", "bin", "repl")],
+            [self.config.lake_path, "env", os.path.join(self.config._cache_repl_dir, ".lake", "build", "bin", "repl")],
             cwd=self.config.working_dir,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
