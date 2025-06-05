@@ -2,7 +2,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from functools import wraps
-from typing import Any, Callable, cast
+from typing import Any, Callable
 
 from mcp.server.fastmcp import Context, FastMCP
 
@@ -16,7 +16,6 @@ from lean_interact.interface import (
     ProofStepResponse,
 )
 from lean_interact.server import AutoLeanServer
-from lean_interact.utils import DEFAULT_REPL_VERSION
 
 
 @dataclass
@@ -231,5 +230,9 @@ async def configure_lean_environment(
     }
 
 
-def main() -> None:
+def main():
     mcp.run()
+
+
+if __name__ == "__main__":
+    main()
