@@ -286,14 +286,15 @@ class LeanREPLConfig:
                 The Lean version you want to use.
                 Default is `None`, which means the latest version compatible with the project will be selected.
             project:
-                The project you want to use. There are 4 options:
-                - `None`: The project will only depend on Lean and its standard library.
+                The project you want to use. There are 5 options:
+                - `None`: The REPL sessions will only depend on Lean and its standard library.
                 - `LocalProject`: An existing local Lean project.
                 - `GitProject`: A git repository with a Lean project that will be cloned.
-                - `TemporaryProject`: A temporary Lean project with a custom lakefile.lean that will be created.
+                - `TemporaryProject`: A temporary Lean project with a custom lakefile that will be created.
                 - `TempRequireProject`: A temporary Lean project with dependencies that will be created.
             repl_rev:
-                The REPL version you want to use. It is not recommended to change this value unless you know what you are doing.
+                The REPL version / git revision you want to use. It is not recommended to change this value unless you know what you are doing.
+                It will first attempt to checkout `{repl_rev}_lean-toolchain-{lean_version}`, and fallback to `{repl_rev}` if it fails.
                 Note: Ignored when `local_repl_path` is provided.
             repl_git:
                 The git repository of the Lean REPL. It is not recommended to change this value unless you know what you are doing.
@@ -327,6 +328,7 @@ class LeanREPLConfig:
         self.memory_hard_limit_mb = memory_hard_limit_mb
         self.lake_path = Path(lake_path)
         self.verbose = verbose
+        self._timeout = 300
 
         # Configure output streams based on verbosity
         self._stdout = None if self.verbose else subprocess.DEVNULL
@@ -376,7 +378,7 @@ class LeanREPLConfig:
             self._build_repl()
 
     def _prepare_local_repl(self) -> None:
-        """Prepare a local REPL installation."""
+        """Prepare a local REPL."""
         assert self.local_repl_path is not None
 
         if not self.local_repl_path.exists():
@@ -405,68 +407,62 @@ class LeanREPLConfig:
             logger.info("Using local REPL at %s", self.local_repl_path)
 
     def _prepare_git_repl(self) -> None:
-        """Prepare a Git-based REPL installation."""
-        assert isinstance(self.repl_rev, str)
-
+        """Prepare a Git-based REPL."""
         from git import GitCommandError, Repo
 
+        assert isinstance(self.repl_rev, str)
+
+        # Try to infer Lean version if not specified
+        if self.lean_version is None and isinstance(self.project, (LocalProject, GitProject)):
+            self.lean_version = get_project_lean_version(self.project._get_directory(self.cache_dir))
+
         # First, ensure we have the clean repository with the correct revision
-        with FileLock(f"{self.cache_clean_repl_dir}.lock", timeout=300):
+        with FileLock(f"{self.cache_clean_repl_dir}.lock", timeout=self._timeout):
             # Check if the repl is already cloned
             if not self.cache_clean_repl_dir.exists():
                 self.cache_clean_repl_dir.mkdir(parents=True, exist_ok=True)
                 Repo.clone_from(self.repl_git, self.cache_clean_repl_dir)
 
+            def get_tag_name(lean_version: str) -> str:
+                return f"{self.repl_rev}_lean-toolchain-{lean_version}"
+
             repo = Repo(self.cache_clean_repl_dir)
             try:
-                repo.git.checkout(self.repl_rev)
+                try:
+                    if self.lean_version is not None:
+                        repo.git.checkout(get_tag_name(self.lean_version))
+                except GitCommandError:
+                    repo.git.checkout(self.repl_rev)
             except GitCommandError:
                 repo.remote().pull()
                 try:
-                    repo.git.checkout(self.repl_rev)
+                    try:
+                        if self.lean_version is not None:
+                            repo.git.checkout(get_tag_name(self.lean_version))
+                    except GitCommandError:
+                        repo.git.checkout(self.repl_rev)
                 except GitCommandError as e:
                     raise ValueError(f"Lean REPL version `{self.repl_rev}` is not available.") from e
 
-            # Determine Lean version if not specified
-            lean_versions_sha = self._get_available_lean_versions_sha()
-            lean_versions_sha_dict = dict(lean_versions_sha)
-
-            if not lean_versions_sha:
-                raise ValueError("No Lean versions are available in the Lean REPL repository.")
-
-            if self.lean_version is None:
-                if self.project is None or isinstance(self.project, (TemporaryProject, TempRequireProject)):
-                    self.lean_version = lean_versions_sha[-1][0]
-                elif isinstance(self.project, (LocalProject, GitProject)):
-                    # Get the Lean version from the project
-                    inferred_ver = get_project_lean_version(self.project._get_directory(self.cache_dir))
-                    self.lean_version = inferred_ver if inferred_ver else lean_versions_sha[-1][0]
-
-            if self.lean_version not in lean_versions_sha_dict:
-                raise ValueError(
-                    f"Lean version `{self.lean_version}` is required but not available in the Lean REPL repository."
-                )
-
-        # Set up the version-specific REPL directory
-        self._cache_repl_dir = self.cache_dir / self.repo_name / f"repl_{self.repl_rev}_{self.lean_version}"
-
-        # Prepare the version-specific REPL checkout
-        with FileLock(f"{self._cache_repl_dir}.lock", timeout=300):
-            if not self._cache_repl_dir.exists():
-                # Copy the repository to the version directory and checkout the required revision
-                self._cache_repl_dir.mkdir(parents=True, exist_ok=True)
-                shutil.copytree(self.cache_clean_repl_dir, self._cache_repl_dir, dirs_exist_ok=True)
-                cached_repo = Repo(self._cache_repl_dir)
-                cached_repo.git.checkout(lean_versions_sha_dict[self.lean_version])
-
-            # Verify the Lean version
-            repl_lean_version = get_project_lean_version(self._cache_repl_dir)
+            repl_lean_version = get_project_lean_version(self.cache_clean_repl_dir)
+            if not self.lean_version:
+                self.lean_version = repl_lean_version
             if not repl_lean_version or self.lean_version != repl_lean_version:
                 raise ValueError(
                     f"An error occurred while preparing the Lean REPL. The requested Lean version `{self.lean_version}` "
                     f"does not match the fetched Lean version in the repository `{repl_lean_version or 'unknown'}`."
                     f"Please open an issue on GitHub if you think this is a bug."
                 )
+            assert isinstance(self.lean_version, str), "Lean version inference failed"
+
+            # Set up the version-specific REPL directory
+            self._cache_repl_dir = self.cache_dir / self.repo_name / f"repl_{get_tag_name(self.lean_version)}"
+
+            # Prepare the version-specific REPL checkout
+            if not self._cache_repl_dir.exists():
+                with FileLock(f"{self._cache_repl_dir}.lock", timeout=self._timeout):
+                    self._cache_repl_dir.mkdir(parents=True, exist_ok=True)
+                    shutil.copytree(self.cache_clean_repl_dir, self._cache_repl_dir, dirs_exist_ok=True)
 
     def _build_repl(self) -> None:
         """Build the REPL."""
@@ -482,36 +478,40 @@ class LeanREPLConfig:
             logger.error("Failed to build the REPL at %s: %s", self._cache_repl_dir, e)
             raise
 
-    def _get_available_lean_versions_sha(self) -> list[tuple[str, str]]:
+    def _get_available_lean_versions(self) -> list[tuple[str, str | None]]:
         """
         Get the available Lean versions for the selected REPL.
 
         Returns:
-            A list of tuples (lean_version, commit_sha) for available versions.
-            For local REPL path, returns only the detected version with "local" as sha.
+            A list of tuples (lean_version, tag_name) for available versions.
+            For local REPL path, returns only the detected version with `None` as tag_name.
         """
         # If using local REPL, there's only one version available
         if self.local_repl_path:
             version = get_project_lean_version(self.local_repl_path)
             if version:
-                return [(version, "local")]
+                return [(version, None)]
             return []
 
-        # For Git-based REPL, get versions from commit history
+        # For Git-based REPL, get versions from tags
         from git import Repo
 
         repo = Repo(self.cache_clean_repl_dir)
-        return [
-            (str(commit.message.strip()), commit.hexsha)
-            for commit in repo.iter_commits(f"{self.repl_rev}...master")
-            if str(commit.message.strip()).startswith("v4")
-        ]
+        all_tags = [tag for tag in repo.tags if tag.name.startswith(f"{self.repl_rev}_lean-toolchain-")]
+        if not all_tags:
+            # The tag convention is not used, let's extract the only available version
+            version = get_project_lean_version(self._cache_repl_dir)
+            if version:
+                return [(version, None)]
+            return []
+        else:
+            return [(tag.name.split("_lean-toolchain-")[-1], tag.name) for tag in all_tags]
 
     def get_available_lean_versions(self) -> list[str]:
         """
         Get the available Lean versions for the selected REPL.
         """
-        return [commit[0] for commit in self._get_available_lean_versions_sha()]
+        return [commit[0] for commit in self._get_available_lean_versions()]
 
     @property
     def working_dir(self) -> str:
