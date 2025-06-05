@@ -34,9 +34,11 @@ dev = [
 ]
 
 [project.optional-dependencies]
-mcp = ["mcp[cli]"]
+mcp = [
+    "mcp[cli]",
+]
 
 [project.scripts]
 install-lean      = "lean_interact.utils:install_lean"
 clear-lean-cache  = "lean_interact.utils:clear_cache"
-lean-interact-mcp = "lean_interact.mcp:main"
+lean-interact-mcp = "lean_interact.mcp_server:main"

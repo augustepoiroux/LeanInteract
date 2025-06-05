@@ -33,7 +33,6 @@ If you also want to use the MCP server functionality (see [MCP Server documentat
 ```
 pip install lean-interact[mcp]
 ```
-This will ensure that the `mcp-sdk` and its dependencies are installed alongside LeanInteract.
 
 ### 2. Install Lean 4 (if not already installed)
 
