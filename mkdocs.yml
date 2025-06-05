@@ -122,6 +122,7 @@ nav:
       - LeanServer: api/server.md
       - Session Cache: api/sessioncache.md
       - Interface: api/interface.md
+      - MCP Server: api/mcp_server.md
       - Utils: api/utils.md
   - Examples: examples.md
   - Troubleshooting: troubleshooting.md

@@ -17,6 +17,7 @@
   - We backport the latest features of Lean REPL to older versions of Lean.
 - **📦 Temporary Projects**: Easily instantiate temporary Lean environments.
   - Useful for experimenting with benchmarks depending on [Mathlib](https://github.com/leanprover-community/mathlib4) like [ProofNet#](https://huggingface.co/datasets/PAug/ProofNetSharp) and [MiniF2F](https://github.com/yangky11/miniF2F-lean4).
+- **🛠 MCP Server Interface**: Exposes LeanInteract functionalities as tools via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 ## Table of Contents
 
@@ -41,6 +42,10 @@
 - [Advanced options](#advanced-options)
   - [LeanServer](#leanserver)
   - [Custom Lean REPL](#custom-lean-repl)
+- [MCP Server Interface](#mcp-server-interface)
+  - [Running the Server](#running-the-server)
+  - [Exposed Tools](#exposed-tools)
+  - [Interacting with the Server](#interacting-with-the-server)
 - [Similar tools](#similar-tools)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
@@ -49,10 +54,16 @@
 
 ## Installation and Setup
 
-You can install the LeanInteract package using the following command:
+You can install the base LeanInteract package using the following command:
 
 ```bash
 pip install lean-interact
+```
+
+To include the optional MCP server capabilities (see 'MCP Server Interface' section below), install LeanInteract with the `mcp` extra:
+
+```bash
+pip install lean-interact[mcp]
 ```
 
 Requirements:
@@ -442,6 +453,33 @@ config = LeanREPLConfig(repl_rev="v4.21.0-rc3", repl_git="https://github.com/lea
 > ```
 
 For assistance, feel free to contact [us](mailto:auguste.poiroux@epfl.ch).
+
+## MCP Server Interface
+
+LeanInteract includes an MCP ([Model Context Protocol](https://modelcontextprotocol.io/)) server to expose its functionalities, allowing interaction from various MCP-compatible clients.
+
+### Running the Server
+
+You can run the MCP server using the following command installed with the `mcp` extra:
+
+```bash
+lean-interact-mcp
+```
+
+### Exposed Tools
+
+The server exposes the following tools, which correspond to LeanInteract's query types:
+
+- `execute_lean_command(cmd: str, env: int | None = None, all_tactics: bool | None = None, root_goals: bool | None = None, infotree: str | None = None)`: Executes a Lean command string.
+- `execute_file_command(path: str, all_tactics: bool | None = None, root_goals: bool | None = None, infotree: str | None = None)`: Executes all commands in a specified Lean file.
+- `execute_proof_step(proof_state: int, tactic: str)`: Applies a tactic within a given proof state.
+- `configure_lean_environment(lean_version: str | None, repl_rev: str | None, memory_hard_limit_mb: int | None, verbose: bool | None, project_type: str | None, project_config: dict | None)`: Dynamically reconfigures the Lean environment (version, project, memory, verbosity) and restarts the internal Lean server. Key parameters include `lean_version`, `project_type` (e.g., "local", "git", "temp_mathlib", "temp_require", "none"), and `project_config` for project-specific details.
+
+The optional arguments like `all_tactics`, `root_goals`, and `infotree` for command and file execution tools allow for more detailed information retrieval, similar to their usage in the Lean REPL.
+
+### Interacting with the Server
+
+Clients can interact with these tools using any MCP-compatible client library (e.g., `mcp-client` for Python). For more details on MCP client development and the protocol itself, please refer to the official [MCP documentation](https://modelcontextprotocol.io/).
 
 ## Similar tools
 

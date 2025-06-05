@@ -22,11 +22,18 @@ Your system should be one of:
 
 ### 1. Install the Package
 
-You can install LeanInteract directly from PyPI:
+You can install the base LeanInteract package directly from PyPI:
 
 ```
 pip install lean-interact
 ```
+
+If you also want to use the MCP server functionality (see [MCP Server documentation](api/mcp_server.md) for details), you should install LeanInteract with the `mcp` extra:
+
+```
+pip install lean-interact[mcp]
+```
+This will ensure that the `mcp-sdk` and its dependencies are installed alongside LeanInteract.
 
 ### 2. Install Lean 4 (if not already installed)
 
