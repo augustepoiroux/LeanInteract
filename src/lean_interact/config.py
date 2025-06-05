@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Literal
 
 from filelock import FileLock
+from packaging.version import parse
 
 from lean_interact.utils import (
     DEFAULT_CACHE_DIR,
@@ -505,7 +506,16 @@ class LeanREPLConfig:
                 return [(version, None)]
             return []
         else:
-            return [(tag.name.split("_lean-toolchain-")[-1], tag.name) for tag in all_tags]
+            # Extract versions and sort them semantically
+            versions = [(tag.name.split("_lean-toolchain-")[-1], tag.name) for tag in all_tags]
+
+            def version_key(version_tuple):
+                v = version_tuple[0]
+                if v.startswith("v"):
+                    v = v[1:]
+                return parse(v)
+
+            return sorted(versions, key=version_key)
 
     def get_available_lean_versions(self) -> list[str]:
         """

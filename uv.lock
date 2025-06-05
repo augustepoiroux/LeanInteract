@@ -540,11 +540,12 @@ wheels = [
 
 [[package]]
 name = "lean-interact"
-version = "0.5.3"
+version = "0.6.0"
 source = { editable = "." }
 dependencies = [
     { name = "filelock" },
     { name = "gitpython" },
+    { name = "packaging" },
     { name = "psutil" },
     { name = "pydantic" },
     { name = "requests" },
@@ -567,6 +568,7 @@ dev = [
 requires-dist = [
     { name = "filelock", specifier = ">=3.18.0" },
     { name = "gitpython", specifier = ">=3.1.44" },
+    { name = "packaging", specifier = ">=24.2" },
     { name = "psutil", specifier = ">=6.1.0" },
     { name = "pydantic", specifier = ">=2.11.1" },
     { name = "requests", specifier = ">=2.32.3" },
