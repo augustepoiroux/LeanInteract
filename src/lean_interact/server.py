@@ -61,7 +61,11 @@ class LeanServer:
 
     def start(self) -> None:
         self._proc = subprocess.Popen(
-            [self.config.lake_path, "env", os.path.join(self.config._cache_repl_dir, ".lake", "build", "bin", "repl")],
+            [
+                str(self.config.lake_path),
+                "env",
+                str(os.path.join(self.config._cache_repl_dir, ".lake", "build", "bin", "repl")),
+            ],
             cwd=self.config.working_dir,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -103,6 +107,12 @@ class LeanServer:
                         pass
             except Exception:
                 pass
+            if self._proc.stdin:
+                self._proc.stdin.close()
+            if self._proc.stdout:
+                self._proc.stdout.close()
+            if self._proc.stderr:
+                self._proc.stderr.close()
             self._proc = None
         gc.collect()
 

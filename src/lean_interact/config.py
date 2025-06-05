@@ -69,9 +69,9 @@ class LocalProject(BaseProject):
         with FileLock(f"{directory}.lock"):
             try:
                 subprocess.run(
-                    [lake_path, "exe", "cache", "get"], cwd=directory, check=False, stdout=stdout, stderr=stderr
+                    [str(lake_path), "exe", "cache", "get"], cwd=directory, check=False, stdout=stdout, stderr=stderr
                 )
-                subprocess.run([lake_path, "build"], cwd=directory, check=True, stdout=stdout, stderr=stderr)
+                subprocess.run([str(lake_path), "build"], cwd=directory, check=True, stdout=stdout, stderr=stderr)
             except subprocess.CalledProcessError as e:
                 logger.error("Failed to build local project: %s", e)
                 raise
@@ -119,9 +119,9 @@ class GitProject(BaseProject):
 
             try:
                 subprocess.run(
-                    [lake_path, "exe", "cache", "get"], cwd=project_dir, check=False, stdout=stdout, stderr=stderr
+                    [str(lake_path), "exe", "cache", "get"], cwd=project_dir, check=False, stdout=stdout, stderr=stderr
                 )
-                subprocess.run([lake_path, "build"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
+                subprocess.run([str(lake_path), "build"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
             except subprocess.CalledProcessError as e:
                 logger.error("Failed to build the git project: %s", e)
                 raise
@@ -159,9 +159,9 @@ class BaseTempProject(BaseProject):
                 tmp_project_dir.mkdir(parents=True, exist_ok=True)
 
                 # initialize the Lean project
-                cmd_init = [lake_path, f"+{lean_version}", "init", "dummy", "exe.lean"]
+                cmd_init = [str(lake_path), f"+{lean_version}", "init", "dummy", "exe.lean"]
                 if lean_version.startswith("v4") and int(lean_version.split(".")[1]) <= 7:
-                    cmd_init = [lake_path, f"+{lean_version}", "init", "dummy", "exe"]
+                    cmd_init = [str(lake_path), f"+{lean_version}", "init", "dummy", "exe"]
 
                 try:
                     subprocess.run(cmd_init, cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
@@ -176,16 +176,20 @@ class BaseTempProject(BaseProject):
 
                 # Run lake commands with appropriate platform handling
                 try:
-                    subprocess.run([lake_path, "update"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
+                    subprocess.run(
+                        [str(lake_path), "update"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr
+                    )
                     # in case mathlib is used as a dependency, we try to get the cache
                     subprocess.run(
-                        [lake_path, "exe", "cache", "get"],
+                        [str(lake_path), "exe", "cache", "get"],
                         cwd=tmp_project_dir,
                         check=False,
                         stdout=stdout,
                         stderr=stderr,
                     )
-                    subprocess.run([lake_path, "build"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr)
+                    subprocess.run(
+                        [str(lake_path), "build"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr
+                    )
                 except subprocess.CalledProcessError as e:
                     logger.error("Failed during Lean project setup: %s", e)
                     # delete the project directory to avoid conflicts
@@ -417,34 +421,59 @@ class LeanREPLConfig:
         if self.lean_version is None and isinstance(self.project, (LocalProject, GitProject)):
             self.lean_version = get_project_lean_version(self.project._get_directory(self.cache_dir))
 
-        # First, ensure we have the clean repository with the correct revision
+        def get_tag_name(lean_version: str) -> str:
+            return f"{self.repl_rev}_lean-toolchain-{lean_version}"
+
+        # First, ensure we have the clean repository
         with FileLock(f"{self.cache_clean_repl_dir}.lock", timeout=self._timeout):
             # Check if the repl is already cloned
             if not self.cache_clean_repl_dir.exists():
                 self.cache_clean_repl_dir.mkdir(parents=True, exist_ok=True)
                 Repo.clone_from(self.repl_git, self.cache_clean_repl_dir)
 
-            def get_tag_name(lean_version: str) -> str:
-                return f"{self.repl_rev}_lean-toolchain-{lean_version}"
-
             repo = Repo(self.cache_clean_repl_dir)
-            try:
-                try:
-                    if self.lean_version is not None:
-                        repo.git.checkout(get_tag_name(self.lean_version))
-                except GitCommandError:
-                    repo.git.checkout(self.repl_rev)
-            except GitCommandError:
-                repo.remote().pull()
-                try:
-                    try:
-                        if self.lean_version is not None:
-                            repo.git.checkout(get_tag_name(self.lean_version))
-                    except GitCommandError:
-                        repo.git.checkout(self.repl_rev)
-                except GitCommandError as e:
-                    raise ValueError(f"Lean REPL version `{self.repl_rev}` is not available.") from e
 
+            def try_checkout(rev):
+                try:
+                    repo.git.checkout(rev)
+                    return True
+                except GitCommandError:
+                    return False
+
+            checkout_success = False
+            if self.lean_version is not None:
+                # Try to find a tag with the format `{repl_rev}_lean-toolchain-{lean_version}`
+                target_tag = get_tag_name(self.lean_version)
+                checkout_success = try_checkout(target_tag)
+            else:
+                checkout_success = try_checkout(self.repl_rev)
+
+            # If checkout fails, pull once and retry
+            if not checkout_success:
+                repo.remote().pull()
+
+                if self.lean_version is not None:
+                    checkout_success = try_checkout(get_tag_name(self.lean_version))
+
+                # Fall back to base revision if needed
+                if not checkout_success:
+                    try:
+                        repo.git.checkout(self.repl_rev)
+                        checkout_success = True
+                    except GitCommandError as e:
+                        raise ValueError(f"Lean REPL version `{self.repl_rev}` is not available.") from e
+
+            # If we still don't have a lean_version, try to find the latest available
+            if self.lean_version is None:
+                # Get all available versions and use the latest one
+                # We need to temporarily store the repo directory location for the _get_available_lean_versions call
+                self._cache_repl_dir = self.cache_clean_repl_dir
+                if available_versions := self._get_available_lean_versions():
+                    # The versions are already sorted semantically, so take the last one
+                    self.lean_version = available_versions[-1][0]
+                    try_checkout(get_tag_name(self.lean_version))
+
+            # Verify we have a valid lean version
             repl_lean_version = get_project_lean_version(self.cache_clean_repl_dir)
             if not self.lean_version:
                 self.lean_version = repl_lean_version
@@ -469,7 +498,7 @@ class LeanREPLConfig:
         """Build the REPL."""
         try:
             subprocess.run(
-                [self.lake_path, "build"],
+                [str(self.lake_path), "build"],
                 cwd=self._cache_repl_dir,
                 check=True,
                 stdout=self._stdout,

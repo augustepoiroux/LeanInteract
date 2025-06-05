@@ -116,6 +116,29 @@ class TestLeanServer(unittest.TestCase):
             response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
             self.assertIsInstance(response, CommandResponse)
 
+    def test_init_with_official_repl(self):
+        config = LeanREPLConfig(
+            repl_rev="v4.21.0-rc3", repl_git="https://github.com/leanprover-community/repl", verbose=True
+        )
+        server = AutoLeanServer(config=config)
+        self.assertEqual(server.lean_version, "v4.21.0-rc3")
+        response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
+        self.assertIsInstance(response, CommandResponse)
+        self.assertEqual(
+            response,
+            CommandResponse(
+                messages=[
+                    Message(
+                        start_pos=Pos(line=1, column=0),
+                        end_pos=Pos(line=1, column=5),
+                        severity="info",
+                        data='"4.21.0-rc3"',
+                    )
+                ],
+                env=0,
+            ),
+        )
+
     def test_temp_project_creation(self):
         # Create a simple temporary project
         temp_content = """
