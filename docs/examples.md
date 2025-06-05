@@ -35,7 +35,6 @@ from lean_interact import LeanREPLConfig, LeanServer, Command, TempRequireProjec
 
 # Create configuration with Mathlib
 config = LeanREPLConfig(
-    lean_version="v4.19.0", 
     project=TempRequireProject("mathlib"),
     verbose=True
 )
