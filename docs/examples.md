@@ -52,6 +52,30 @@ theorem irrational_plus_rational
 """))
 ```
 
+## Using Custom REPL Versions
+
+This example demonstrates how to use a specific REPL version from a custom repository:
+
+```python
+from lean_interact import LeanREPLConfig, LeanServer, Command
+
+# Use a specific REPL version from the official Lean repository
+config = LeanREPLConfig(
+    repl_rev="v4.21.0-rc3", 
+    repl_git="https://github.com/leanprover-community/repl"
+)
+server = LeanServer(config)
+
+# Check the Lean version
+response = server.run(Command(cmd="#eval Lean.versionString"))
+print(response.messages[0].data)  # Output: "4.21.0-rc3"
+
+# If you encounter interface compatibility issues with custom REPLs,
+# you can use run_dict to communicate directly with the REPL:
+result = server.run_dict({"cmd": "#eval Lean.versionString"})
+print(result)  # Example raw output from the REPL
+```
+
 ## Real-World Examples
 
 For more comprehensive examples, check out the following scripts in the examples directory:

@@ -21,6 +21,12 @@ config = LeanREPLConfig(lean_version="v4.19.0", verbose=True)
 
 # Configuration with memory limits
 config = LeanREPLConfig(memory_hard_limit_mb=2000)
+
+# Configuration with custom REPL version and repository
+config = LeanREPLConfig(
+    repl_rev="v4.21.0-rc3",
+    repl_git="https://github.com/leanprover-community/repl"
+)
 ```
 
 ## Project Classes

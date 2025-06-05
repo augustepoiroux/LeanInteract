@@ -426,7 +426,22 @@ Two versions of Lean servers are available:
 
 ### Custom Lean REPL
 
-To use a forked Lean REPL project, specify the git repository using the `repl_git` parameter in the `LeanREPLConfig`. Your fork should have a similar versioning format to <https://github.com/augustepoiroux/repl> (i.e. having a branch with commits for each Lean version). For assistance, feel free to contact [us](mailto:auguste.poiroux@epfl.ch).
+To use a forked Lean REPL project, specify the git repository using the `repl_git` parameter in the `LeanREPLConfig` and the target revision using the `repl_rev` parameter. For example:
+
+```python
+config = LeanREPLConfig(repl_rev="v4.21.0-rc3", repl_git="https://github.com/leanprover-community/repl", verbose=True)
+```
+
+> [!WARNING]
+>
+> Custom REPL implementations may have interfaces that are incompatible with LeanInteract's standard commands. If you encounter incompatibility issues, you can use the `run_dict` method from `LeanServer` to communicate directly with the REPL using the raw JSON protocol:
+>
+> ```python
+> # Using run_dict instead of the standard commands
+> result = server.run_dict({"cmd": "your_command_here"})
+> ```
+
+For assistance, feel free to contact [us](mailto:auguste.poiroux@epfl.ch).
 
 ## Similar tools
 
