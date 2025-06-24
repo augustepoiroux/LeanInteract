@@ -57,7 +57,7 @@ class LocalProject(BaseProject):
         return Path(self.directory)
 
     def _instantiate(
-        self, cache_dir: str | PathLike, lean_version: str, lake_path: str | PathLike, verbose: bool = True
+        self, cache_dir: str | PathLike, lean_version: str | None, lake_path: str | PathLike, verbose: bool = True
     ):
         """Instantiate the local project."""
         if not self.build:
@@ -97,7 +97,7 @@ class GitProject(BaseProject):
             return cache_dir / "git_projects" / repo_name / (self.rev or "latest")
 
     def _instantiate(
-        self, cache_dir: str | PathLike, lean_version: str, lake_path: str | PathLike, verbose: bool = True
+        self, cache_dir: str | PathLike, lean_version: str | None, lake_path: str | PathLike, verbose: bool = True
     ):
         """Instantiate the git project."""
 
@@ -333,7 +333,7 @@ class LeanREPLConfig:
         self.memory_hard_limit_mb = memory_hard_limit_mb
         self.lake_path = Path(lake_path)
         self.verbose = verbose
-        self._timeout = 300
+        self._timeout_lock = 300
 
         # Configure output streams based on verbosity
         self._stdout = None if self.verbose else subprocess.DEVNULL
@@ -357,13 +357,29 @@ class LeanREPLConfig:
                 "You can try to run `install-lean` or find installation instructions here: https://leanprover-community.github.io/get_started.html"
             )
 
+        # If the project is not temporary, we first set up the project to infer the Lean version.
+        if isinstance(self.project, (LocalProject, GitProject)):
+            self.project._instantiate(
+                cache_dir=self.cache_dir, lean_version=self.lean_version, lake_path=self.lake_path, verbose=self.verbose
+            )
+            project_lean_version = get_project_lean_version(self.project._get_directory(self.cache_dir))
+            assert project_lean_version is not None, (
+                f"Could not determine Lean version for project at {self.project._get_directory(self.cache_dir)}"
+            )
+            if self.lean_version is not None:
+                assert project_lean_version == self.lean_version, (
+                    f"Project Lean version `{project_lean_version}` does not match the requested Lean version `{self.lean_version}`."
+                )
+            self.lean_version = project_lean_version
+            self._working_dir = self.project._get_directory(cache_dir=self.cache_dir, lean_version=self.lean_version)
+
         self._setup_repl()
 
         assert isinstance(self.lean_version, str)
 
         if self.project is None:
             self._working_dir = self._cache_repl_dir
-        else:
+        elif not isinstance(self.project, (LocalProject, GitProject)):
             self.project._instantiate(
                 cache_dir=self.cache_dir,
                 lean_version=self.lean_version,
@@ -417,15 +433,11 @@ class LeanREPLConfig:
 
         assert isinstance(self.repl_rev, str)
 
-        # Try to infer Lean version if not specified
-        if self.lean_version is None and isinstance(self.project, (LocalProject, GitProject)):
-            self.lean_version = get_project_lean_version(self.project._get_directory(self.cache_dir))
-
         def get_tag_name(lean_version: str) -> str:
             return f"{self.repl_rev}_lean-toolchain-{lean_version}"
 
         # First, ensure we have the clean repository
-        with FileLock(f"{self.cache_clean_repl_dir}.lock", timeout=self._timeout):
+        with FileLock(f"{self.cache_clean_repl_dir}.lock", timeout=self._timeout_lock):
             # Check if the repl is already cloned
             if not self.cache_clean_repl_dir.exists():
                 self.cache_clean_repl_dir.mkdir(parents=True, exist_ok=True)
@@ -490,7 +502,7 @@ class LeanREPLConfig:
 
             # Prepare the version-specific REPL checkout
             if not self._cache_repl_dir.exists():
-                with FileLock(f"{self._cache_repl_dir}.lock", timeout=self._timeout):
+                with FileLock(f"{self._cache_repl_dir}.lock", timeout=self._timeout_lock):
                     self._cache_repl_dir.mkdir(parents=True, exist_ok=True)
                     shutil.copytree(self.cache_clean_repl_dir, self._cache_repl_dir, dirs_exist_ok=True)
 
