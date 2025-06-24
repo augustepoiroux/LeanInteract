@@ -156,7 +156,18 @@ lean_exe "dummy" where
         project = TemporaryProject(temp_content)
         config = LeanREPLConfig(lean_version="v4.14.0", project=project, verbose=True)
         server = AutoLeanServer(config=config)
-        server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
+        response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
+        self.assertEqual(
+            response,
+            CommandResponse(
+                messages=[
+                    Message(
+                        start_pos=Pos(line=1, column=0), end_pos=Pos(line=1, column=5), severity="info", data='"4.14.0"'
+                    )
+                ],
+                env=0,
+            ),
+        )
 
     def test_init_with_git_project(self):
         if platform.system() == "Windows":
@@ -165,7 +176,23 @@ lean_exe "dummy" where
         git_url = "https://github.com/yangky11/lean4-example"
         config = LeanREPLConfig(project=GitProject(git_url), verbose=True)
         server = AutoLeanServer(config=config)
-        server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
+        response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
+        assert config.lean_version is not None, "Error: Lean version could not be determined from the project"
+        lean_version = config.lean_version[1:]
+        self.assertEqual(
+            response,
+            CommandResponse(
+                messages=[
+                    Message(
+                        start_pos=Pos(line=1, column=0),
+                        end_pos=Pos(line=1, column=5),
+                        severity="info",
+                        data=f'"{lean_version}"',
+                    )
+                ],
+                env=0,
+            ),
+        )
 
     def test_run_code_simple(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
@@ -608,6 +635,7 @@ lean_exe "dummy" where
 
         # Pickle the environment
         temp_pickle = tempfile.NamedTemporaryFile(suffix=".olean", delete=False)
+        temp_pickle.close()  # Close the file to allow writing
 
         pickle_result = server.run(PickleEnvironment(env=env_id, pickle_to=temp_pickle.name), verbose=True)
         self.assertIsInstance(pickle_result, CommandResponse)
@@ -641,7 +669,6 @@ lean_exe "dummy" where
 
         # delete the temp file
         try:
-            temp_pickle.close()
             os.remove(temp_pickle.name)
         except (FileNotFoundError, PermissionError):
             pass
@@ -660,6 +687,8 @@ lean_exe "dummy" where
 
         # Pickle the proof state
         temp_pickle = tempfile.NamedTemporaryFile(suffix=".olean", delete=False)
+        temp_pickle.close()  # Close the file to allow writing
+
         pickle_result = server.run(
             PickleProofState(proof_state=proof_state_id, pickle_to=temp_pickle.name), verbose=True
         )
@@ -679,7 +708,6 @@ lean_exe "dummy" where
 
         # Delete the temp file
         try:
-            temp_pickle.close()
             os.remove(temp_pickle.name)
         except (FileNotFoundError, PermissionError):
             pass
@@ -689,13 +717,14 @@ lean_exe "dummy" where
 
         # Try to pickle a non-existent environment
         temp_pickle = tempfile.NamedTemporaryFile(suffix=".olean", delete=False)
+        temp_pickle.close()  # Close the file to allow writing
+
         result = server.run(PickleEnvironment(env=999, pickle_to=temp_pickle.name), verbose=True)
         assert isinstance(result, LeanError)
         self.assertEqual("unknown environment.", result.message.lower())
 
         # delete the temp file
         try:
-            temp_pickle.close()
             os.remove(temp_pickle.name)
         except (FileNotFoundError, PermissionError):
             pass
@@ -704,6 +733,7 @@ lean_exe "dummy" where
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
         # Try to unpickle invalid data
         temp_pickle = tempfile.NamedTemporaryFile(suffix=".olean", delete=False)
+        temp_pickle.close()  # Close the file to allow writing
 
         # Try to unpickle invalid data
         with self.assertRaises(ConnectionAbortedError):
@@ -713,7 +743,6 @@ lean_exe "dummy" where
 
         # delete the temp file
         try:
-            temp_pickle.close()
             os.remove(temp_pickle.name)
         except (FileNotFoundError, PermissionError):
             pass
@@ -750,6 +779,8 @@ lean_exe "dummy" where
 
         # Pickle the environment
         temp_pickle = tempfile.NamedTemporaryFile(suffix=".olean", delete=False)
+        temp_pickle.close()  # Close the file to allow writing
+
         pickle_result = server.run(PickleEnvironment(env=env_id, pickle_to=temp_pickle.name), verbose=True)
         self.assertIsInstance(pickle_result, CommandResponse)
 
@@ -776,7 +807,6 @@ lean_exe "dummy" where
 
         # delete the temp file
         try:
-            temp_pickle.close()
             os.remove(temp_pickle.name)
         except (FileNotFoundError, PermissionError):
             pass
