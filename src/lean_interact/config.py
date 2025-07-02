@@ -4,7 +4,7 @@ import subprocess
 from dataclasses import dataclass
 from os import PathLike
 from pathlib import Path
-from typing import Literal
+from typing import Callable, Literal
 
 from filelock import FileLock
 from packaging.version import parse
@@ -13,6 +13,7 @@ from lean_interact.utils import (
     DEFAULT_CACHE_DIR,
     DEFAULT_REPL_GIT_URL,
     DEFAULT_REPL_VERSION,
+    _GitUtilities,
     get_project_lean_version,
     logger,
 )
@@ -20,11 +21,16 @@ from lean_interact.utils import (
 
 @dataclass(frozen=True)
 class LeanRequire:
-    """Lean project dependency"""
+    """Lean project dependency specification for lakefile.lean files."""
 
     name: str
+    """The name of the dependency package."""
+
     git: str
+    """The git URL of the dependency repository."""
+
     rev: str | None = None
+    """The specific git revision (tag, branch, or commit hash) to use. If None, uses the default branch."""
 
     def __hash__(self):
         return hash((self.name, self.git, self.rev))
@@ -44,13 +50,40 @@ class BaseProject:
         """Instantiate the project."""
         raise NotImplementedError("Subclasses must implement this method")
 
+    def _build_project(self, project_dir: Path, lake_path: str | PathLike, verbose: bool, update: bool = False) -> None:
+        """Build the Lean project using lake."""
+        stdout = None if verbose else subprocess.DEVNULL
+        stderr = None if verbose else subprocess.DEVNULL
+        try:
+            # Run lake update if requested
+            if update:
+                subprocess.run([str(lake_path), "update"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
+            
+            # Try to get cache first (non-fatal if it fails)
+            cache_result = subprocess.run(
+                [str(lake_path), "exe", "cache", "get"], cwd=project_dir, check=False, stdout=stdout, stderr=stderr
+            )
+            if cache_result.returncode != 0 and verbose:
+                logger.info("Getting 'error: unknown executable cache' is expected if the project doesn't depend on Mathlib")
+
+            # Build the project (this must succeed)
+            subprocess.run([str(lake_path), "build"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
+            logger.debug("Successfully built project at %s", project_dir)
+
+        except subprocess.CalledProcessError as e:
+            logger.error("Failed to build the project: %s", e)
+            raise
+
 
 @dataclass(frozen=True)
 class LocalProject(BaseProject):
-    """Use an existing local Lean project directory"""
+    """Configuration for using an existing local Lean project directory."""
 
     directory: str | PathLike
+    """Path to the local Lean project directory."""
+
     build: bool = True
+    """Whether to build the project after instantiation. Set to False to skip building."""
 
     def _get_directory(self, cache_dir: str | PathLike, lean_version: str | None = None) -> Path:
         """Get the project directory."""
@@ -62,27 +95,24 @@ class LocalProject(BaseProject):
         """Instantiate the local project."""
         if not self.build:
             return
-        stdout = None if verbose else subprocess.DEVNULL
-        stderr = None if verbose else subprocess.DEVNULL
 
         directory = Path(self.directory)
         with FileLock(f"{directory}.lock"):
-            try:
-                subprocess.run(
-                    [str(lake_path), "exe", "cache", "get"], cwd=directory, check=False, stdout=stdout, stderr=stderr
-                )
-                subprocess.run([str(lake_path), "build"], cwd=directory, check=True, stdout=stdout, stderr=stderr)
-            except subprocess.CalledProcessError as e:
-                logger.error("Failed to build local project: %s", e)
-                raise
+            self._build_project(directory, lake_path, verbose)
 
 
 @dataclass(frozen=True)
 class GitProject(BaseProject):
-    """Use an online git repository with a Lean project"""
+    """Configuration for using an online git repository containing a Lean project."""
 
     url: str
+    """The git URL of the repository to clone."""
+
     rev: str | None = None
+    """The specific git revision (tag, branch, or commit hash) to checkout. If None, uses the default branch."""
+
+    force_pull: bool = False
+    """Whether to force pull the latest changes from the remote repository, overwriting local changes."""
 
     def _get_directory(self, cache_dir: str | PathLike, lean_version: str | None = None) -> Path:
         cache_dir = Path(cache_dir)
@@ -100,31 +130,107 @@ class GitProject(BaseProject):
         self, cache_dir: str | PathLike, lean_version: str | None, lake_path: str | PathLike, verbose: bool = True
     ):
         """Instantiate the git project."""
+        project_dir = self._get_directory(cache_dir, lean_version)
 
+        with FileLock(f"{project_dir}.lock"):
+            try:
+                if project_dir.exists():
+                    self._update_existing_repo(project_dir, verbose)
+                else:
+                    self._clone_new_repo(project_dir, verbose)
+                self._build_project(project_dir, lake_path, verbose)
+            except Exception as e:
+                logger.error("Failed to instantiate git project at %s: %s", project_dir, e)
+                raise
+
+    def _update_existing_repo(self, project_dir: Path, verbose: bool) -> None:
+        """Update an existing git repository."""
+        git_utils = _GitUtilities(project_dir)
+
+        # Strategy: Only make network calls when absolutely necessary to avoid rate limiting
+        network_calls_made = False
+
+        # Handle force pull first if requested to ensure we have latest branches
+        if self.force_pull:
+            self._force_update_repo(git_utils, verbose)
+            network_calls_made = True
+
+        # Checkout the specified revision if provided
+        if self.rev:
+            # First try to checkout without network calls
+            if not git_utils.safe_checkout(self.rev):
+                logger.debug("Revision '%s' not found locally, fetching from remote", self.rev)
+                if git_utils.safe_fetch():
+                    network_calls_made = True
+                    if not git_utils.safe_checkout(self.rev):
+                        raise ValueError(f"Could not checkout revision '{self.rev}' after fetching")
+                else:
+                    raise ValueError(f"Could not fetch from remote to get revision '{self.rev}'")
+        else:
+            # Only pull for non-specific revisions and only if we haven't made network calls yet
+            if not network_calls_made:
+                if git_utils.safe_pull():
+                    network_calls_made = True
+                    logger.debug("Pulled latest changes for default branch")
+                else:
+                    logger.warning("Failed to pull from remote, continuing with current state")
+
+        # Update submodules only if we made other network calls or if explicitly requested
+        if network_calls_made or self.force_pull:
+            if not git_utils.update_submodules():
+                logger.warning("Failed to update submodules")
+        else:
+            logger.debug("Skipping submodule update to minimize network calls")
+
+    def _force_update_repo(self, git_utils: _GitUtilities, verbose: bool) -> None:
+        """Perform a force update of the repository with single fetch call."""
+        # Single fetch call for force update
+        if not git_utils.safe_fetch():
+            raise RuntimeError("Failed to fetch from remote during force update")
+
+        logger.debug("Force update: successfully fetched latest changes from remote")
+
+        # Determine target branch for reset
+        target_branch = None
+        if self.rev and git_utils.branch_exists_locally(self.rev):
+            target_branch = self.rev
+        elif not self.rev:
+            target_branch = git_utils.get_current_branch_name()
+
+        # Perform hard reset if we have a valid remote branch
+        if target_branch and git_utils.remote_ref_exists(f"origin/{target_branch}"):
+            if git_utils.safe_reset_hard(f"origin/{target_branch}"):
+                logger.info("Force updated git project to match remote branch %s", target_branch)
+            else:
+                logger.warning("Failed to reset to remote branch %s", target_branch)
+        else:
+            logger.info("Force pull: fetched all refs, but no matching remote branch for reset.")
+
+        if not git_utils.update_submodules():
+            logger.warning("Failed to update submodules after force update")
+
+    def _clone_new_repo(self, project_dir: Path, verbose: bool) -> None:
+        """Clone a new git repository."""
         from git import Repo
 
-        stdout = None if verbose else subprocess.DEVNULL
-        stderr = None if verbose else subprocess.DEVNULL
-        project_dir = self._get_directory(cache_dir, lean_version)
-        with FileLock(f"{project_dir}.lock"):
-            # check if the git repository is already cloned
-            repo = Repo(project_dir) if project_dir.exists() else Repo.clone_from(self.url, project_dir)
+        try:
+            Repo.clone_from(self.url, project_dir)
+            logger.debug("Successfully cloned repository from %s", self.url)
 
+            git_utils = _GitUtilities(project_dir)
+
+            # Checkout specific revision if provided
             if self.rev:
-                repo.git.checkout(self.rev)
-            else:
-                repo.git.pull()
+                if not git_utils.safe_checkout(self.rev):
+                    raise ValueError(f"Could not checkout revision '{self.rev}' after cloning")
 
-            repo.submodule_update(init=True, recursive=True)
+            # Initialize and update submodules
+            if not git_utils.update_submodules():
+                logger.warning("Failed to update submodules after cloning")
 
-            try:
-                subprocess.run(
-                    [str(lake_path), "exe", "cache", "get"], cwd=project_dir, check=False, stdout=stdout, stderr=stderr
-                )
-                subprocess.run([str(lake_path), "build"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
-            except subprocess.CalledProcessError as e:
-                logger.error("Failed to build the git project: %s", e)
-                raise
+        except Exception as e:
+            logger.error("Failed to clone repository from %s: %s", self.url, e)
+            raise
 
 
 @dataclass(frozen=True)
@@ -174,22 +280,9 @@ class BaseTempProject(BaseProject):
 
                 logger.info("Preparing Lean environment with dependencies (may take a while the first time)...")
 
-                # Run lake commands with appropriate platform handling
+                # Use the inherited _build_project method with update=True
                 try:
-                    subprocess.run(
-                        [str(lake_path), "update"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr
-                    )
-                    # in case mathlib is used as a dependency, we try to get the cache
-                    subprocess.run(
-                        [str(lake_path), "exe", "cache", "get"],
-                        cwd=tmp_project_dir,
-                        check=False,
-                        stdout=stdout,
-                        stderr=stderr,
-                    )
-                    subprocess.run(
-                        [str(lake_path), "build"], cwd=tmp_project_dir, check=True, stdout=stdout, stderr=stderr
-                    )
+                    self._build_project(tmp_project_dir, lake_path, verbose, update=True)
                 except subprocess.CalledProcessError as e:
                     logger.error("Failed during Lean project setup: %s", e)
                     # delete the project directory to avoid conflicts
@@ -207,10 +300,13 @@ class BaseTempProject(BaseProject):
 
 @dataclass(frozen=True)
 class TemporaryProject(BaseTempProject):
-    """Use custom lakefile.lean / lakefile.toml content to create a temporary Lean project"""
+    """Configuration for creating a temporary Lean project with custom lakefile content."""
 
     content: str
+    """The content to write to the lakefile (either lakefile.lean or lakefile.toml format)."""
+
     lakefile_type: Literal["lean", "toml"] = "lean"
+    """The type of lakefile to create. Either 'lean' for lakefile.lean or 'toml' for lakefile.toml."""
 
     def _get_hash_content(self, lean_version: str) -> str:
         """Return a unique hash based on the content."""
@@ -227,14 +323,21 @@ class TemporaryProject(BaseTempProject):
 @dataclass(frozen=True)
 class TempRequireProject(BaseTempProject):
     """
-    Set up a temporary project with dependencies.
-    As Mathlib is a common dependency, you can just set `require="mathlib"` and a compatible version of mathlib will be used.
-    This feature has been developed mostly to be able to run benchmarks using Mathlib as a dependency
-    (such as [ProofNet#](https://huggingface.co/datasets/PAug/ProofNetSharp) or
-    [MiniF2F](https://github.com/yangky11/miniF2F-lean4)) without having to manually set up a Lean project.
+    Configuration for setting up a temporary project with specific dependencies.
+
+    As Mathlib is a common dependency, you can just set `require="mathlib"` and a compatible
+    version of mathlib will be used. This feature has been developed mostly to be able to run
+    benchmarks using Mathlib as a dependency (such as ProofNet# or MiniF2F) without having
+    to manually set up a Lean project.
     """
 
     require: Literal["mathlib"] | LeanRequire | list[LeanRequire | Literal["mathlib"]]
+    """
+    The dependencies to include in the project. Can be:
+    - "mathlib" for automatic Mathlib dependency matching the Lean version
+    - A single LeanRequire object for a custom dependency
+    - A list of dependencies (mix of "mathlib" and LeanRequire objects)
+    """
 
     def _normalize_require(self, lean_version: str) -> list[LeanRequire]:
         """Normalize the require field to always be a list."""
@@ -276,6 +379,7 @@ class LeanREPLConfig:
         project: BaseProject | None = None,
         repl_rev: str = DEFAULT_REPL_VERSION,
         repl_git: str = DEFAULT_REPL_GIT_URL,
+        force_pull_repl: bool = False,
         cache_dir: str | PathLike = DEFAULT_CACHE_DIR,
         local_repl_path: str | PathLike | None = None,
         build_repl: bool = True,
@@ -304,6 +408,9 @@ class LeanREPLConfig:
             repl_git:
                 The git repository of the Lean REPL. It is not recommended to change this value unless you know what you are doing.
                 Note: Ignored when `local_repl_path` is provided.
+            force_pull_repl:
+                If True, always pull the latest changes from the REPL git repository before checking out the revision.
+                By default, it is `False` to limit hitting GitHub API rate limits.
             cache_dir:
                 The directory where the Lean REPL and temporary Lean projects with dependencies will be cached.
                 Default is inside the package directory.
@@ -331,6 +438,7 @@ class LeanREPLConfig:
         self.project = project
         self.repl_git = repl_git
         self.repl_rev = repl_rev
+        self.force_pull_repl = force_pull_repl
         self.cache_dir = Path(cache_dir)
         self.local_repl_path = Path(local_repl_path) if local_repl_path else None
         self.build_repl = build_repl
@@ -433,8 +541,6 @@ class LeanREPLConfig:
 
     def _prepare_git_repl(self) -> None:
         """Prepare a Git-based REPL."""
-        from git import GitCommandError, Repo
-
         assert isinstance(self.repl_rev, str)
 
         def get_tag_name(lean_version: str) -> str:
@@ -442,73 +548,188 @@ class LeanREPLConfig:
 
         # First, ensure we have the clean repository
         with FileLock(f"{self.cache_clean_repl_dir}.lock", timeout=self._timeout_lock):
-            # Check if the repl is already cloned
-            if not self.cache_clean_repl_dir.exists():
-                self.cache_clean_repl_dir.mkdir(parents=True, exist_ok=True)
+            # Initialize or update the clean repository
+            self._setup_clean_repl_repo()
+            git_utils = _GitUtilities(self.cache_clean_repl_dir)
+
+            # Handle force pull first if requested to ensure we have latest branches
+            if self.force_pull_repl:
+                self._force_update_repl(git_utils)
+
+            # Checkout the appropriate revision
+            checkout_success = self._checkout_repl_revision(git_utils, get_tag_name)
+
+            # If checkout failed and we haven't done a force update, try pulling and retrying
+            if not checkout_success and not self.force_pull_repl:
+                checkout_success = self._retry_checkout_after_pull(git_utils, get_tag_name)
+
+            # Determine and validate Lean version
+            self._validate_and_set_lean_version(get_tag_name)
+
+            # Set up version-specific REPL directory
+            self._setup_version_specific_repl_dir(get_tag_name)
+
+    def _setup_clean_repl_repo(self) -> None:
+        """Set up the clean REPL repository."""
+        from git import Repo
+
+        if not self.cache_clean_repl_dir.exists():
+            self.cache_clean_repl_dir.mkdir(parents=True, exist_ok=True)
+            try:
                 Repo.clone_from(self.repl_git, self.cache_clean_repl_dir)
+                logger.debug("Successfully cloned REPL repository from %s", self.repl_git)
+            except Exception as e:
+                logger.error("Failed to clone REPL repository from %s: %s", self.repl_git, e)
+                raise
 
-            repo = Repo(self.cache_clean_repl_dir)
+    def _force_update_repl(self, git_utils: _GitUtilities) -> None:
+        """Perform force update of the REPL repository with fetch and reset."""
+        # Fetch the latest changes
+        if not git_utils.safe_fetch():
+            logger.warning("Failed to fetch during force update")
+            return
 
-            def try_checkout(rev):
-                try:
-                    repo.git.checkout(rev)
-                    return True
-                except GitCommandError:
-                    return False
+        logger.debug("Force update: successfully fetched latest changes from remote")
 
-            checkout_success = False
-            if self.lean_version is not None:
-                # Try to find a tag with the format `{repl_rev}_lean-toolchain-{lean_version}`
-                target_tag = get_tag_name(self.lean_version)
-                checkout_success = try_checkout(target_tag)
+        # Determine target branch for reset
+        target_branch = None
+        if self.lean_version is not None:
+            # If we have a lean version, try to find the corresponding tag first
+            target_tag = f"{self.repl_rev}_lean-toolchain-{self.lean_version}"
+            # For tags, we don't reset since tags don't change
+            if git_utils.safe_checkout(target_tag):
+                logger.debug("Force update: checked out target tag %s", target_tag)
+                return
+            # If tag doesn't exist, fall back to branch logic
+
+        # Check if we're on a branch that has a remote counterpart
+        current_branch = git_utils.get_current_branch_name()
+        if current_branch and git_utils.remote_ref_exists(f"origin/{current_branch}"):
+            target_branch = current_branch
+        elif not self.lean_version:
+            # If no lean version specified, use current branch or default
+            target_branch = current_branch
+
+        # Perform hard reset if we have a valid remote branch
+        if target_branch and git_utils.remote_ref_exists(f"origin/{target_branch}"):
+            if git_utils.safe_reset_hard(f"origin/{target_branch}"):
+                logger.debug("Force updated REPL to match remote branch %s", target_branch)
             else:
-                checkout_success = try_checkout(self.repl_rev)
+                logger.warning("Failed to reset REPL to remote branch %s", target_branch)
+        else:
+            logger.debug("Force update: fetched all refs, but no matching remote branch for reset")
 
-            # If checkout fails, pull once and retry
-            if not checkout_success:
-                repo.remote().pull()
+    def _checkout_repl_revision(self, git_utils: _GitUtilities, get_tag_name: Callable[[str], str]) -> bool:
+        """Attempt to checkout the specified REPL revision."""
+        checkout_success = False
 
-                if self.lean_version is not None:
-                    checkout_success = try_checkout(get_tag_name(self.lean_version))
+        if self.lean_version is not None:
+            # Try to find a tag with the format `{repl_rev}_lean-toolchain-{lean_version}`
+            target_tag = get_tag_name(self.lean_version)
+            checkout_success = git_utils.safe_checkout(target_tag)
+            if checkout_success:
+                logger.debug("Successfully checked out tag: %s", target_tag)
+        else:
+            checkout_success = git_utils.safe_checkout(self.repl_rev)
+            if checkout_success:
+                logger.debug("Successfully checked out revision: %s", self.repl_rev)
 
-                # Fall back to base revision if needed
-                if not checkout_success:
-                    try:
-                        repo.git.checkout(self.repl_rev)
-                        checkout_success = True
-                    except GitCommandError as e:
-                        raise ValueError(f"Lean REPL version `{self.repl_rev}` is not available.") from e
+        return checkout_success
 
-            # If we still don't have a lean_version, try to find the latest available
-            if self.lean_version is None:
-                # Get all available versions and use the latest one
-                # We need to temporarily store the repo directory location for the _get_available_lean_versions call
-                self._cache_repl_dir = self.cache_clean_repl_dir
-                if available_versions := self._get_available_lean_versions():
-                    # The versions are already sorted semantically, so take the last one
-                    self.lean_version = available_versions[-1][0]
-                    try_checkout(get_tag_name(self.lean_version))
+    def _retry_checkout_after_pull(self, git_utils: _GitUtilities, get_tag_name: Callable[[str], str]) -> bool:
+        """Retry checkout after pulling latest changes - only if force_pull_repl is False."""
+        # Only pull if not already done in force update
+        if not self.force_pull_repl:
+            if git_utils.safe_pull():
+                logger.debug("Pulled latest changes to retry checkout")
+            else:
+                logger.warning("Failed to pull REPL repository, continuing with current state")
 
-            # Verify we have a valid lean version
-            repl_lean_version = get_project_lean_version(self.cache_clean_repl_dir)
-            if not self.lean_version:
-                self.lean_version = repl_lean_version
-            if not repl_lean_version or self.lean_version != repl_lean_version:
-                raise ValueError(
-                    f"An error occurred while preparing the Lean REPL. The requested Lean version `{self.lean_version}` "
-                    f"does not match the fetched Lean version in the repository `{repl_lean_version or 'unknown'}`."
-                    f"Please open an issue on GitHub if you think this is a bug."
-                )
-            assert isinstance(self.lean_version, str), "Lean version inference failed"
+        # Retry checkout with updated repository
+        checkout_success = False
+        if self.lean_version is not None:
+            checkout_success = git_utils.safe_checkout(get_tag_name(self.lean_version))
 
-            # Set up the version-specific REPL directory
-            self._cache_repl_dir = self.cache_dir / self.repo_name / f"repl_{get_tag_name(self.lean_version)}"
+        # Fall back to base revision if needed
+        if not checkout_success:
+            if not git_utils.safe_checkout(self.repl_rev):
+                raise ValueError(f"Lean REPL version `{self.repl_rev}` is not available.")
+            checkout_success = True
 
-            # Prepare the version-specific REPL checkout
-            if not self._cache_repl_dir.exists():
-                with FileLock(f"{self._cache_repl_dir}.lock", timeout=self._timeout_lock):
-                    self._cache_repl_dir.mkdir(parents=True, exist_ok=True)
-                    shutil.copytree(self.cache_clean_repl_dir, self._cache_repl_dir, dirs_exist_ok=True)
+        return checkout_success
+
+    def _validate_and_set_lean_version(self, get_tag_name) -> None:
+        """Validate and set the Lean version for the REPL."""
+        # If we still don't have a lean_version, try to find the latest available
+        if self.lean_version is None:
+            # We need to temporarily store the repo directory location for the _get_available_lean_versions call
+            self._cache_repl_dir = self.cache_clean_repl_dir
+            if available_versions := self._get_available_lean_versions():
+                # The versions are already sorted semantically, so take the last one
+                self.lean_version = available_versions[-1][0]
+                git_utils = _GitUtilities(self.cache_clean_repl_dir)
+                git_utils.safe_checkout(get_tag_name(self.lean_version))
+
+        # Verify we have a valid lean version
+        repl_lean_version = get_project_lean_version(self.cache_clean_repl_dir)
+        if not self.lean_version:
+            self.lean_version = repl_lean_version
+        if not repl_lean_version or self.lean_version != repl_lean_version:
+            raise ValueError(
+                f"An error occurred while preparing the Lean REPL. The requested Lean version `{self.lean_version}` "
+                f"does not match the fetched Lean version in the repository `{repl_lean_version or 'unknown'}`."
+                f"Please open an issue on GitHub if you think this is a bug."
+            )
+        assert isinstance(self.lean_version, str), "Lean version inference failed"
+
+    def _setup_version_specific_repl_dir(self, get_tag_name) -> None:
+        """Set up the version-specific REPL directory."""
+        # Set up the version-specific REPL directory
+        self._cache_repl_dir = self.cache_dir / self.repo_name / f"repl_{get_tag_name(self.lean_version)}"
+
+        # Only update the version-specific REPL checkout if the revision changed since last time
+        from git import Repo
+
+        repo = Repo(self.cache_clean_repl_dir)
+        clean_commit = repo.head.commit.hexsha
+        last_synced_file = self._cache_repl_dir / ".last_synced_commit"
+
+        # Acquire lock before checking and copying to avoid race conditions
+        with FileLock(f"{self._cache_repl_dir}.lock", timeout=self._timeout_lock):
+            last_synced_commit = self._read_last_synced_commit(last_synced_file)
+
+            if (not self._cache_repl_dir.exists()) or (last_synced_commit != clean_commit):
+                self._update_version_specific_cache(clean_commit, last_synced_file)
+
+    def _read_last_synced_commit(self, last_synced_file: Path) -> str | None:
+        """Read the last synced commit hash from file."""
+        if self._cache_repl_dir.exists() and last_synced_file.exists():
+            try:
+                with open(last_synced_file, "r") as f:
+                    return f.read().strip()
+            except Exception as e:
+                logger.warning("Could not read last synced commit file: %s", e)
+        return None
+
+    def _update_version_specific_cache(self, clean_commit: str, last_synced_file: Path) -> None:
+        """Update the version-specific REPL cache directory."""
+        # Remove the directory first to avoid stale files
+        if self._cache_repl_dir.exists():
+            try:
+                shutil.rmtree(self._cache_repl_dir)
+            except Exception as e:
+                logger.error("Failed to remove old REPL cache directory: %s", e)
+                raise
+
+        try:
+            self._cache_repl_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(self.cache_clean_repl_dir, self._cache_repl_dir, dirs_exist_ok=True)
+            with open(last_synced_file, "w") as f:
+                f.write(clean_commit)
+            logger.info("Updated version-specific REPL cache to commit %s", clean_commit)
+        except Exception as e:
+            logger.error("Failed to update REPL cache: %s", e)
+            raise
 
     def _build_repl(self) -> None:
         """Build the REPL."""

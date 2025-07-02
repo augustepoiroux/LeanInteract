@@ -367,3 +367,148 @@ def clean_last_theorem_string(lean_code: str, new_theorem_name: str = "dummy", a
         return lean_code[:idx_last_theorem] + clean_thm
 
     raise ValueError(f"Theorem extraction failed for the following Lean code:\n{lean_code}")
+
+
+class _GitUtilities:
+    """Utility class that wraps a git repository with improved error handling."""
+
+    def __init__(self, repo_path: str | Path):
+        """
+        Initialize with a path to a git repository.
+
+        Args:
+            repo_path: Path to the git repository
+        """
+        from git import Repo
+
+        self._repo = Repo(repo_path)
+
+    def safe_checkout(self, revision: str) -> bool:
+        """
+        Safely checkout a git revision.
+
+        Args:
+            revision: The revision to checkout (tag, branch, commit hash)
+
+        Returns:
+            True if checkout was successful, False otherwise
+        """
+        from git import GitCommandError
+
+        try:
+            self._repo.git.checkout(revision)
+            logger.debug("Successfully checked out revision: %s", revision)
+            return True
+        except GitCommandError as e:
+            logger.debug("Failed to checkout revision '%s': %s", revision, e)
+            return False
+
+    def safe_fetch(self, remote_name: str = "origin") -> bool:
+        """
+        Safely fetch from remote repository.
+
+        Args:
+            remote_name: Name of the remote to fetch from
+
+        Returns:
+            True if fetch was successful, False otherwise
+        """
+        try:
+            self._repo.remote(remote_name).fetch()
+            logger.debug("Successfully fetched from remote: %s", remote_name)
+            return True
+        except Exception as e:
+            logger.warning("Failed to fetch from remote '%s': %s", remote_name, e)
+            return False
+
+    def safe_pull(self, remote_name: str = "origin") -> bool:
+        """
+        Safely pull from remote repository.
+
+        Args:
+            remote_name: Name of the remote to pull from
+
+        Returns:
+            True if pull was successful, False otherwise
+        """
+        try:
+            self._repo.remote(remote_name).pull()
+            logger.debug("Successfully pulled from remote: %s", remote_name)
+            return True
+        except Exception as e:
+            logger.warning("Failed to pull from remote '%s': %s", remote_name, e)
+            return False
+
+    def safe_reset_hard(self, target: str) -> bool:
+        """
+        Safely perform a hard reset to target.
+
+        Args:
+            target: The target to reset to
+
+        Returns:
+            True if reset was successful, False otherwise
+        """
+        try:
+            self._repo.git.reset("--hard", target)
+            logger.debug("Successfully reset to: %s", target)
+            return True
+        except Exception as e:
+            logger.warning("Failed to reset to '%s': %s", target, e)
+            return False
+
+    def update_submodules(self) -> bool:
+        """
+        Update git submodules recursively.
+
+        Returns:
+            True if submodule update was successful, False otherwise
+        """
+        try:
+            self._repo.submodule_update(init=True, recursive=True)
+            logger.debug("Successfully updated submodules")
+            return True
+        except Exception as e:
+            logger.warning("Failed to update submodules: %s", e)
+            return False
+
+    def get_current_branch_name(self) -> str | None:
+        """
+        Get the current branch name.
+
+        Returns:
+            Current branch name or None if detached HEAD
+        """
+        try:
+            return self._repo.active_branch.name
+        except Exception:
+            return None
+
+    def branch_exists_locally(self, branch_name: str) -> bool:
+        """
+        Check if a branch exists locally.
+
+        Args:
+            branch_name: Name of the branch to check
+
+        Returns:
+            True if branch exists locally, False otherwise
+        """
+        return branch_name in [head.name for head in self._repo.heads]
+
+    def remote_ref_exists(self, ref_name: str, remote_name: str = "origin") -> bool:
+        """
+        Check if a remote reference exists.
+
+        Args:
+            ref_name: Name of the reference to check
+            remote_name: Name of the remote
+
+        Returns:
+            True if remote reference exists, False otherwise
+        """
+        try:
+            remote = self._repo.remote(remote_name)
+            return ref_name in [ref.name for ref in remote.refs]
+        except Exception:
+            return False
