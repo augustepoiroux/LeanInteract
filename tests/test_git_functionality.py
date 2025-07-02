@@ -9,17 +9,22 @@ from lean_interact.config import GitProject
 from lean_interact.utils import _GitUtilities
 
 
+def resolve_path(path):
+    """Resolve path to handle symlinks on different platforms (especially macOS)."""
+    return Path(path).resolve()
+
+
 class TestGitProject(unittest.TestCase):
-    """Realistic tests for GitProject using real git repositories."""
+    """Tests for GitProject using git repositories."""
 
     def setUp(self):
         self.temp_dir = tempfile.mkdtemp()
-        self.cache_dir = Path(self.temp_dir) / "cache"
-        self.repo_dir = Path(self.temp_dir) / "repo"
+        self.cache_dir = resolve_path(self.temp_dir) / "cache"
+        self.repo_dir = resolve_path(self.temp_dir) / "repo"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-        self.repo_dir.mkdir(
-            parents=True, exist_ok=True
-        )  # Create a real git repository with multiple commits and branches
+        self.repo_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create a git repository with multiple commits and branches
         self.repo = git.Repo.init(self.repo_dir)
 
         # Initial commit on main
@@ -61,7 +66,7 @@ class TestGitProject(unittest.TestCase):
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_git_project_clone_and_build(self):
-        """Test GitProject cloning and building a real repository."""
+        """Test GitProject cloning and building a repository."""
         git_url = f"file://{self.repo_dir}"
         git_project = GitProject(url=git_url)
 
@@ -147,14 +152,14 @@ class TestGitProject(unittest.TestCase):
 
 
 class TestGitUtilities(unittest.TestCase):
-    """Realistic tests for _GitUtilities using real git repositories."""
+    """Tests for _GitUtilities using git repositories."""
 
     def setUp(self):
         self.temp_dir = tempfile.mkdtemp()
-        self.repo_dir = Path(self.temp_dir) / "repo"
+        self.repo_dir = resolve_path(self.temp_dir) / "repo"
         self.repo_dir.mkdir(parents=True, exist_ok=True)
 
-        # Create a real git repository
+        # Create a git repository
         self.repo = git.Repo.init(self.repo_dir)
         (self.repo_dir / "README.md").write_text("# Test Repo\n")
         self.repo.index.add([str(self.repo_dir / "README.md")])
@@ -200,7 +205,7 @@ class TestGitUtilities(unittest.TestCase):
     def test_git_utilities_fetch_and_reset(self):
         """Test _GitUtilities fetch and reset operations."""
         # Create a clone to simulate remote operations
-        clone_dir = Path(self.temp_dir) / "clone"
+        clone_dir = resolve_path(self.temp_dir) / "clone"
         self.repo.clone(clone_dir)
         clone_utils = _GitUtilities(str(clone_dir))
 
@@ -219,17 +224,17 @@ class TestGitUtilities(unittest.TestCase):
 
 
 class TestLeanREPLConfigIntegration(unittest.TestCase):
-    """Integration test for LeanREPLConfig with real GitProject."""
+    """Integration test for LeanREPLConfig with GitProject."""
 
     def setUp(self):
         self.temp_dir = tempfile.mkdtemp()
-        self.cache_dir = Path(self.temp_dir) / "cache"
-        self.project_repo_dir = Path(self.temp_dir) / "project_repo"
+        self.cache_dir = resolve_path(self.temp_dir) / "cache"
+        self.project_repo_dir = resolve_path(self.temp_dir) / "project_repo"
 
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.project_repo_dir.mkdir(parents=True, exist_ok=True)
 
-        # Create a real Lean project repository
+        # Create a Lean project repository
         self.project_repo = git.Repo.init(self.project_repo_dir)
         (self.project_repo_dir / "Test.lean").write_text('-- Test project\ndef test : String := "hello"\n')
         (self.project_repo_dir / "lakefile.lean").write_text('import Lake\nopen Lake DSL\n\npackage "test" where\n')
@@ -247,7 +252,7 @@ class TestLeanREPLConfigIntegration(unittest.TestCase):
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_lean_repl_config_version_inference_from_git_project(self):
-        """Test that LeanREPLConfig correctly infers Lean version from a real GitProject."""
+        """Test that LeanREPLConfig correctly infers Lean version from a GitProject."""
         from lean_interact.config import LeanREPLConfig
 
         project_git_url = f"file://{self.project_repo_dir}"
