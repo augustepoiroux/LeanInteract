@@ -59,12 +59,15 @@ class FileCommand(BaseREPLQuery, CommandOptions):
     """Command for file operations in the REPL.
     Attributes:
         path: The path of the file to be operated on.
+        env: The environment to be used (optional). If `env = None`, starts a new session (in which you can use `import`).
+            If `env` is set, the command is executed in the given environment.
         all_tactics: If true, return all tactics used in the command with their associated information.
         root_goals: If true, return root goals, i.e. initial goals of all declarations in the command, even if they already have a proof.
         infotree: Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored.
     """
 
     path: Annotated[str, Field(min_length=1)]
+    env: int | None = None
 
 
 class ProofStep(BaseREPLQuery):

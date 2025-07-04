@@ -22,7 +22,7 @@ logger.addHandler(handler)
 ROOT_DIR = Path(__file__).resolve().parent
 DEFAULT_CACHE_DIR = ROOT_DIR / "cache"
 DEFAULT_REPL_GIT_URL = "https://github.com/augustepoiroux/repl"
-DEFAULT_REPL_VERSION = "v1.0.11"
+DEFAULT_REPL_VERSION = "v1.0.12"
 
 os.makedirs(DEFAULT_CACHE_DIR, exist_ok=True)
 

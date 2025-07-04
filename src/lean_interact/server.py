@@ -128,6 +128,20 @@ class LeanServer:
     def __del__(self):
         self.kill()
 
+    def get_memory_usage(self) -> float:
+        """
+        Get the memory usage of the Lean REPL server process in MB.
+        Returns:
+            Memory usage in MB.
+        """
+        if self._proc is None:
+            return 0.0
+        try:
+            proc = psutil.Process(self._proc.pid)
+            return get_total_memory_usage(proc) / (1024**2)  # Convert bytes to MB
+        except psutil.NoSuchProcess:
+            return 0.0
+
     def _execute_cmd_in_repl(self, json_query: str, verbose: bool, timeout: float | None) -> str:
         """Send JSON queries to the Lean REPL and wait for the standard delimiter."""
         assert self._proc is not None and self._proc.stdin is not None and self._proc.stdout is not None
