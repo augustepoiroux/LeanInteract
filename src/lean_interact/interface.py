@@ -1,6 +1,8 @@
-from typing import Annotated, Literal
+from collections import deque
+from typing import Annotated, Generator, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+from typing_extensions import Self
 
 # Classes and attributes are aligned with the Lean REPL: https://github.com/leanprover-community/repl/blob/2f0a3cb876b045cc0fe550ca3a625bc479816739/REPL/JSON.lean
 
@@ -198,6 +200,238 @@ def message_intersects_code(msg: Message | Sorry, start_pos: Pos | None, end_pos
     return res
 
 
+class Range(BaseModel):
+    """Range of a Syntax object.
+    Attributes:
+        start: The starting position of the syntax.
+        finish: The ending position of the syntax.
+        synthetic: Boolean whether the syntax is synthetic or not.
+    """
+
+    synthetic: bool
+    start: Pos
+    finish: Pos
+
+    def __eq__(self, other):
+        return self.start == other.start and self.finish == other.finish
+
+
+class Syntax(BaseModel):
+    """Lean Syntax object.
+    Attributes:
+        pp: Pretty-printed string of the syntax.
+        range: Range of the syntax.
+        kind: SyntaxNodeKind for the syntax.
+        arg_kinds: SyntaxNodeKinds for the children of the syntax.
+    """
+
+    pp: str | None
+    range: Range
+    kind: str
+    arg_kinds: list[str] = Field(default_factory=list, alias="argKinds")
+
+
+class BaseNode(BaseModel):
+    """Base for the nodes of the InfoTree.
+    Attributes:
+        stx: Syntax object of the node.
+    """
+
+    stx: Syntax
+
+
+class TacticNode(BaseNode):
+    """A tactic node of the InfoTree.
+    Attributes:
+        stx: Syntax object of the node.
+        name: Optional name of the tactic.
+        goals_before: Goals before tactic application.
+        goals_after: Goals after tactic application.
+    """
+
+    name: str | None
+    goals_before: list[str] = Field(default_factory=list, alias="goalsBefore")
+    goals_after: list[str] = Field(default_factory=list, alias="goalsAfter")
+
+
+class CommandNode(BaseNode):
+    """A command node of the InfoTree.
+    Attributes:
+        stx: Syntax object of the node.
+        elaborator: The elaborator used to elaborate the command.
+    """
+
+    elaborator: str
+
+
+class TermNode(BaseNode):
+    """A term node of the InfoTree.
+    Attributes:
+        stx: Syntax object of the node.
+        is_binder: Whether the node is a binder or not.
+        expr: Expression string.
+        expected_type: Expected type.
+        elaborator: Optionally, the elaborator used.
+    """
+
+    is_binder: bool = Field(alias="isBinder")
+    expr: str
+    expected_type: str | None = Field(default=None, alias="expectedType")
+    elaborator: str | None
+
+
+Node = TacticNode | CommandNode | TermNode | None
+
+
+class InfoTree(BaseModel):
+    """An InfoTree representation of the Lean code.
+    Attributes:
+        node: The root node of the InfoTree.
+        kind: The kind of the InfoTree.
+        children: Children of the InfoTree.
+    """
+
+    node: Node
+    kind: Literal[
+        "TacticInfo",
+        "TermInfo",
+        "PartialTermInfo",
+        "CommandInfo",
+        "MacroExpansionInfo",
+        "OptionInfo",
+        "FieldInfo",
+        "CompletionInfo",
+        "UserWidgetInfo",
+        "CustomInfo",
+        "FVarAliasInfo",
+        "FieldRedeclInfo",
+        "ChoiceInfo",
+        "DelabTermInfo",
+    ]
+    children: list[Self] = Field(default_factory=list)
+
+    def dfs_walk(self) -> Generator[Self, None, None]:
+        """
+        Walk the InfoTree using Depth-First-Search.
+        Returns:
+            Yields the subsequent InfoTree.
+        """
+        # Had to do this iteratively, because recursively is slow and exceeds recursion depth
+        stack = deque([self])
+
+        while stack:
+            first = stack.popleft()
+            yield first
+            stack.extendleft(first.children)
+
+    def leaves(self) -> Generator[Self, None, None]:
+        """
+        Get the InfoTree leaves of the Depth-First-Search
+        Returns:
+            Yield the leaves of the InfoTree.
+        """
+        for tree in self.dfs_walk():
+            if not tree.children:
+                yield tree
+
+    def commands(self) -> Generator[Self, None, None]:
+        """
+        Get all InfoTrees that represent commands
+        Returns:
+            Yields the command nodes of the InfoTree.
+        """
+        for tree in self.dfs_walk():
+            if tree.kind != "CommandInfo":
+                continue
+            assert isinstance(tree.node, CommandNode)
+            yield tree
+
+    def variables(self) -> Generator[Self, None, None]:
+        """
+        Get children corresponding to variable expressions.
+        Returns:
+            Yields the variable nodes of the InfoTree.
+        """
+        for tree in self.commands():
+            if tree.node.elaborator != "Lean.Elab.Command.elabVariable":  # type: ignore
+                continue
+            yield tree
+
+    def theorems(self) -> Generator[Self, None, None]:
+        """
+        Get children corresponding to theorems (including lemmas).
+        Returns:
+             Yields the theorems of the InfoTree.
+        """
+        for tree in self.commands():
+            if tree.node.stx.kind != "Lean.Parser.Command.declaration":  # type: ignore
+                continue
+            if tree.node.stx.arg_kinds[-1] != "Lean.Parser.Command.theorem":  # type: ignore
+                continue
+            yield tree
+
+    def docs(self) -> Generator[Self, None, None]:
+        """
+        Get children corresponding to DocStrings.
+        Returns:
+             Yields the InfoTree nodes representing Docstrings.
+        """
+        for tree in self.commands():
+            if tree.node.elaborator != "Lean.Elab.Command.elabModuleDoc":  # type: ignore
+                continue
+            yield tree
+
+    def namespaces(self) -> Generator[Self, None, None]:
+        """
+        Get children corresponding to namespaces.
+        Returns:
+             Yields the InfoTree nodes for namespaces.
+        """
+        for tree in self.commands():
+            if tree.node.elaborator != "Lean.Elab.Command.elabNamespace":  # type: ignore
+                continue
+            yield tree
+
+    def pp_up_to(self, end_pos: Pos) -> str:
+        """
+        Get the pretty-printed string of the InfoTree up to a given position.
+        """
+        if self.node is None:
+            raise ValueError("InfoTree node is None, cannot pretty-print!")
+        if end_pos > self.node.stx.range.finish or end_pos < self.node.stx.range.start:
+            raise ValueError("end_pos has to be in bounds!")
+        if self.node.stx.pp is None:
+            raise ValueError("InfoTree node has no pretty-printed string!")
+        lines = self.node.stx.pp.splitlines(keepends=True)
+        result = []
+        for line_idx in range(end_pos.line + 1 - self.node.stx.range.start.line):
+            line = lines[line_idx]
+            if line_idx == end_pos.line - self.node.stx.range.start.line:
+                line = line[: end_pos.column]
+            result.append(line)
+        return "".join(result)
+
+    def theorem_for_sorry(self, sorry: Sorry) -> Self | None:
+        """
+        Get the theorem InfoTree for a given sorry, if found in this tree.
+        Args:
+            sorry: The sorry to search a theorem for
+        Returns:
+            The found InfoTree, if found, else None
+        """
+        found = None
+        for tree in self.theorems():
+            thm_range = tree.node.stx.range  # type: ignore
+            # Sorry inside
+            if sorry.start_pos is None or sorry.end_pos is None:
+                continue
+            if sorry.start_pos < thm_range.start or sorry.end_pos > thm_range.finish:
+                continue
+            assert found is None
+            found = tree
+        return found
+
+
 # Response
 
 
@@ -261,7 +495,7 @@ class CommandResponse(BaseREPLResponse):
 
     env: int
     tactics: list[Tactic] = Field(default_factory=list)
-    infotree: list | None = None
+    infotree: list[InfoTree] | None = None
 
 
 class ProofStepResponse(BaseREPLResponse):
