@@ -29,10 +29,16 @@ jobs:
         run: |
           python docs/update_changelog.py --release-tag "${{ github.event.release.tag_name }}"
 
+      - name: Fetch and switch to main branch
+        run: |
+          git fetch origin main
+          git checkout main
+          git pull origin main
+
       - name: Commit and push changelog
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add docs/changelog.md
-          git commit -m "Update changelog with ${{ github.event.release.tag_name }} release notes"
+          git commit -m "Update changelog with ${{ github.event.release.tag_name }} release notes" || echo "No changes to commit"
           git push origin main
