@@ -1,9 +1,11 @@
 import os
 import platform
+import shutil
 import tempfile
 import time
 import unittest
 import unittest.mock
+from pathlib import Path
 from queue import Queue
 from threading import Thread
 from typing import cast
@@ -850,6 +852,38 @@ lean_exe "dummy" where
             os.remove(temp_pickle.name)
         except (FileNotFoundError, PermissionError):
             pass
+
+    def test_separate_cache_dirs(self):
+        """Test that separate cache directories are working correctly."""
+        # Create temporary directories
+        repl_cache = Path(tempfile.mkdtemp(prefix="test_repl_cache"))
+        project_cache = Path(tempfile.mkdtemp(prefix="test_project_cache"))
+
+        try:
+            # Create config with separate cache directories
+            config = LeanREPLConfig(
+                repl_cache_dir=repl_cache, project_cache_dir=project_cache, lean_version="v4.18.0", verbose=True
+            )
+
+            self.assertEqual(config.repl_cache_dir, repl_cache)
+            self.assertEqual(config.project_cache_dir, project_cache)
+
+            # Test with a project
+            project_config = LeanREPLConfig(
+                repl_cache_dir=repl_cache,
+                project_cache_dir=project_cache,
+                project=TempRequireProject([]),
+                lean_version="v4.18.0",
+                verbose=True,
+            )
+
+            self.assertEqual(project_config.repl_cache_dir, repl_cache)
+            self.assertEqual(project_config.project_cache_dir, project_cache)
+
+        finally:
+            # Clean up
+            shutil.rmtree(repl_cache, ignore_errors=True)
+            shutil.rmtree(project_cache, ignore_errors=True)
 
 
 if __name__ == "__main__":

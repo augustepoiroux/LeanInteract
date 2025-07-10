@@ -257,7 +257,12 @@ class TestLeanREPLConfigIntegration(unittest.TestCase):
 
         project_git_url = f"file://{self.project_repo_dir}"
 
-        config = LeanREPLConfig(project=GitProject(url=project_git_url), cache_dir=self.cache_dir, verbose=True)
+        config = LeanREPLConfig(
+            project=GitProject(url=project_git_url),
+            repl_cache_dir=self.cache_dir,
+            project_cache_dir=self.cache_dir,
+            verbose=True,
+        )
 
         # Should have correctly inferred the version from the project's lean-toolchain
         self.assertEqual(config.lean_version, "v4.14.0")

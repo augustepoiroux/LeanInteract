@@ -23,7 +23,7 @@ def create_config_process(cache_dir: str | PathLike, lean_version: str = "v4.18.
     """Function that attempts to create a LeanREPLConfig instance."""
     try:
         # This should timeout if another process is already holding the lock
-        LeanREPLConfig(lean_version=lean_version, cache_dir=str(cache_dir), verbose=verbose)
+        LeanREPLConfig(lean_version=lean_version, repl_cache_dir=str(cache_dir), project_cache_dir=str(cache_dir), verbose=verbose)
         return True
     except Exception:
         return False
@@ -117,7 +117,7 @@ class TestFileLocks(unittest.TestCase):
             with self.assertRaises(Exception):
                 # Use a short timeout to avoid test hanging
                 with mock.patch("lean_interact.config.FileLock", return_value=FileLock(lock_file, timeout=0.1)):
-                    test_project._instantiate(cache_dir, "v4.18.0", verbose=False)
+                    test_project._instantiate(cache_dir, "v4.18.0", "lake", verbose=False)
 
 
 def _worker(idx, result_queue, config: LeanREPLConfig):
@@ -144,7 +144,7 @@ class TestAutoLeanServerConcurrency(unittest.TestCase):
         # Use a dedicated cache dir for concurrency tests
         cls.cache_dir = tempfile.mkdtemp(prefix="lean_concurrency_cache_")
         # Pre-instantiate config to avoid race in REPL setup
-        cls.config = LeanREPLConfig(cache_dir=cls.cache_dir, verbose=True)
+        cls.config = LeanREPLConfig(repl_cache_dir=cls.cache_dir, project_cache_dir=cls.cache_dir, verbose=True)
 
     @classmethod
     def tearDownClass(cls):

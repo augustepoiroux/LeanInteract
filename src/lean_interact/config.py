@@ -58,13 +58,15 @@ class BaseProject:
             # Run lake update if requested
             if update:
                 subprocess.run([str(lake_path), "update"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
-            
+
             # Try to get cache first (non-fatal if it fails)
             cache_result = subprocess.run(
                 [str(lake_path), "exe", "cache", "get"], cwd=project_dir, check=False, stdout=stdout, stderr=stderr
             )
             if cache_result.returncode != 0 and verbose:
-                logger.info("Getting 'error: unknown executable cache' is expected if the project doesn't depend on Mathlib")
+                logger.info(
+                    "Getting 'error: unknown executable cache' is expected if the project doesn't depend on Mathlib"
+                )
 
             # Build the project (this must succeed)
             subprocess.run([str(lake_path), "build"], cwd=project_dir, check=True, stdout=stdout, stderr=stderr)
@@ -380,7 +382,8 @@ class LeanREPLConfig:
         repl_rev: str = DEFAULT_REPL_VERSION,
         repl_git: str = DEFAULT_REPL_GIT_URL,
         force_pull_repl: bool = False,
-        cache_dir: str | PathLike = DEFAULT_CACHE_DIR,
+        repl_cache_dir: str | PathLike = DEFAULT_CACHE_DIR,
+        project_cache_dir: str | PathLike = DEFAULT_CACHE_DIR,
         local_repl_path: str | PathLike | None = None,
         build_repl: bool = True,
         lake_path: str | PathLike = "lake",
@@ -411,8 +414,11 @@ class LeanREPLConfig:
             force_pull_repl:
                 If True, always pull the latest changes from the REPL git repository before checking out the revision.
                 By default, it is `False` to limit hitting GitHub API rate limits.
-            cache_dir:
-                The directory where the Lean REPL and temporary Lean projects with dependencies will be cached.
+            repl_cache_dir:
+                The directory where the Lean REPL will be cached.
+                Default is inside the package directory.
+            project_cache_dir:
+                The directory where temporary Lean projects with dependencies will be cached.
                 Default is inside the package directory.
             local_repl_path:
                 A local path to the Lean REPL. This is useful if you want to use a local copy of the REPL.
@@ -439,7 +445,8 @@ class LeanREPLConfig:
         self.repl_git = repl_git
         self.repl_rev = repl_rev
         self.force_pull_repl = force_pull_repl
-        self.cache_dir = Path(cache_dir)
+        self.repl_cache_dir = Path(repl_cache_dir)
+        self.project_cache_dir = Path(project_cache_dir)
         self.local_repl_path = Path(local_repl_path) if local_repl_path else None
         self.build_repl = build_repl
         self.memory_hard_limit_mb = memory_hard_limit_mb
@@ -460,7 +467,7 @@ class LeanREPLConfig:
                 self.repo_name = Path(owner) / repo
             else:
                 self.repo_name = Path(self.repl_git.replace(".git", ""))
-            self.cache_clean_repl_dir = self.cache_dir / self.repo_name / "repl_clean_copy"
+            self.cache_clean_repl_dir = self.repl_cache_dir / self.repo_name / "repl_clean_copy"
 
         # Check if the specified lake executable is available
         if shutil.which(str(self.lake_path)) is None:
@@ -472,18 +479,23 @@ class LeanREPLConfig:
         # If the project is not temporary, we first set up the project to infer the Lean version.
         if isinstance(self.project, (LocalProject, GitProject)):
             self.project._instantiate(
-                cache_dir=self.cache_dir, lean_version=self.lean_version, lake_path=self.lake_path, verbose=self.verbose
+                cache_dir=self.project_cache_dir,
+                lean_version=self.lean_version,
+                lake_path=self.lake_path,
+                verbose=self.verbose,
             )
-            project_lean_version = get_project_lean_version(self.project._get_directory(self.cache_dir))
+            project_lean_version = get_project_lean_version(self.project._get_directory(self.project_cache_dir))
             assert project_lean_version is not None, (
-                f"Could not determine Lean version for project at {self.project._get_directory(self.cache_dir)}"
+                f"Could not determine Lean version for project at {self.project._get_directory(self.project_cache_dir)}"
             )
             if self.lean_version is not None:
                 assert project_lean_version == self.lean_version, (
                     f"Project Lean version `{project_lean_version}` does not match the requested Lean version `{self.lean_version}`."
                 )
             self.lean_version = project_lean_version
-            self._working_dir = self.project._get_directory(cache_dir=self.cache_dir, lean_version=self.lean_version)
+            self._working_dir = self.project._get_directory(
+                cache_dir=self.project_cache_dir, lean_version=self.lean_version
+            )
 
         self._setup_repl()
 
@@ -493,12 +505,14 @@ class LeanREPLConfig:
             self._working_dir = self._cache_repl_dir
         elif not isinstance(self.project, (LocalProject, GitProject)):
             self.project._instantiate(
-                cache_dir=self.cache_dir,
+                cache_dir=self.project_cache_dir,
                 lean_version=self.lean_version,
                 lake_path=self.lake_path,
                 verbose=self.verbose,
             )
-            self._working_dir = self.project._get_directory(cache_dir=self.cache_dir, lean_version=self.lean_version)
+            self._working_dir = self.project._get_directory(
+                cache_dir=self.project_cache_dir, lean_version=self.lean_version
+            )
 
     def _setup_repl(self) -> None:
         """Set up the REPL either from a local path or from a Git repository."""
@@ -685,7 +699,7 @@ class LeanREPLConfig:
     def _setup_version_specific_repl_dir(self, get_tag_name) -> None:
         """Set up the version-specific REPL directory."""
         # Set up the version-specific REPL directory
-        self._cache_repl_dir = self.cache_dir / self.repo_name / f"repl_{get_tag_name(self.lean_version)}"
+        self._cache_repl_dir = self.repl_cache_dir / self.repo_name / f"repl_{get_tag_name(self.lean_version)}"
 
         # Only update the version-specific REPL checkout if the revision changed since last time
         from git import Repo
