@@ -10,11 +10,11 @@ You can specify which version of Lean 4 you want to use:
 from lean_interact import LeanREPLConfig, LeanServer
 
 # Use a specific Lean version
-config = LeanREPLConfig(lean_version="v4.7.0")
+config = LeanREPLConfig(lean_version="v4.8.0")
 server = LeanServer(config)
 ```
 
-LeanInteract supports all Lean versions between `v4.7.0-rc1` and `v4.19.0`.
+LeanInteract supports all Lean versions between `v4.8.0-rc1` and `v4.19.0`.
 
 ## Working with Existing Projects
 
@@ -78,12 +78,12 @@ from lean_interact import LeanREPLConfig, TempRequireProject, LeanRequire
 
 # Create a temporary project with Mathlib as a dependency
 config = LeanREPLConfig(
-    lean_version="v4.7.0",
+    lean_version="v4.8.0",
     project=TempRequireProject([
         LeanRequire(
             name="mathlib",
             git="https://github.com/leanprover-community/mathlib4.git",
-            rev="v4.7.0"
+            rev="v4.8.0"
         )
     ])
 )
@@ -92,7 +92,7 @@ config = LeanREPLConfig(
 For the common case of requiring Mathlib, there's a shortcut:
 
 ```python
-config = LeanREPLConfig(lean_version="v4.7.0", project=TempRequireProject("mathlib"))
+config = LeanREPLConfig(lean_version="v4.8.0", project=TempRequireProject("mathlib"))
 ```
 
 ### Fine-Grained Temporary Projects

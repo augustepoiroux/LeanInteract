@@ -42,7 +42,7 @@ from lean_interact.utils import get_total_memory_usage
 
 class TestLeanServer(unittest.TestCase):
     maxDiff = None
-    oldestVersion = "v4.8.0-rc1" if platform.system() == "Windows" else "v4.7.0"
+    oldestVersion = "v4.8.0-rc1"
 
     @classmethod
     def setUpClass(cls):
@@ -587,13 +587,12 @@ lean_exe "dummy" where
         if platform.system() != "Linux":
             self.skipTest("This test is only relevant on Linux")
 
-        # Test this issue: https://github.com/leanprover-community/repl/issues/77
+        # Check that the following issue is now solved: https://github.com/leanprover-community/repl/issues/77
         server = AutoLeanServer(config=LeanREPLConfig(memory_hard_limit_mb=4096, verbose=True))
 
-        with self.assertRaises(ConnectionAbortedError):
-            for i in range(1000):
-                cmd = Command(cmd=f"theorem womp{i} (a{i} b c : Nat) : (a{i} + b) + c = c + a{i} + b := by sorry")
-                server.run(cmd)
+        for i in range(1000):
+            cmd = Command(cmd=f"theorem womp{i} (a{i} b c : Nat) : (a{i} + b) + c = c + a{i} + b := by sorry")
+            server.run(cmd)
 
     def test_run_lots_of_commands(self):
         # Test this issue: https://github.com/leanprover-community/repl/issues/77
