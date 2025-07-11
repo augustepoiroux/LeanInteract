@@ -870,13 +870,13 @@ lean_exe "dummy" where
     def test_separate_cache_dirs(self):
         """Test that projects manage their own cache directories independently."""
         # Create temporary directories
-        repl_cache = Path(tempfile.mkdtemp(prefix="test_repl_cache"))
-        project_cache = Path(tempfile.mkdtemp(prefix="test_project_cache"))
+        repl_cache = Path(tempfile.mkdtemp(prefix="test_repl_cache")).resolve()
+        project_cache = Path(tempfile.mkdtemp(prefix="test_project_cache")).resolve()
 
         try:
             # Create config with REPL cache directory
             config = LeanREPLConfig(cache_dir=repl_cache, lean_version="v4.18.0", verbose=True)
-            self.assertEqual(config.cache_dir, repl_cache)
+            self.assertEqual(config.cache_dir.resolve(), repl_cache)
 
             # Test with a project that has its own directory
             project_config = LeanREPLConfig(
@@ -886,9 +886,9 @@ lean_exe "dummy" where
             )
 
             # REPL still uses its own cache
-            self.assertEqual(project_config.cache_dir, repl_cache)
+            self.assertEqual(project_config.cache_dir.resolve(), repl_cache)
             # Project uses its specified directory
-            self.assertEqual(Path(project_config.working_dir), project_cache)
+            self.assertEqual(Path(project_config.working_dir).resolve(), project_cache)
 
         finally:
             # Clean up
