@@ -1,11 +1,4 @@
-from lean_interact.config import (
-    GitProject,
-    LeanREPLConfig,
-    LeanRequire,
-    LocalProject,
-    TemporaryProject,
-    TempRequireProject,
-)
+from lean_interact.config import LeanREPLConfig
 from lean_interact.interface import (
     Command,
     FileCommand,
@@ -14,6 +7,13 @@ from lean_interact.interface import (
     ProofStep,
     UnpickleEnvironment,
     UnpickleProofState,
+)
+from lean_interact.project import (
+    GitProject,
+    LeanRequire,
+    LocalProject,
+    TemporaryProject,
+    TempRequireProject,
 )
 from lean_interact.server import AutoLeanServer, LeanServer
 

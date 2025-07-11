@@ -12,14 +12,7 @@ from typing import cast
 
 import psutil
 
-from lean_interact.config import (
-    GitProject,
-    LeanREPLConfig,
-    LeanRequire,
-    LocalProject,
-    TemporaryProject,
-    TempRequireProject,
-)
+from lean_interact.config import LeanREPLConfig
 from lean_interact.interface import (
     Command,
     CommandResponse,
@@ -35,6 +28,13 @@ from lean_interact.interface import (
     UnpickleEnvironment,
     UnpickleProofState,
 )
+from lean_interact.project import (
+    GitProject,
+    LeanRequire,
+    LocalProject,
+    TemporaryProject,
+    TempRequireProject,
+)
 from lean_interact.server import DEFAULT_TIMEOUT, AutoLeanServer, LeanServer
 from lean_interact.sessioncache import PickleSessionCache, PickleSessionState
 from lean_interact.utils import get_total_memory_usage
@@ -48,6 +48,7 @@ class TestLeanServer(unittest.TestCase):
     def setUpClass(cls):
         # Pre-run configs for all available versions to get the cache
         lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
+        cls.mostRecentVersion = lean_versions[-1]
         for version in [cls.oldestVersion, "v4.14.0", lean_versions[-1]]:
             LeanREPLConfig(lean_version=version, verbose=True)
 
@@ -56,8 +57,8 @@ class TestLeanServer(unittest.TestCase):
             return
 
         # prepare Mathlib for the last version
-        LeanREPLConfig(lean_version=cls.oldestVersion, project=TempRequireProject("mathlib"), verbose=True)
-        LeanREPLConfig(lean_version=lean_versions[-1], project=TempRequireProject("mathlib"), verbose=True)
+        LeanREPLConfig(project=TempRequireProject(lean_version=cls.oldestVersion, require="mathlib"), verbose=True)
+        LeanREPLConfig(project=TempRequireProject(lean_version=lean_versions[-1], require="mathlib"), verbose=True)
 
     def test_init_with_lean_version(self):
         lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
@@ -89,16 +90,20 @@ class TestLeanServer(unittest.TestCase):
         require = [
             LeanRequire(name="mathlib", git="https://github.com/leanprover-community/mathlib4.git", rev=latest_version)
         ]
-        server = AutoLeanServer(LeanREPLConfig(project=TempRequireProject("mathlib"), verbose=True))
+        server = AutoLeanServer(
+            LeanREPLConfig(project=TempRequireProject(lean_version=latest_version, require="mathlib"), verbose=True)
+        )
         project = cast(TempRequireProject, server.config.project)
         self.assertEqual(server.lean_version, latest_version)
-        self.assertEqual(project._normalize_require(latest_version), require)
+        self.assertEqual(project._normalize_require(), require)
 
     def test_init_with_project_dir_fail(self):
         project_dir = os.path.join("tmp", "path", "to", "project")
         with self.assertRaises((FileNotFoundError, NotADirectoryError)):
             AutoLeanServer(
-                LeanREPLConfig(project=LocalProject(project_dir), lean_version=self.oldestVersion, verbose=True)
+                LeanREPLConfig(
+                    project=LocalProject(directory=project_dir), lean_version=self.oldestVersion, verbose=True
+                )
             )
 
     def test_init_with_project_dir(self):
@@ -106,15 +111,20 @@ class TestLeanServer(unittest.TestCase):
         if platform.system() == "Windows":
             self.skipTest("(Temporary) Skipping test on Windows due to long path issues in the CI")
 
-        base_config = LeanREPLConfig(project=TempRequireProject("mathlib"), verbose=True)
-        new_config = LeanREPLConfig(project=LocalProject(base_config._working_dir), verbose=True)
+        base_config = LeanREPLConfig(
+            project=TempRequireProject(lean_version=self.mostRecentVersion, require="mathlib"), verbose=True
+        )
+        new_config = LeanREPLConfig(project=LocalProject(directory=base_config.working_dir), verbose=True)
         server = AutoLeanServer(new_config)
         response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
         self.assertIsInstance(response, CommandResponse)
         # Re-use the existing build
         with unittest.mock.patch("subprocess.run") as run_mock:
-            new_config = LeanREPLConfig(project=LocalProject(base_config._working_dir, build=False), verbose=True)
-            run_mock.assert_called_once()  # it should be called only once (to build the REPL, but not the local project)
+            new_config = LeanREPLConfig(
+                project=LocalProject(directory=base_config.working_dir, auto_build=False), verbose=True
+            )
+            # it should be called only by the REPL (once to check Lake, once to build the REPL)
+            self.assertEqual(run_mock.call_count, 2)
             server = AutoLeanServer(new_config)
             response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
             self.assertIsInstance(response, CommandResponse)
@@ -155,8 +165,8 @@ package "dummy" where
 lean_exe "dummy" where
   root := `Main
 """
-        project = TemporaryProject(temp_content)
-        config = LeanREPLConfig(lean_version="v4.14.0", project=project, verbose=True)
+        project = TemporaryProject(content=temp_content, lean_version="v4.14.0")
+        config = LeanREPLConfig(project=project, verbose=True)
         server = AutoLeanServer(config=config)
         response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
         self.assertEqual(
@@ -176,7 +186,7 @@ lean_exe "dummy" where
             self.skipTest("(Temporary) Skipping test on Windows due to long path issues in the CI")
 
         git_url = "https://github.com/yangky11/lean4-example"
-        config = LeanREPLConfig(project=GitProject(git_url), verbose=True)
+        config = LeanREPLConfig(project=GitProject(url=git_url), verbose=True)
         server = AutoLeanServer(config=config)
         response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
         assert config.lean_version is not None, "Error: Lean version could not be determined from the project"
@@ -319,7 +329,11 @@ lean_exe "dummy" where
         if platform.system() == "Windows":
             self.skipTest("(Temporary) Skipping test on Windows due to long path issues in the CI")
 
-        server = AutoLeanServer(config=LeanREPLConfig(project=TempRequireProject("mathlib"), verbose=True))
+        server = AutoLeanServer(
+            config=LeanREPLConfig(
+                project=TempRequireProject(lean_version=self.mostRecentVersion, require="mathlib"), verbose=True
+            )
+        )
         result = server.run(Command(cmd="import Mathlib"), add_to_session_cache=True, verbose=True)
         self.assertEqual(result, CommandResponse(env=-1))
         result = server.run(
@@ -479,7 +493,7 @@ lean_exe "dummy" where
         if platform.system() == "Windows":
             self.skipTest("(Temporary) Skipping test on Windows due to long path issues in the CI")
 
-        config = LeanREPLConfig(project=TempRequireProject("mathlib"))
+        config = LeanREPLConfig(project=TempRequireProject(lean_version=self.mostRecentVersion, require="mathlib"))
         server = AutoLeanServer(config)
 
         response = server.run(
@@ -854,31 +868,27 @@ lean_exe "dummy" where
             pass
 
     def test_separate_cache_dirs(self):
-        """Test that separate cache directories are working correctly."""
+        """Test that projects manage their own cache directories independently."""
         # Create temporary directories
-        repl_cache = Path(tempfile.mkdtemp(prefix="test_repl_cache"))
-        project_cache = Path(tempfile.mkdtemp(prefix="test_project_cache"))
+        repl_cache = Path(tempfile.mkdtemp(prefix="test_repl_cache")).resolve()
+        project_cache = Path(tempfile.mkdtemp(prefix="test_project_cache")).resolve()
 
         try:
-            # Create config with separate cache directories
-            config = LeanREPLConfig(
-                repl_cache_dir=repl_cache, project_cache_dir=project_cache, lean_version="v4.18.0", verbose=True
-            )
+            # Create config with REPL cache directory
+            config = LeanREPLConfig(cache_dir=repl_cache, lean_version="v4.18.0", verbose=True)
+            self.assertEqual(config.cache_dir.resolve(), repl_cache)
 
-            self.assertEqual(config.repl_cache_dir, repl_cache)
-            self.assertEqual(config.project_cache_dir, project_cache)
-
-            # Test with a project
+            # Test with a project that has its own directory
             project_config = LeanREPLConfig(
-                repl_cache_dir=repl_cache,
-                project_cache_dir=project_cache,
-                project=TempRequireProject([]),
-                lean_version="v4.18.0",
+                cache_dir=repl_cache,
+                project=TempRequireProject(require=[], lean_version="v4.18.0", directory=project_cache),
                 verbose=True,
             )
 
-            self.assertEqual(project_config.repl_cache_dir, repl_cache)
-            self.assertEqual(project_config.project_cache_dir, project_cache)
+            # REPL still uses its own cache
+            self.assertEqual(project_config.cache_dir.resolve(), repl_cache)
+            # Project uses its specified directory
+            self.assertEqual(Path(project_config.working_dir).resolve(), project_cache)
 
         finally:
             # Clean up

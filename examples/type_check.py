@@ -20,8 +20,8 @@ from rich.console import Console
 from tqdm import tqdm
 
 from lean_interact import AutoLeanServer, LeanREPLConfig
-from lean_interact.config import TempRequireProject
 from lean_interact.interface import Command, CommandResponse
+from lean_interact.project import TempRequireProject
 
 console = Console()
 DEFAULT_TIMEOUT = 60
@@ -102,7 +102,7 @@ def type_check_sequential_optimized(dataset: list[dict[str, Any]], repl_config: 
 
 if __name__ == "__main__":
     proofnetsharp = load_dataset("PAug/ProofNetSharp", split="valid")
-    config = LeanREPLConfig(lean_version="v4.16.0-rc2", project=TempRequireProject("mathlib"), verbose=True)
+    config = LeanREPLConfig(project=TempRequireProject(lean_version="v4.16.0-rc2", require="mathlib"), verbose=True)
 
     # type_check_results = type_check_sequential(proofnetsharp, config)
     type_check_results = type_check_sequential_optimized(proofnetsharp, config)

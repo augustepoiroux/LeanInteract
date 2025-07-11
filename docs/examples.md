@@ -34,7 +34,7 @@ This example shows how to use Mathlib to work with more advanced mathematical co
 from lean_interact import LeanREPLConfig, LeanServer, Command, TempRequireProject
 
 # Create configuration with Mathlib
-config = LeanREPLConfig(project=TempRequireProject("mathlib"))
+config = LeanREPLConfig(project=TempRequireProject(lean_version="v4.19.0", require="mathlib"))
 server = LeanServer(config)
 
 # Define a theorem using Mathlib's real numbers

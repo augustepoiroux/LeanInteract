@@ -226,13 +226,17 @@ config = LeanREPLConfig(lean_version="v4.7.0")
 #### Existing Lean projects
 
 ```python
-config = LeanREPLConfig(project=LocalProject("path/to/your/project"))
+# Local project
+project = LocalProject(directory="path/to/your/project")
+config = LeanREPLConfig(project=project)
 ```
 
 or
 
 ```python
-config = LeanREPLConfig(project=GitProject("https://github.com/yangky11/lean4-example"))
+# Git project
+project = GitProject(url="https://github.com/yangky11/lean4-example", rev="main")
+config = LeanREPLConfig(project=project)
 ```
 
 You can then use `run` as usual:
@@ -250,19 +254,24 @@ server.run(FileCommand(path="file.lean"))
 #### Temporary project with dependencies
 
 ```python
-from lean_interact import TempRequireProject
+from lean_interact import TempRequireProject, LeanRequire
 
-config = LeanREPLConfig(lean_version="v4.7.0", project=TempRequireProject([LeanRequire(
-    name="mathlib",
-    git="https://github.com/leanprover-community/mathlib4.git",
-    rev="v4.7.0"
-)]))
+project = TempRequireProject(
+    lean_version="v4.8.0", 
+    require=[LeanRequire(
+        name="mathlib",
+        git="https://github.com/leanprover-community/mathlib4.git",
+        rev="v4.8.0"
+    )]
+)
+config = LeanREPLConfig(project=project)
 ```
 
 Mathlib being a frequent requirement, a shortcut is available:
 
 ```python
-config = LeanREPLConfig(lean_version="v4.7.0", project=TempRequireProject("mathlib"))
+project = TempRequireProject(lean_version="v4.8.0", require="mathlib")
+config = LeanREPLConfig(project=project)
 ```
 
 You can then use Mathlib as follows:
@@ -309,7 +318,9 @@ For more control over the temporary project, you can use `TemporaryProject` to s
 ```python
 from lean_interact import TemporaryProject
 
-config = LeanREPLConfig(lean_version="v4.18.0", project=TemporaryProject("""
+project = TemporaryProject(
+    lean_version="v4.18.0", 
+    content="""
 import Lake
 open Lake DSL
 
@@ -322,7 +333,9 @@ lean_exe "dummy" where
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "v4.18.0"
-"""))
+"""
+)
+config = LeanREPLConfig(project=project)
 ```
 
 ## Available Queries

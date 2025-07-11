@@ -4,7 +4,7 @@ LeanInteract provides flexible ways to configure the Lean environment to suit di
 
 ## Specifying Lean Versions
 
-You can specify which version of Lean 4 you want to use:
+You can specify which version of Lean 4 you want to use when no project is specified:
 
 ```python
 from lean_interact import LeanREPLConfig, LeanServer
@@ -14,36 +14,57 @@ config = LeanREPLConfig(lean_version="v4.7.0")
 server = LeanServer(config)
 ```
 
-LeanInteract supports all Lean versions between `v4.7.0-rc1` and `v4.19.0`.
+!!! note
+    When using a project through the `project` attribute, the Lean version is automatically inferred from the project. You cannot specify both `lean_version` and `project` parameters.
 
 ## Working with Existing Projects
 
 ### Local Lean Projects
 
-To work with a local Lean project:
+To work with a local Lean project, create a `LocalProject` instance:
 
 ```python
 from lean_interact import LeanREPLConfig, LocalProject, LeanServer
 
 # Configure with a local project
-config = LeanREPLConfig(project=LocalProject("path/to/your/project"))
+project = LocalProject(
+    directory="path/to/your/project",
+    auto_build=True  # Automatically build the project (default is True)
+)
+config = LeanREPLConfig(project=project)
 server = LeanServer(config)
 ```
 
 !!! important
     Ensure the project can be successfully built with `lake build` before using it with LeanInteract.
 
+!!! tip
+    Setting `auto_build=False` will skip building the project, which can be useful if you've already built it.
+
 ### Git-Based Projects
 
-You can also work with projects hosted on Git:
+You can work with projects hosted on Git repositories:
 
 ```python
 from lean_interact import LeanREPLConfig, GitProject, LeanServer
 
 # Configure with a Git-hosted project
-config = LeanREPLConfig(project=GitProject("https://github.com/yangky11/lean4-example"))
+project = GitProject(
+    url="https://github.com/yangky11/lean4-example",
+    rev="main",  # Optional: specific branch, tag, or commit
+    directory="/custom/cache/path",  # Optional: custom directory where the project will be cloned
+    force_pull=False  # Optional: force update from remote. Useful in case you already have the project cloned.
+)
+config = LeanREPLConfig(project=project)
 server = LeanServer(config)
 ```
+
+The `GitProject` will automatically:
+
+- Clone the repository if it doesn't exist
+- Update to the specified revision
+- Build the project using Lake
+- Handle submodules if present
 
 ### Using a Local REPL Installation
 
@@ -77,22 +98,24 @@ To create a temporary project with dependencies:
 from lean_interact import LeanREPLConfig, TempRequireProject, LeanRequire
 
 # Create a temporary project with Mathlib as a dependency
-config = LeanREPLConfig(
+project = TempRequireProject(
     lean_version="v4.7.0",
-    project=TempRequireProject([
+    require=[
         LeanRequire(
             name="mathlib",
             git="https://github.com/leanprover-community/mathlib4.git",
             rev="v4.7.0"
         )
-    ])
+    ]
 )
+config = LeanREPLConfig(project=project)
 ```
 
 For the common case of requiring Mathlib, there's a shortcut:
 
 ```python
-config = LeanREPLConfig(lean_version="v4.7.0", project=TempRequireProject("mathlib"))
+project = TempRequireProject(lean_version="v4.8.0", require="mathlib")
+config = LeanREPLConfig(project=project)
 ```
 
 ### Fine-Grained Temporary Projects
@@ -102,10 +125,9 @@ For more control over the temporary project, you can specify the complete lakefi
 ```python
 from lean_interact import LeanREPLConfig, TemporaryProject
 
-# Using lakefile.lean (default)
-config = LeanREPLConfig(
+project = TemporaryProject(
     lean_version="v4.18.0",
-    project=TemporaryProject("""
+    content="""
 import Lake
 open Lake DSL
 
@@ -118,8 +140,10 @@ lean_exe "dummy" where
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "v4.18.0"
-""")
+""",
+    lakefile_type="lean"  # or "toml"
 )
+config = LeanREPLConfig(project=project)
 ```
 
 This approach gives you full control over the Lake configuration.
@@ -148,8 +172,10 @@ When you specify a `repl_rev`, LeanInteract will try to:
 
 This approach allows for better matching between REPL versions and Lean versions, ensuring compatibility.
 
+- Always check `config.is_setup()` before creating servers
 !!! warning
     Custom/older REPL implementations may have interfaces that are incompatible with LeanInteract's standard commands. If you encounter issues, consider using the `run_dict` method from `LeanServer` to communicate directly with the REPL:
+
     ```python
     # Using run_dict instead of the standard commands
     result = server.run_dict({"cmd": "your_command_here"})
@@ -160,7 +186,5 @@ This approach allows for better matching between REPL versions and Lean versions
 
 ## Best Practices
 
-- Check the Lean version your project is compatible with and use that version in your configuration
-- Initialize `LeanREPLConfig` before starting parallel processes to avoid conflicts, and then copy it in the child processes when instantiating `LeanServer`
-- When working with custom Lean or Lake installations, specify the paths explicitly for reproducibility
-- Use compatible REPL and Lean versions to avoid unexpected behavior
+- **Custom Directories**: Use the `directory` parameter to control where projects are cached
+- **Build Control**: Use `auto_build=False` to skip building if you've already built a project

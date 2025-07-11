@@ -276,7 +276,7 @@ def run_proof_generation_pipeline(
 
     # 5. Check proofs
     console.print(f"[bold]Checking proofs using Lean {lean_version}[/bold]")
-    repl_config = LeanREPLConfig(lean_version=lean_version, project=TempRequireProject("mathlib"))
+    repl_config = LeanREPLConfig(project=TempRequireProject(lean_version=lean_version, require="mathlib"))
     proof_results = check_proofs(context_proofs_list, repl_config, verbose=verbose)
 
     # 6. Prepare results
