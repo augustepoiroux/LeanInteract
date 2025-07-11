@@ -59,6 +59,16 @@ def clear_cache():
     shutil.rmtree(DEFAULT_CACHE_DIR, ignore_errors=True)
 
 
+def parse_lean_version(lean_version: str) -> str:
+    """
+    Parse the Lean version from a string.
+    """
+    lean_version = lean_version.removeprefix("leanprover/lean4:")
+    if not lean_version.startswith("v4"):
+        raise ValueError("Unable to parse Lean version format!")
+    return lean_version
+
+
 def get_project_lean_version(project_dir: str | PathLike) -> str | None:
     """
     Get the Lean version used in a project.
@@ -68,12 +78,26 @@ def get_project_lean_version(project_dir: str | PathLike) -> str | None:
     if toolchain_file.is_file():
         with open(toolchain_file, "r", encoding="utf-8") as f:
             content = f.read().strip()
-            if content:
-                try:
-                    return content.split(":")[-1]
-                except Exception:
-                    pass
+            try:
+                return parse_lean_version(content)
+            except ValueError:
+                return None
     return None
+
+
+def check_lake(lake_path: str | PathLike) -> None:
+    """
+    Check if the lake executable is available and can be executed.
+    """
+    lake_path = Path(lake_path)
+
+    try:
+        subprocess.run([str(lake_path), "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        raise RuntimeError(
+            f"Lean 4 build system (`{lake_path}`) is not installed or not found in PATH. "
+            "You can try to run `install-lean` or find installation instructions here: https://leanprover-community.github.io/get_started.html"
+        )
 
 
 def check_windows_long_paths():
@@ -372,7 +396,7 @@ def clean_last_theorem_string(lean_code: str, new_theorem_name: str = "dummy", a
 class _GitUtilities:
     """Utility class that wraps a git repository with improved error handling."""
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: str | PathLike):
         """
         Initialize with a path to a git repository.
 

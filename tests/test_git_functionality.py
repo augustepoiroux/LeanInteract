@@ -70,9 +70,7 @@ class TestGitProject(unittest.TestCase):
         git_url = f"file://{self.repo_dir}"
         git_project = GitProject(url=git_url)
 
-        git_project._instantiate(cache_dir=self.cache_dir, lean_version="v4.14.0", lake_path="lake", verbose=True)
-
-        project_dir = git_project._get_directory(self.cache_dir)
+        project_dir = Path(git_project.get_directory())
         self.assertTrue(project_dir.exists())
         self.assertTrue((project_dir / "lean-toolchain").exists())
         self.assertTrue((project_dir / "Test.lean").exists())
@@ -82,9 +80,7 @@ class TestGitProject(unittest.TestCase):
         git_url = f"file://{self.repo_dir}"
         git_project = GitProject(url=git_url, rev="v1.0.0")
 
-        git_project._instantiate(cache_dir=self.cache_dir, lean_version="v4.14.0", lake_path="lake", verbose=True)
-
-        project_dir = git_project._get_directory(self.cache_dir)
+        project_dir = git_project.get_directory()
         # Verify we're on the correct revision
         repo = git.Repo(project_dir)
         self.assertEqual(repo.head.commit, repo.tags["v1.0.0"].commit)
@@ -94,9 +90,7 @@ class TestGitProject(unittest.TestCase):
         git_url = f"file://{self.repo_dir}"
         git_project = GitProject(url=git_url, rev="feature/new-def")
 
-        git_project._instantiate(cache_dir=self.cache_dir, lean_version="v4.14.0", lake_path="lake", verbose=True)
-
-        project_dir = git_project._get_directory(self.cache_dir)
+        project_dir = Path(git_project.get_directory())
         # Verify we have the greet function from the feature branch
         test_content = (project_dir / "Test.lean").read_text()
         self.assertIn("greet", test_content)
@@ -106,10 +100,7 @@ class TestGitProject(unittest.TestCase):
         git_url = f"file://{self.repo_dir}"
         git_project = GitProject(url=git_url, force_pull=True)
 
-        # First instantiation
-        git_project._instantiate(cache_dir=self.cache_dir, lean_version="v4.14.0", lake_path="lake", verbose=True)
-
-        project_dir = git_project._get_directory(self.cache_dir)
+        project_dir = Path(git_project.get_directory())
 
         # Make changes to the original repo
         (self.repo_dir / "NewFile.lean").write_text("-- New file\ndef newFunction : Nat := 42\n")
@@ -117,9 +108,6 @@ class TestGitProject(unittest.TestCase):
         self.repo.index.commit("Add new file")
 
         self.assertFalse((project_dir / "NewFile.lean").exists())
-
-        # Second instantiation with force_pull should get the new changes
-        git_project._instantiate(cache_dir=self.cache_dir, lean_version="v4.14.0", lake_path="lake", verbose=True)
 
         # Should have the new file after force pull
         self.assertTrue((project_dir / "NewFile.lean").exists())
@@ -129,10 +117,7 @@ class TestGitProject(unittest.TestCase):
         git_url = f"file://{self.repo_dir}"
         git_project = GitProject(url=git_url)
 
-        # First instantiation
-        git_project._instantiate(cache_dir=self.cache_dir, lean_version="v4.14.0", lake_path="lake", verbose=True)
-
-        project_dir = git_project._get_directory(self.cache_dir)
+        project_dir = Path(git_project.get_directory())
         initial_commit = git.Repo(project_dir).head.commit.hexsha
 
         # Make changes to original repo
@@ -143,7 +128,7 @@ class TestGitProject(unittest.TestCase):
         self.assertFalse((project_dir / "Update.lean").exists())
 
         # Second instantiation should update
-        git_project._instantiate(cache_dir=self.cache_dir, lean_version="v4.14.0", lake_path="lake", verbose=True)
+        git_project = GitProject(url=git_url)
 
         # Should have pulled the update
         final_commit = git.Repo(project_dir).head.commit.hexsha
@@ -259,8 +244,7 @@ class TestLeanREPLConfigIntegration(unittest.TestCase):
 
         config = LeanREPLConfig(
             project=GitProject(url=project_git_url),
-            repl_cache_dir=self.cache_dir,
-            project_cache_dir=self.cache_dir,
+            cache_dir=self.cache_dir,
             verbose=True,
         )
 
@@ -268,9 +252,9 @@ class TestLeanREPLConfigIntegration(unittest.TestCase):
         self.assertEqual(config.lean_version, "v4.14.0")
 
         # Should have cloned and set up the project directory
-        self.assertTrue(config._working_dir.exists())
-        self.assertTrue((config._working_dir / "Test.lean").exists())
-        self.assertTrue((config._working_dir / "lean-toolchain").exists())
+        self.assertTrue(Path(config.working_dir).exists())
+        self.assertTrue((Path(config.working_dir) / "Test.lean").exists())
+        self.assertTrue((Path(config.working_dir) / "lean-toolchain").exists())
 
 
 if __name__ == "__main__":

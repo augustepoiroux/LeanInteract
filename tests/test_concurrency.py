@@ -1,12 +1,12 @@
 import asyncio
 import multiprocessing as mp
 import os
-from os import PathLike
 import shutil
 import tempfile
 import threading
 import time
 import unittest
+from os import PathLike
 from unittest import mock
 
 from filelock import FileLock, Timeout
@@ -23,7 +23,7 @@ def create_config_process(cache_dir: str | PathLike, lean_version: str = "v4.18.
     """Function that attempts to create a LeanREPLConfig instance."""
     try:
         # This should timeout if another process is already holding the lock
-        LeanREPLConfig(lean_version=lean_version, repl_cache_dir=str(cache_dir), project_cache_dir=str(cache_dir), verbose=verbose)
+        LeanREPLConfig(lean_version=lean_version, cache_dir=str(cache_dir), verbose=verbose)
         return True
     except Exception:
         return False
@@ -95,20 +95,20 @@ class TestFileLocks(unittest.TestCase):
 
         # Create a temp project instance with a simple hash
         class SimpleTestProject(BaseTempProject):
-            def _get_hash_content(self, lean_version: str) -> str:
+            def _get_hash_content(self) -> str:
                 """Return a fixed hash."""
                 return "test_hash"
 
-            def _modify_lakefile(self, project_dir: str | PathLike, lean_version: str) -> None:
+            def _modify_lakefile(self) -> None:
                 """Do nothing."""
                 pass
 
-        test_project = SimpleTestProject()
+        test_project = SimpleTestProject(lean_version="v4.18.0")
 
         # Get the project directory and lock path
         cache_dir = os.path.join(self.temp_dir, "cache")
         os.makedirs(cache_dir, exist_ok=True)
-        project_dir = test_project._get_directory(str(cache_dir), "v4.18.0")
+        project_dir = test_project.get_directory()
         lock_file = f"{project_dir}.lock"
 
         # Hold the lock to simulate another process using it
@@ -117,7 +117,7 @@ class TestFileLocks(unittest.TestCase):
             with self.assertRaises(Exception):
                 # Use a short timeout to avoid test hanging
                 with mock.patch("lean_interact.config.FileLock", return_value=FileLock(lock_file, timeout=0.1)):
-                    test_project._instantiate(cache_dir, "v4.18.0", "lake", verbose=False)
+                    SimpleTestProject(lean_version="v4.18.0")
 
 
 def _worker(idx, result_queue, config: LeanREPLConfig):
@@ -144,7 +144,7 @@ class TestAutoLeanServerConcurrency(unittest.TestCase):
         # Use a dedicated cache dir for concurrency tests
         cls.cache_dir = tempfile.mkdtemp(prefix="lean_concurrency_cache_")
         # Pre-instantiate config to avoid race in REPL setup
-        cls.config = LeanREPLConfig(repl_cache_dir=cls.cache_dir, project_cache_dir=cls.cache_dir, verbose=True)
+        cls.config = LeanREPLConfig(cache_dir=cls.cache_dir, verbose=True)
 
     @classmethod
     def tearDownClass(cls):
