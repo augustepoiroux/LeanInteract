@@ -417,8 +417,7 @@ class LeanREPLConfig:
     def working_dir(self) -> str:
         """Get the working directory, where the commands are executed."""
         if self.project is not None:
-            assert self.project.directory is not None, "unexpected `None` project directory"
-            return str(self.project.directory)
+            return str(self.project.get_directory())
         return str(self._cache_repl_dir)
 
     def is_setup(self) -> bool:

@@ -33,20 +33,18 @@ class BaseProject:
         if self.auto_build:
             self.build()
 
-    def get_lean_version(self) -> str:
-        """The Lean version used by this project."""
-        if self.directory is None:
-            raise ValueError("`directory` must be set to determine the Lean version")
-        version = get_project_lean_version(Path(self.directory))
-        if version is None:
-            raise ValueError("Unable to determine Lean version")
-        return version
-
     def get_directory(self) -> str:
         """Get the directory of the Lean project."""
         if self.directory is None:
             raise ValueError("`directory` must be set")
         return str(Path(self.directory).resolve())
+
+    def get_lean_version(self) -> str:
+        """The Lean version used by this project."""
+        version = get_project_lean_version(Path(self.get_directory()))
+        if version is None:
+            raise ValueError("Unable to determine Lean version")
+        return version
 
     def build(self, verbose: bool = True, update: bool = False, _lock: bool = True) -> None:
         """Build the Lean project using lake.
@@ -55,9 +53,7 @@ class BaseProject:
             update: Whether to run `lake update` before building.
             _lock: (internal parameter) Whether to acquire a file lock (should be False if already locked by caller).
         """
-        if self.directory is None:
-            raise ValueError("`directory` must be set")
-        directory = Path(self.directory).resolve()
+        directory = Path(self.get_directory())
         check_lake(self.lake_path)
 
         def _do_build():
@@ -67,13 +63,13 @@ class BaseProject:
                 # Run lake update if requested
                 if update:
                     subprocess.run(
-                        [str(self.lake_path), "update"], cwd=self.directory, check=True, stdout=stdout, stderr=stderr
+                        [str(self.lake_path), "update"], cwd=directory, check=True, stdout=stdout, stderr=stderr
                     )
 
                 # Try to get cache first (non-fatal if it fails)
                 cache_result = subprocess.run(
                     [str(self.lake_path), "exe", "cache", "get"],
-                    cwd=self.directory,
+                    cwd=directory,
                     check=False,
                     stdout=stdout,
                     stderr=stderr,
@@ -84,10 +80,8 @@ class BaseProject:
                     )
 
                 # Build the project (this must succeed)
-                subprocess.run(
-                    [str(self.lake_path), "build"], cwd=self.directory, check=True, stdout=stdout, stderr=stderr
-                )
-                logger.debug("Successfully built project at %s", self.directory)
+                subprocess.run([str(self.lake_path), "build"], cwd=directory, check=True, stdout=stdout, stderr=stderr)
+                logger.debug("Successfully built project at %s", directory)
 
             except subprocess.CalledProcessError as e:
                 logger.error("Failed to build the project: %s", e)
@@ -145,9 +139,8 @@ class GitProject(BaseProject):
                 object.__setattr__(
                     self, "directory", DEFAULT_CACHE_DIR / "git_projects" / repo_name / (self.rev or "latest")
                 )
-            assert self.directory is not None
 
-        directory = Path(self.directory).resolve()
+        directory = Path(self.get_directory())
         with FileLock(f"{directory}.lock"):
             try:
                 if directory.exists():
@@ -161,8 +154,7 @@ class GitProject(BaseProject):
 
     def _update_existing_repo(self) -> None:
         """Update an existing git repository."""
-        assert self.directory is not None
-        git_utils = _GitUtilities(self.directory)
+        git_utils = _GitUtilities(self.get_directory())
 
         # Strategy: Only make network calls when absolutely necessary to avoid rate limiting
         network_calls_made = False
@@ -228,14 +220,13 @@ class GitProject(BaseProject):
 
     def _clone_new_repo(self) -> None:
         """Clone a new git repository."""
-        assert self.directory is not None
         from git import Repo
 
         try:
-            Repo.clone_from(self.url, self.directory)
+            Repo.clone_from(self.url, self.get_directory())
             logger.debug("Successfully cloned repository from %s", self.url)
 
-            git_utils = _GitUtilities(self.directory)
+            git_utils = _GitUtilities(self.get_directory())
 
             # Checkout specific revision if provided
             if self.rev:
@@ -273,7 +264,7 @@ class BaseTempProject(BaseProject):
             tmp_project_dir = directory / "tmp_projects" / self.lean_version / hash_content
             tmp_project_dir.mkdir(parents=True, exist_ok=True)
             object.__setattr__(self, "directory", tmp_project_dir)
-        directory = Path(self.directory).resolve()  # type: ignore
+        directory = Path(self.get_directory())
 
         stdout = None if self.verbose else subprocess.DEVNULL
         stderr = None if self.verbose else subprocess.DEVNULL
@@ -336,8 +327,7 @@ class TemporaryProject(BaseTempProject):
 
     def _modify_lakefile(self) -> None:
         """Write the content to the lakefile."""
-        assert self.directory is not None
-        project_dir = Path(self.directory)
+        project_dir = Path(self.get_directory())
         filename = "lakefile.lean" if self.lakefile_type == "lean" else "lakefile.toml"
         with (project_dir / filename).open("w", encoding="utf-8") as f:
             f.write(self.content)
@@ -405,8 +395,7 @@ class TempRequireProject(BaseTempProject):
 
     def _modify_lakefile(self) -> None:
         """Add requirements to the lakefile."""
-        assert self.directory is not None
-        project_dir = Path(self.directory)
+        project_dir = Path(self.get_directory())
         require = self._normalize_require()
         with (project_dir / "lakefile.lean").open("a", encoding="utf-8") as f:
             for req in require:
