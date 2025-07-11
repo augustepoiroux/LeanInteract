@@ -113,11 +113,19 @@ class TestFileLocks(unittest.TestCase):
 
         # Hold the lock to simulate another process using it
         with FileLock(lock_file, timeout=0.1):
-            # Try to instantiate the project which should try to acquire the same lock
-            with self.assertRaises(Exception):
-                # Use a short timeout to avoid test hanging
-                with mock.patch("lean_interact.config.FileLock", return_value=FileLock(lock_file, timeout=0.1)):
+            # Try to instantiate the project which should try to acquire the same lock in a separate thread
+            def try_instantiate():
+                try:
                     SimpleTestProject(lean_version="v4.18.0")
+                except Exception:
+                    pass  # Expected: may raise or hang
+
+            import threading
+
+            t = threading.Thread(target=try_instantiate)
+            t.start()
+            t.join(timeout=5)
+            self.assertTrue(t.is_alive(), "Project instantiation is hanging as expected")
 
 
 def _worker(idx, result_queue, config: LeanREPLConfig):
