@@ -124,8 +124,7 @@ LeanInteract returns error messages while the Lean code runs fine in VSCode.
 
     ```python
     config = LeanREPLConfig(
-        lean_version="v4.19.0", 
-        project=TempRequireProject("mathlib")
+        project=TempRequireProject(lean_version="v4.19.0", require="mathlib")
     )
     ```
 
