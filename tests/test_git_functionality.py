@@ -98,7 +98,7 @@ class TestGitProject(unittest.TestCase):
     def test_git_project_force_pull(self):
         """Test GitProject with force_pull enabled."""
         git_url = f"file://{self.repo_dir}"
-        git_project = GitProject(url=git_url, force_pull=True)
+        git_project = GitProject(url=git_url)
 
         project_dir = Path(git_project.get_directory())
 
@@ -108,6 +108,8 @@ class TestGitProject(unittest.TestCase):
         self.repo.index.commit("Add new file")
 
         self.assertFalse((project_dir / "NewFile.lean").exists())
+
+        git_project = GitProject(url=git_url, force_pull=True)
 
         # Should have the new file after force pull
         self.assertTrue((project_dir / "NewFile.lean").exists())

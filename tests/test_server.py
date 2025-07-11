@@ -123,7 +123,8 @@ class TestLeanServer(unittest.TestCase):
             new_config = LeanREPLConfig(
                 project=LocalProject(directory=base_config.working_dir, auto_build=False), verbose=True
             )
-            run_mock.assert_called_once()  # it should be called only once (to build the REPL, but not the local project)
+            # it should be called only by the REPL (once to check Lake, once to build the REPL)
+            self.assertEqual(run_mock.call_count, 2)
             server = AutoLeanServer(new_config)
             response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
             self.assertIsInstance(response, CommandResponse)
@@ -887,7 +888,7 @@ lean_exe "dummy" where
             # REPL still uses its own cache
             self.assertEqual(project_config.cache_dir, repl_cache)
             # Project uses its specified directory
-            self.assertEqual(Path(project_config.working_dir).parent, project_cache)
+            self.assertEqual(Path(project_config.working_dir), project_cache)
 
         finally:
             # Clean up

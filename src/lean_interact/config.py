@@ -52,17 +52,19 @@ class BaseProject:
             raise ValueError("`directory` must be set")
         return str(Path(self.directory).resolve())
 
-    def build(self, verbose: bool = True, update: bool = False) -> None:
+    def build(self, verbose: bool = True, update: bool = False, _lock: bool = True) -> None:
         """Build the Lean project using lake.
         Args:
             verbose: Whether to print building information to the console.
             update: Whether to run `lake update` before building.
+            _lock: (internal parameter) Whether to acquire a file lock (should be False if already locked by caller).
         """
         if self.directory is None:
             raise ValueError("`directory` must be set")
         directory = Path(self.directory).resolve()
         check_lake(self.lake_path)
-        with FileLock(f"{directory}.lock"):
+
+        def _do_build():
             stdout = None if verbose else subprocess.DEVNULL
             stderr = None if verbose else subprocess.DEVNULL
             try:
@@ -94,6 +96,12 @@ class BaseProject:
             except subprocess.CalledProcessError as e:
                 logger.error("Failed to build the project: %s", e)
                 raise
+
+        if _lock:
+            with FileLock(f"{directory}.lock"):
+                _do_build()
+        else:
+            _do_build()
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -150,7 +158,7 @@ class GitProject(BaseProject):
                     self._update_existing_repo()
                 else:
                     self._clone_new_repo()
-                self.build()
+                self.build(_lock=False)
             except Exception as e:
                 logger.error("Failed to instantiate git project at %s: %s", directory, e)
                 raise
@@ -300,7 +308,7 @@ class BaseTempProject(BaseProject):
 
                 # Use the inherited _build_project method with update=True
                 try:
-                    self.build(verbose=self.verbose, update=True)
+                    self.build(verbose=self.verbose, update=True, _lock=False)
                 except subprocess.CalledProcessError as e:
                     logger.error("Failed during Lean project setup: %s", e)
                     # delete the project directory to avoid conflicts

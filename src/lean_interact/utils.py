@@ -109,8 +109,8 @@ def check_windows_long_paths():
     try:
         import winreg
 
-        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem")
-        value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem")  # type: ignore
+        value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")  # type: ignore
         if value == 1:
             logger.info("Windows long paths already enabled")
         else:
