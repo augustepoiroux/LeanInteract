@@ -12,8 +12,8 @@ from unittest import mock
 from filelock import FileLock, Timeout
 
 from lean_interact import AutoLeanServer, LeanREPLConfig
-from lean_interact.config import BaseTempProject
 from lean_interact.interface import Command, CommandResponse
+from lean_interact.project import BaseTempProject
 from lean_interact.server import LeanServer
 from lean_interact.utils import DEFAULT_REPL_GIT_URL
 

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import git
 
-from lean_interact.config import GitProject
+from lean_interact.project import GitProject
 from lean_interact.utils import _GitUtilities
 
 

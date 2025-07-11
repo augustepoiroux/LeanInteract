@@ -34,13 +34,13 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from tqdm import tqdm
 
 from lean_interact import AutoLeanServer, Command, LeanREPLConfig
-from lean_interact.config import TempRequireProject
 from lean_interact.interface import (
     CommandResponse,
     LeanError,
     Pos,
     message_intersects_code,
 )
+from lean_interact.project import TempRequireProject
 from lean_interact.utils import (
     clean_last_theorem_string,
     indent_code,
@@ -331,7 +331,7 @@ def beq_plus(
 
 
 def examples_limitations(metric):
-    repl_config = LeanREPLConfig(lean_version="v4.8.0", project=TempRequireProject("mathlib"), verbose=True)
+    repl_config = LeanREPLConfig(project=TempRequireProject(lean_version="v4.8.0", require="mathlib"), verbose=True)
 
     src_header = """import Mathlib
 
@@ -412,7 +412,7 @@ open scoped BigOperators"""
 
 
 def proofnetverif(metric, n_samples=100):
-    repl_config = LeanREPLConfig(lean_version="v4.8.0", project=TempRequireProject("mathlib"), verbose=True)
+    repl_config = LeanREPLConfig(project=TempRequireProject(lean_version="v4.8.0", require="mathlib"), verbose=True)
 
     dataset = load_dataset("PAug/ProofNetVerif", split="valid")
     dataset = dataset.shuffle(seed=42).select(range(n_samples))

@@ -12,14 +12,7 @@ from typing import cast
 
 import psutil
 
-from lean_interact.config import (
-    GitProject,
-    LeanREPLConfig,
-    LeanRequire,
-    LocalProject,
-    TemporaryProject,
-    TempRequireProject,
-)
+from lean_interact.config import LeanREPLConfig
 from lean_interact.interface import (
     Command,
     CommandResponse,
@@ -34,6 +27,13 @@ from lean_interact.interface import (
     Sorry,
     UnpickleEnvironment,
     UnpickleProofState,
+)
+from lean_interact.project import (
+    GitProject,
+    LeanRequire,
+    LocalProject,
+    TemporaryProject,
+    TempRequireProject,
 )
 from lean_interact.server import DEFAULT_TIMEOUT, AutoLeanServer, LeanServer
 from lean_interact.sessioncache import PickleSessionCache, PickleSessionState
