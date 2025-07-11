@@ -14,8 +14,15 @@ import psutil
 
 from lean_interact.config import LeanREPLConfig
 from lean_interact.interface import (
+    BinderView,
     Command,
     CommandResponse,
+    DeclarationInfo,
+    DeclBinders,
+    DeclModifiers,
+    DeclSignature,
+    DeclType,
+    DeclValue,
     FileCommand,
     LeanError,
     Message,
@@ -24,6 +31,8 @@ from lean_interact.interface import (
     Pos,
     ProofStep,
     ProofStepResponse,
+    Range,
+    ScopeInfo,
     Sorry,
     UnpickleEnvironment,
     UnpickleProofState,
@@ -539,6 +548,118 @@ lean_exe "dummy" where
         assert not isinstance(step1, LeanError)
         step2 = server.run(ProofStep(tactic="rfl", proof_state=step1.proof_state), verbose=True)
         self.assertEqual(step2, ProofStepResponse(proof_state=2, goals=[], proof_status="Completed"))
+
+    def test_declaration_info(self):
+        server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
+        result = server.run(Command(cmd="def x := 42", declarations=True), verbose=True)
+        self.assertEqual(
+            result,
+            CommandResponse(
+                declarations=[
+                    DeclarationInfo(
+                        pp="def x := 42",
+                        range=Range(synthetic=False, start=Pos(line=1, column=0), finish=Pos(line=1, column=11)),
+                        scope=ScopeInfo(
+                            var_decls=[],
+                            include_vars=[],
+                            omit_vars=[],
+                            level_names=[],
+                            curr_namespace="[anonymous]",
+                            open_decl=[],
+                        ),
+                        name="x",
+                        full_name="x",
+                        kind="definition",
+                        modifiers=DeclModifiers(
+                            doc_string=None,
+                            visibility="regular",
+                            compute_kind="regular",
+                            rec_kind="default",
+                            is_unsafe=False,
+                            attributes=[],
+                        ),
+                        signature=DeclSignature(
+                            pp="",
+                            constants=[],
+                            range=Range(synthetic=True, start=Pos(line=1, column=0), finish=Pos(line=1, column=0)),
+                        ),
+                        binders=None,
+                        type=None,
+                        value=DeclValue(
+                            pp=":= 42",
+                            constants=[],
+                            range=Range(synthetic=False, start=Pos(line=1, column=6), finish=Pos(line=1, column=11)),
+                        ),
+                    )
+                ],
+                env=0,
+            ),
+        )
+
+        result = server.run(
+            Command(cmd="variable (p : Prop)\ntheorem test (h : p) : 0 = 0 := by rfl", declarations=True), verbose=True
+        )
+        print(result)
+        self.assertEqual(
+            result,
+            CommandResponse(
+                messages=[
+                    Message(
+                        end_pos=Pos(column=15, line=2),
+                        severity="warning",
+                        data="unused variable `h`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+                        start_pos=Pos(column=14, line=2),
+                    )
+                ],
+                env=1,
+                declarations=[
+                    DeclarationInfo(
+                        pp="theorem test (h : p) : 0 = 0 := by rfl",
+                        type=DeclType(
+                            pp="0 = 0",
+                            range=Range(synthetic=False, finish=Pos(column=28, line=2), start=Pos(column=23, line=2)),
+                            constants=[],
+                        ),
+                        full_name="test",
+                        binders=DeclBinders(
+                            pp="(h : p)",
+                            groups=["(h : p)"],
+                            map=[BinderView(id="h", type="p", binderInfo="default")],
+                            range=Range(synthetic=False, finish=Pos(column=20, line=2), start=Pos(column=13, line=2)),
+                        ),
+                        kind="theorem",
+                        range=Range(synthetic=False, finish=Pos(column=38, line=2), start=Pos(column=0, line=2)),
+                        modifiers=DeclModifiers(
+                            doc_string=None,
+                            is_unsafe=False,
+                            rec_kind="default",
+                            attributes=[],
+                            visibility="regular",
+                            compute_kind="regular",
+                        ),
+                        signature=DeclSignature(
+                            pp="(h : p) : 0 = 0",
+                            range=Range(synthetic=False, finish=Pos(column=28, line=2), start=Pos(column=13, line=2)),
+                            constants=["h", "p"],
+                        ),
+                        scope=ScopeInfo(
+                            level_names=[],
+                            open_decl=[],
+                            curr_namespace="[anonymous]",
+                            omit_vars=[],
+                            var_decls=["variable (p : Prop)"],
+                            include_vars=[],
+                        ),
+                        name="test",
+                        value=DeclValue(
+                            pp=":= by rfl",
+                            range=Range(synthetic=False, finish=Pos(column=38, line=2), start=Pos(column=29, line=2)),
+                            constants=[],
+                        ),
+                    )
+                ],
+            ),
+        )
 
     def test_infotree(self):
         """Test infotree with all possible values"""
