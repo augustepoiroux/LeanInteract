@@ -63,4 +63,4 @@ jobs:
 
       - name: Build documentation
         if: runner.os == 'Linux'
-        run: mkdocs build
+        run: clear-lean-cache && mkdocs build
