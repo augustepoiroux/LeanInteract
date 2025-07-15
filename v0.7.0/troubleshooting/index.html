@@ -588,6 +588,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../api/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Projects
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/sessioncache/" class="md-nav__link">
         
   
@@ -868,7 +891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
+      <a href="../changelog.md" class="md-nav__link">
         
   
   
@@ -1127,9 +1150,8 @@ LeanInteract returns error messages while the Lean code runs fine in VSCode.</p>
 <li>
 <p>A frequent issue is forgetting to include <code>mathlib</code> in the dependencies:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.19.0&quot;</span><span class="p">,</span> 
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">project</span><span class="o">=</span><span class="n">TempRequireProject</span><span class="p">(</span><span class="s2">&quot;mathlib&quot;</span><span class="p">)</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="n">project</span><span class="o">=</span><span class="n">TempRequireProject</span><span class="p">(</span><span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.19.0&quot;</span><span class="p">,</span> <span class="n">require</span><span class="o">=</span><span class="s2">&quot;mathlib&quot;</span><span class="p">)</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p">)</span>
 </span></code></pre></div>
 </li>
 <li>

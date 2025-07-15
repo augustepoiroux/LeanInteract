@@ -699,6 +699,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Projects
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/sessioncache/" class="md-nav__link">
         
   
@@ -841,7 +864,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../changelog/" class="md-nav__link">
+      <a href="../../changelog.md" class="md-nav__link">
         
   
   
@@ -998,7 +1021,7 @@
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Use environment state 0 for the next command</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;#check x&quot;</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">response1</span><span class="o">.</span><span class="n">env</span><span class="p">))</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=2, messages=[Message(start_pos=Pos(line=1, column=0), data=&#39;x : Nat&#39;, end_pos=Pos(line=1, column=6), severity=&#39;info&#39;)])
+<div class="language-text highlight"><pre><span></span><code>CommandResponse(messages=[Message(start_pos=Pos(column=0, line=1), severity=&#39;info&#39;, data=&#39;x : Nat&#39;, end_pos=Pos(column=6, line=1))], env=2)
 </code></pre></div>
 <h2 id="processing-lean-files">Processing Lean Files<a class="headerlink" href="#processing-lean-files" title="Permanent link">&para;</a></h2>
 <p>You can process entire Lean files using the <code>FileCommand</code> class:</p>
@@ -1024,14 +1047,14 @@
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">))</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">tactics</span><span class="p">)</span>  <span class="c1"># Shows tactics used</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[Tactic(start_pos=Pos(line=1, column=43), tactic=&#39;simp&#39;, end_pos=Pos(line=1, column=47), goals=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, proof_state=0, used_constants=[&#39;instOfNatNat&#39;, &#39;imp_self._simp_1&#39;, &#39;Nat&#39;, &#39;of_eq_true&#39;, &#39;OfNat.ofNat&#39;, &#39;Eq&#39;])]
+<div class="language-text highlight"><pre><span></span><code>[Tactic(tactic=&#39;simp&#39;, end_pos=Pos(column=47, line=1), used_constants=[&#39;instOfNatNat&#39;, &#39;imp_self._simp_1&#39;, &#39;Nat&#39;, &#39;of_eq_true&#39;, &#39;OfNat.ofNat&#39;, &#39;Eq&#39;], goals=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, start_pos=Pos(column=43, line=1), proof_state=0)]
 </code></pre></div>
 <h2 id="working-with-sorries">Working with Sorries<a class="headerlink" href="#working-with-sorries" title="Permanent link">&para;</a></h2>
 <p>When Lean code contains <code>sorry</code> (incomplete proofs), LeanInteract returns information about these <code>sorry</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := sorry&quot;</span><span class="p">))</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">sorries</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Sorry(start_pos=Pos(line=1, column=40), goal=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, end_pos=Pos(line=1, column=45), proof_state=1)
+<div class="language-text highlight"><pre><span></span><code>Sorry(proof_state=1, start_pos=Pos(column=40, line=1), goal=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, end_pos=Pos(column=45, line=1))
 </code></pre></div>
 <p>This response will include a list of <code>Sorry</code> objects, each containing:</p>
 <ul>
@@ -1052,7 +1075,7 @@
 </span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 </span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Command succeeded: CommandResponse(env=5, messages=[Message(start_pos=Pos(line=1, column=0), data=&#39;unexpected identifier; expected command&#39;, end_pos=Pos(line=1, column=7), severity=&#39;error&#39;)])
+<div class="language-text highlight"><pre><span></span><code>Command succeeded: CommandResponse(messages=[Message(start_pos=Pos(column=0, line=1), severity=&#39;error&#39;, data=&#39;unexpected identifier; expected command&#39;, end_pos=Pos(column=7, line=1))], env=5)
 </code></pre></div>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <p>Now that you understand basic operations, you can:</p>

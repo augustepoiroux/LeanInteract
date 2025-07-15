@@ -690,6 +690,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Projects
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/sessioncache/" class="md-nav__link">
         
   
@@ -832,7 +855,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../changelog/" class="md-nav__link">
+      <a href="../../changelog.md" class="md-nav__link">
         
   
   
@@ -976,7 +999,7 @@
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := sorry&quot;</span><span class="p">))</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">sorries</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Sorry(end_pos=Pos(column=45, line=1), goal=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, proof_state=0, start_pos=Pos(column=40, line=1))
+<div class="language-text highlight"><pre><span></span><code>Sorry(proof_state=0, goal=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, start_pos=Pos(column=40, line=1), end_pos=Pos(column=45, line=1))
 </code></pre></div>
 <p>This response contains a <code>Sorry</code> object that includes:</p>
 <ul>
