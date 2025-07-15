@@ -120,6 +120,7 @@ nav:
   - API Reference:
       - LeanREPLConfig: api/config.md
       - LeanServer: api/server.md
+      - Projects: api/project.md
       - Session Cache: api/sessioncache.md
       - Interface: api/interface.md
       - Utils: api/utils.md
