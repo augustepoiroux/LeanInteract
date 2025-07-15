@@ -16,11 +16,13 @@ from lean_interact.project import (
     TempRequireProject,
 )
 from lean_interact.server import AutoLeanServer, LeanServer
+from lean_interact.workspace import LeanWorkspace
 
 __all__ = [
     "LeanREPLConfig",
     "LeanServer",
     "AutoLeanServer",
+    "LeanWorkspace",
     "LeanRequire",
     "GitProject",
     "LocalProject",
