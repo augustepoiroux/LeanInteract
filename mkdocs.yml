@@ -1,7 +1,7 @@
 site_name: LeanInteract
 site_description: Python package for seamless interaction with Lean 4 through the Lean REPL
 site_author: Auguste Poiroux
-site_url: https://augustepoiroux.github.io/LeanInteract
+site_url: https://augustepoiroux.github.io/LeanInteract/
 
 repo_name: augustepoiroux/LeanInteract
 repo_url: https://github.com/augustepoiroux/LeanInteract
@@ -59,6 +59,9 @@ theme:
 
 # Extra customization
 extra:
+  version:
+    provider: mike
+    default: stable
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/augustepoiroux/LeanInteract
@@ -67,6 +70,13 @@ extra:
 
 plugins:
   - search
+  - mike:
+      alias_type: symlink
+      redirect_template: null
+      canonical_version: null
+      version_selector: true
+      css_dir: css
+      javascript_dir: js
   - mkdocstrings:
       handlers:
         python:
