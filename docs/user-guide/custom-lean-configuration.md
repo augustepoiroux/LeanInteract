@@ -10,7 +10,7 @@ You can specify which version of Lean 4 you want to use when no project is speci
 from lean_interact import LeanREPLConfig, LeanServer
 
 # Use a specific Lean version
-config = LeanREPLConfig(lean_version="v4.7.0")
+config = LeanREPLConfig(lean_version="v4.8.0")
 server = LeanServer(config)
 ```
 
@@ -99,12 +99,12 @@ from lean_interact import LeanREPLConfig, TempRequireProject, LeanRequire
 
 # Create a temporary project with Mathlib as a dependency
 project = TempRequireProject(
-    lean_version="v4.7.0",
+    lean_version="v4.8.0",
     require=[
         LeanRequire(
             name="mathlib",
             git="https://github.com/leanprover-community/mathlib4.git",
-            rev="v4.7.0"
+            rev="v4.8.0"
         )
     ]
 )
