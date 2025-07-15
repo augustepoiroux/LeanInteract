@@ -103,11 +103,11 @@ jobs:
       - name: Deploy with mike
         run: |
           if [[ -n "${{ steps.version.outputs.alias }}" ]]; then
-            mike deploy --push --update-aliases ${{ steps.version.outputs.version }} ${{ steps.version.outputs.alias }}
+            uv run mike deploy --push --update-aliases ${{ steps.version.outputs.version }} ${{ steps.version.outputs.alias }}
             # Set default version if this is a stable release
             if [[ "${{ steps.version.outputs.alias }}" == "stable" ]]; then
-              mike set-default --push stable
+              uv run mike set-default --push stable
             fi
           else
-            mike deploy --push ${{ steps.version.outputs.version }}
+            uv run mike deploy --push ${{ steps.version.outputs.version }}
           fi
