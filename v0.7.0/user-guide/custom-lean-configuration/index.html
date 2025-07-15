@@ -130,10 +130,6 @@
       
     </div>
     
-      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
-        
-      </div>
-    
     
       
 
@@ -732,29 +728,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/project/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Projects
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../api/sessioncache/" class="md-nav__link">
         
   
@@ -897,7 +870,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../changelog.md" class="md-nav__link">
+      <a href="../../changelog/" class="md-nav__link">
         
   
   
@@ -1062,59 +1035,35 @@
 <h1 id="custom-lean-configuration">Custom Lean Configuration<a class="headerlink" href="#custom-lean-configuration" title="Permanent link">&para;</a></h1>
 <p>LeanInteract provides flexible ways to configure the Lean environment to suit different use cases. This guide covers the various configuration options available.</p>
 <h2 id="specifying-lean-versions">Specifying Lean Versions<a class="headerlink" href="#specifying-lean-versions" title="Permanent link">&para;</a></h2>
-<p>You can specify which version of Lean 4 you want to use when no project is specified:</p>
+<p>You can specify which version of Lean 4 you want to use:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Use a specific Lean version</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.7.0&quot;</span><span class="p">)</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>When using a project through the <code>project</code> attribute, the Lean version is automatically inferred from the project. You cannot specify both <code>lean_version</code> and <code>project</code> parameters.</p>
-</div>
+<p>LeanInteract supports all Lean versions between <code>v4.7.0-rc1</code> and <code>v4.19.0</code>.</p>
 <h2 id="working-with-existing-projects">Working with Existing Projects<a class="headerlink" href="#working-with-existing-projects" title="Permanent link">&para;</a></h2>
 <h3 id="local-lean-projects">Local Lean Projects<a class="headerlink" href="#local-lean-projects" title="Permanent link">&para;</a></h3>
-<p>To work with a local Lean project, create a <code>LocalProject</code> instance:</p>
+<p>To work with a local Lean project:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LocalProject</span><span class="p">,</span> <span class="n">LeanServer</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Configure with a local project</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">project</span> <span class="o">=</span> <span class="n">LocalProject</span><span class="p">(</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;path/to/your/project&quot;</span><span class="p">,</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">auto_build</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Automatically build the project (default is True)</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">LocalProject</span><span class="p">(</span><span class="s2">&quot;path/to/your/project&quot;</span><span class="p">))</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Ensure the project can be successfully built with <code>lake build</code> before using it with LeanInteract.</p>
 </div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Setting <code>auto_build=False</code> will skip building the project, which can be useful if you've already built it.</p>
-</div>
 <h3 id="git-based-projects">Git-Based Projects<a class="headerlink" href="#git-based-projects" title="Permanent link">&para;</a></h3>
-<p>You can work with projects hosted on Git repositories:</p>
+<p>You can also work with projects hosted on Git:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">GitProject</span><span class="p">,</span> <span class="n">LeanServer</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Configure with a Git-hosted project</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">project</span> <span class="o">=</span> <span class="n">GitProject</span><span class="p">(</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://github.com/yangky11/lean4-example&quot;</span><span class="p">,</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">rev</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">,</span>  <span class="c1"># Optional: specific branch, tag, or commit</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;/custom/cache/path&quot;</span><span class="p">,</span>  <span class="c1"># Optional: custom directory where the project will be cloned</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">force_pull</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># Optional: force update from remote. Useful in case you already have the project cloned.</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">)</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">GitProject</span><span class="p">(</span><span class="s2">&quot;https://github.com/yangky11/lean4-example&quot;</span><span class="p">))</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
-<p>The <code>GitProject</code> will automatically:</p>
-<ul>
-<li>Clone the repository if it doesn't exist</li>
-<li>Update to the specified revision</li>
-<li>Build the project using Lake</li>
-<li>Handle submodules if present</li>
-</ul>
 <h3 id="using-a-local-repl-installation">Using a Local REPL Installation<a class="headerlink" href="#using-a-local-repl-installation" title="Permanent link">&para;</a></h3>
 <p>If you're developing the Lean REPL or have a custom version, you can use your local copy instead of downloading from the Git repository:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span>
@@ -1141,45 +1090,42 @@
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">TempRequireProject</span><span class="p">,</span> <span class="n">LeanRequire</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># Create a temporary project with Mathlib as a dependency</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">project</span> <span class="o">=</span> <span class="n">TempRequireProject</span><span class="p">(</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span>
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.7.0&quot;</span><span class="p">,</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">require</span><span class="o">=</span><span class="p">[</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">project</span><span class="o">=</span><span class="n">TempRequireProject</span><span class="p">([</span>
 </span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>        <span class="n">LeanRequire</span><span class="p">(</span>
 </span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mathlib&quot;</span><span class="p">,</span>
 </span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>            <span class="n">git</span><span class="o">=</span><span class="s2">&quot;https://github.com/leanprover-community/mathlib4.git&quot;</span><span class="p">,</span>
 </span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>            <span class="n">rev</span><span class="o">=</span><span class="s2">&quot;v4.7.0&quot;</span>
 </span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>        <span class="p">)</span>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="p">]</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="p">])</span>
 </span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="p">)</span>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
 </span></code></pre></div>
 <p>For the common case of requiring Mathlib, there's a shortcut:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">project</span> <span class="o">=</span> <span class="n">TempRequireProject</span><span class="p">(</span><span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.8.0&quot;</span><span class="p">,</span> <span class="n">require</span><span class="o">=</span><span class="s2">&quot;mathlib&quot;</span><span class="p">)</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.7.0&quot;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="n">TempRequireProject</span><span class="p">(</span><span class="s2">&quot;mathlib&quot;</span><span class="p">))</span>
 </span></code></pre></div>
 <h3 id="fine-grained-temporary-projects">Fine-Grained Temporary Projects<a class="headerlink" href="#fine-grained-temporary-projects" title="Permanent link">&para;</a></h3>
 <p>For more control over the temporary project, you can specify the complete lakefile content:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">TemporaryProject</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">project</span> <span class="o">=</span> <span class="n">TemporaryProject</span><span class="p">(</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.18.0&quot;</span><span class="p">,</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">content</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="s2">import Lake</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="s2">open Lake DSL</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="s2">package &quot;dummy&quot; where</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="s2">  version := v!&quot;0.1.0&quot;</span>
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="s2">@[default_target]</span>
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="s2">lean_exe &quot;dummy&quot; where</span>
-</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="s2">  root := `Main</span>
-</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>
-</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="s2">require mathlib from git</span>
-</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="s2">  &quot;https://github.com/leanprover-community/mathlib4.git&quot; @ &quot;v4.18.0&quot;</span>
-</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
-</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>    <span class="n">lakefile_type</span><span class="o">=</span><span class="s2">&quot;lean&quot;</span>  <span class="c1"># or &quot;toml&quot;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Using lakefile.lean (default)</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.18.0&quot;</span><span class="p">,</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">project</span><span class="o">=</span><span class="n">TemporaryProject</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="s2">import Lake</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="s2">open Lake DSL</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="s2">package &quot;dummy&quot; where</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="s2">  version := v!&quot;0.1.0&quot;</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="s2">@[default_target]</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="s2">lean_exe &quot;dummy&quot; where</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="s2">  root := `Main</span>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="s2">require mathlib from git</span>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="s2">  &quot;https://github.com/leanprover-community/mathlib4.git&quot; @ &quot;v4.18.0&quot;</span>
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 </span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="p">)</span>
-</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
 </span></code></pre></div>
 <p>This approach gives you full control over the Lake configuration.
 Alternatively, you can define the lakefile content using the TOML format by setting <code>lakefile_type="toml"</code>.</p>
@@ -1201,15 +1147,12 @@ Alternatively, you can define the lakefile content using the TOML format by sett
 <li>If <code>lean_version</code> is not specified, it will use the latest available Lean version compatible with the REPL</li>
 </ol>
 <p>This approach allows for better matching between REPL versions and Lean versions, ensuring compatibility.</p>
-<ul>
-<li>Always check <code>config.is_setup()</code> before creating servers</li>
-</ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Custom/older REPL implementations may have interfaces that are incompatible with LeanInteract's standard commands. If you encounter issues, consider using the <code>run_dict</code> method from <code>LeanServer</code> to communicate directly with the REPL:</p>
+<p>Custom/older REPL implementations may have interfaces that are incompatible with LeanInteract's standard commands. If you encounter issues, consider using the <code>run_dict</code> method from <code>LeanServer</code> to communicate directly with the REPL:
 <div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Using run_dict instead of the standard commands</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run_dict</span><span class="p">({</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;your_command_here&quot;</span><span class="p">})</span>
-</span></code></pre></div>
+</span></code></pre></div></p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1217,8 +1160,10 @@ Alternatively, you can define the lakefile content using the TOML format by sett
 </div>
 <h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Custom Directories</strong>: Use the <code>directory</code> parameter to control where projects are cached</li>
-<li><strong>Build Control</strong>: Use <code>auto_build=False</code> to skip building if you've already built a project</li>
+<li>Check the Lean version your project is compatible with and use that version in your configuration</li>
+<li>Initialize <code>LeanREPLConfig</code> before starting parallel processes to avoid conflicts, and then copy it in the child processes when instantiating <code>LeanServer</code></li>
+<li>When working with custom Lean or Lake installations, specify the paths explicitly for reproducibility</li>
+<li>Use compatible REPL and Lean versions to avoid unexpected behavior</li>
 </ul>
 
 
@@ -1306,7 +1251,7 @@ Alternatively, you can define the lakefile content using the TOML format by sett
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "header.autohide", "toc.follow"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "stable", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "header.autohide", "toc.follow"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
