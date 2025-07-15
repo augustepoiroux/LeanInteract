@@ -33,11 +33,13 @@ class CommandOptions(REPLBaseModel):
     """Options for commands.
     Attributes:
         all_tactics: If true, return all tactics used in the command with their associated information.
+        declarations: If true, return detailed information about declarations in the command.
         root_goals: If true, return root goals, i.e. initial goals of all declarations in the command, even if they already have a proof.
         infotree: Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored.
     """
 
     all_tactics: Annotated[bool | None, Field(alias="allTactics")] = None
+    declarations: bool | None = None
     root_goals: Annotated[bool | None, Field(alias="rootGoals")] = None
     infotree: str | None = None
 
@@ -49,6 +51,7 @@ class Command(BaseREPLQuery, CommandOptions):
         env: The environment to be used (optional). If `env = None`, starts a new session (in which you can use `import`).
             If `env` is set, the command is executed in the given environment.
         all_tactics: If true, return all tactics used in the command with their associated information.
+        declarations: If true, return detailed information about declarations in the command.
         root_goals: If true, return root goals, i.e. initial goals of all declarations in the command, even if they already have a proof.
         infotree: Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored.
     """
@@ -62,9 +65,10 @@ class FileCommand(BaseREPLQuery, CommandOptions):
     Attributes:
         path: The path of the file to be operated on.
         env: The environment to be used (optional). If `env = None`, starts a new session (in which you can use `import`).
-            If `env` is set, the command is executed in the given environment.
-        all_tactics: If true, return all tactics used in the command with their associated information.
-        root_goals: If true, return root goals, i.e. initial goals of all declarations in the command, even if they already have a proof.
+            If `env` is set, the file is executed in the given environment.
+        all_tactics: If true, return all tactics used in the file with their associated information.
+        declarations: If true, return detailed information about declarations in the file.
+        root_goals: If true, return root goals, i.e. initial goals of all declarations in the file, even if they already have a proof.
         infotree: Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored.
     """
 
@@ -200,7 +204,7 @@ def message_intersects_code(msg: Message | Sorry, start_pos: Pos | None, end_pos
     return res
 
 
-class Range(BaseModel):
+class Range(REPLBaseModel):
     """Range of a Syntax object.
     Attributes:
         start: The starting position of the syntax.
@@ -216,7 +220,7 @@ class Range(BaseModel):
         return self.start == other.start and self.finish == other.finish
 
 
-class Syntax(BaseModel):
+class Syntax(REPLBaseModel):
     """Lean Syntax object.
     Attributes:
         pp: Pretty-printed string of the syntax.
@@ -231,7 +235,7 @@ class Syntax(BaseModel):
     arg_kinds: list[str] = Field(default_factory=list, alias="argKinds")
 
 
-class BaseNode(BaseModel):
+class BaseNode(REPLBaseModel):
     """Base for the nodes of the InfoTree.
     Attributes:
         stx: Syntax object of the node.
@@ -283,7 +287,7 @@ class TermNode(BaseNode):
 Node = TacticNode | CommandNode | TermNode | None
 
 
-class InfoTree(BaseModel):
+class InfoTree(REPLBaseModel):
     """An InfoTree representation of the Lean code.
     Attributes:
         node: The root node of the InfoTree.
@@ -432,12 +436,12 @@ class InfoTree(BaseModel):
         return found
 
 
-class DocString(BaseModel):
+class DocString(REPLBaseModel):
     content: str
     range: Range
 
 
-class DeclModifiers(BaseModel):
+class DeclModifiers(REPLBaseModel):
     doc_string: Annotated[DocString | None, Field(default=None, alias="docString")]
     visibility: Literal["regular", "private", "protected", "public"] = "regular"
     compute_kind: Annotated[Literal["regular", "meta", "noncomputable"], Field(default="regular", alias="computeKind")]
@@ -446,52 +450,52 @@ class DeclModifiers(BaseModel):
     attributes: list[str] = Field(default_factory=list)
 
 
-class DeclSignature(BaseModel):
+class DeclSignature(REPLBaseModel):
     pp: str
     constants: list[str]
     range: Range
 
 
-class BinderView(BaseModel):
+class BinderView(REPLBaseModel):
     id: str
     type: str
     binderInfo: str
 
 
-class DeclBinders(BaseModel):
+class DeclBinders(REPLBaseModel):
     pp: str
     groups: list[str]
     map: list[BinderView]
     range: Range
 
 
-class DeclType(BaseModel):
+class DeclType(REPLBaseModel):
     pp: str
     constants: list[str]
     range: Range
 
 
-class DeclValue(BaseModel):
+class DeclValue(REPLBaseModel):
     pp: str
     constants: list[str]
     range: Range
 
 
-class OpenDecl(BaseModel):
+class OpenDecl(REPLBaseModel):
     simple: dict[str, str | list[str]] | None = None
     rename: dict[str, str] | None = None
 
 
-class ScopeInfo(BaseModel):
+class ScopeInfo(REPLBaseModel):
     var_decls: Annotated[list[str], Field(default_factory=list, alias="varDecls")]
     include_vars: Annotated[list[str], Field(default_factory=list, alias="includeVars")]
     omit_vars: Annotated[list[str], Field(default_factory=list, alias="omitVars")]
     level_names: Annotated[list[str], Field(default_factory=list, alias="levelNames")]
-    curr_namespace: str = ""
+    curr_namespace: Annotated[str, Field(alias="currNamespace")]
     open_decl: Annotated[list[OpenDecl], Field(default_factory=list, alias="openDecl")]
 
 
-class DeclarationInfo(BaseModel):
+class DeclarationInfo(REPLBaseModel):
     pp: str
     range: Range
     scope: ScopeInfo
@@ -561,6 +565,7 @@ class CommandResponse(BaseREPLResponse):
     Attributes:
         env: The environment state after running the code in the command
         tactics: List of tactics in the code. Returned only if `all_tactics` is true.
+        declarations: List of declarations in the code. Returned only if `declarations` is true.
         infotree: The infotree of the code. Returned only if `infotree` is true.
         messages: List of messages in the response.
         sorries: List of sorries found in the submitted code.
@@ -568,6 +573,7 @@ class CommandResponse(BaseREPLResponse):
 
     env: int
     tactics: list[Tactic] = Field(default_factory=list)
+    declarations: list[DeclarationInfo] = Field(default_factory=list)
     infotree: list[InfoTree] | None = None
 
 
