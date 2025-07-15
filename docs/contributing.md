@@ -54,6 +54,44 @@ mkdocs serve
 
 This will start a local web server at <http://127.0.0.1:8000/> where you can preview the documentation as you make changes.
 
+### Multi-Version Documentation
+
+LeanInteract uses [`mike`](https://github.com/jimporter/mike) for managing multiple documentation versions. For local development:
+
+```bash
+# Preview current documentation (development)
+uv run mkdocs serve
+
+# Deploy current version locally for testing
+uv run mike deploy dev
+
+# Deploy with a specific version and alias
+uv run mike deploy v0.7.0 stable --update-aliases
+
+# List all available versions
+uv run mike list
+
+# Serve a specific version
+uv run mike serve v0.7.0
+
+# Delete a version (if needed)
+uv run mike delete v0.6.0
+```
+
+#### Documentation Versioning Workflow
+
+When contributing documentation changes:
+
+1. **For current development**: Just use `mkdocs serve`
+2. **For testing versioned docs**: Use `mike deploy dev` then `mike serve`
+3. **For version-specific testing**: Deploy with `mike deploy [version] [alias]`
+
+The documentation is automatically deployed when:
+
+- **Main branch changes**: Updates the `dev` version
+- **Version tags**: Creates new version and sets as `stable`
+- **Manual workflow**: Custom deployment via GitHub Actions
+
 ## Reporting Issues
 
 If you find a bug or would like to request a feature:
