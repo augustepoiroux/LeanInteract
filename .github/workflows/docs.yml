@@ -58,7 +58,7 @@ jobs:
 
       - name: Install Lean
         run: |
-          install-lean
+          uv run install-lean
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
       - name: Configure Git
