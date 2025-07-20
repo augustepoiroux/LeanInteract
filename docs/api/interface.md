@@ -24,3 +24,13 @@
         - CommandNode
         - TermNode
         - Syntax
+        - DocString
+        - DeclModifiers
+        - DeclSignature
+        - BinderView
+        - DeclBinders
+        - DeclType
+        - DeclValue
+        - OpenDecl
+        - ScopeInfo
+        - DeclarationInfo
