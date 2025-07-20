@@ -1,110 +1,71 @@
+---
+hide:
+  - navigation
+---
+
 # Contributing to LeanInteract
 
-Contributions to LeanInteract are welcome and appreciated! This guide will help you understand how you can contribute to the project.
+Thank you for your interest in contributing to LeanInteract! This guide will help you get started, follow best practices, and make your contributions easy to review.
+
+## Pull Request Guidelines
+
+- **Describe your changes** clearly and concisely in the PR description.
+- **Link to relevant issues** using `#` (e.g., #42).
+- **Include tests** for new features or bug fixes.
+- **Update documentation** if your change affects usage or APIs.
+- **Ensure all tests pass** before requesting review.
 
 ## Getting Started
 
-1. **Fork the repository** on GitHub.
-2. **Clone your fork** to your local machine.
-3. **Create a feature branch**: `git checkout -b feature-name`
+1. **Fork the repository** on GitHub and clone your fork locally.
 
-## Development Setup
-
-Install the package in development mode:
+2. **Install development dependencies**: we recommend using [uv](https://docs.astral.sh/uv/).
 
    ```bash
-   pip install -e ".[dev]"
+   uv pip install -e ".[dev]"
    ```
 
-## Code Style and Guidelines
+## Code Style & Quality
 
-- Use **ruff** for code formatting.
-- Write **descriptive docstrings**.
-- Include **type hints** where appropriate.
-- Follow the **existing code structure**.
-- Write **unit tests** for new features.
-- Update the **documentation** if necessary.
+- **Type hints:** All functions and methods should have type annotations.
+- **Docstrings:** Write clear, descriptive docstrings for all public classes, functions, and modules.
+- **Tests:** All new features and bug fixes must include unit tests.
+- **Documentation:** Update or add documentation as needed.
 
-## Submitting Contributions
+## Testing
 
-1. **Commit your changes**: `git commit -am 'Add new feature'`
-2. **Push to your branch**: `git push origin feature-name`
-3. **Submit a pull request** to the main repository.
+- **Run all tests:**
 
-### Pull Request Guidelines
+   ```bash
+   uv run python -m unittest discover tests
+   ```
 
-- **Describe your changes** clearly and concisely.
-- **Link to any relevant issues** using the # symbol (e.g., #42).
-- Ensure your code **passes all tests**.
-- Include **tests for new features** or bug fixes.
+- **Run a specific test module:**
 
-## Running Tests
+   ```bash
+   uv run python -m unittest tests/test_server.py
+   ```
 
-```bash
-python -m unittest discover -s ./tests
-```
+- **First-time setup is slow:** Lean toolchain and dependencies may take several minutes to install/compile.
+- **Concurrency tests timeout:** Use generous timeouts and check system resources.
 
-## Building Documentation
+## Documentation & Versioning
 
-You can build and preview the documentation locally:
+LeanInteract uses [`mkdocs`](https://www.mkdocs.org/) and [`mike`](https://github.com/jimporter/mike) for versioned documentation. Documentation is auto-deployed on `main` branch changes and version tags.
+
+- **Preview docs locally:**
 
 ```bash
-mkdocs serve
-```
-
-This will start a local web server at <http://127.0.0.1:8000/> where you can preview the documentation as you make changes.
-
-### Multi-Version Documentation
-
-LeanInteract uses [`mike`](https://github.com/jimporter/mike) for managing multiple documentation versions. For local development:
-
-```bash
-# Preview current documentation (development)
 uv run mkdocs serve
-
-# Deploy current version locally for testing
-uv run mike deploy dev
-
-# Deploy with a specific version and alias
-uv run mike deploy v0.7.0 stable --update-aliases
-
-# List all available versions
-uv run mike list
-
-# Serve a specific version
-uv run mike serve v0.7.0
-
-# Delete a version (if needed)
-uv run mike delete v0.6.0
 ```
 
-#### Documentation Versioning Workflow
+## Reporting Issues & Getting Help
 
-When contributing documentation changes:
+- **Bugs/Feature requests:**
+  1. Check [GitHub issues](https://github.com/augustepoiroux/LeanInteract/issues) first (open or closed).
+  2. If new, open an issue with a clear description and steps to reproduce.
+- **Contact:** For questions, contact the [maintainer](mailto:auguste.poiroux@epfl.ch).
 
-1. **For current development**: Just use `mkdocs serve`
-2. **For testing versioned docs**: Use `mike deploy dev` then `mike serve`
-3. **For version-specific testing**: Deploy with `mike deploy [version] [alias]`
-
-The documentation is automatically deployed when:
-
-- **Main branch changes**: Updates the `dev` version
-- **Version tags**: Creates new version and sets as `stable`
-- **Manual workflow**: Custom deployment via GitHub Actions
-
-## Reporting Issues
-
-If you find a bug or would like to request a feature:
-
-1. Check if the issue already exists in the [GitHub issues](https://github.com/augustepoiroux/LeanInteract/issues).
-2. If not, create a new issue with a clear description and, if applicable, steps to reproduce.
-
-## Contact
-
-If you have questions about contributing, feel free to contact the maintainer at [auguste.poiroux@epfl.ch](mailto:auguste.poiroux@epfl.ch).
-
-## Code of Conduct
-
-Please be respectful and inclusive when contributing to this project. Harassment or abusive behavior will not be tolerated.
+---
 
 Thank you for contributing to LeanInteract!

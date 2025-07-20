@@ -148,7 +148,7 @@ If you encounter issues not covered in this guide:
 
 1. Check the [GitHub repository](https://github.com/augustepoiroux/LeanInteract) for open issues
 2. Open a new issue with:
-   - A minimal reproducible example
-   - Your operating system and Python version
-   - LeanInteract version (`pip show lean-interact`)
-   - Complete error message/stack trace
+    - A minimal reproducible example
+    - Your operating system and Python version
+    - LeanInteract version (`pip show lean-interact`)
+    - Complete error message/stack trace

@@ -1,10 +1,16 @@
+"""
+**Module:** `lean_interact.interface`
+
+This module provides the base classes and data models for interacting with the Lean REPL (Read-Eval-Print Loop).
+It defines the request and response structures used for sending commands to the Lean server and receiving results.
+These are aligned with the [Lean REPL's API](https://github.com/leanprover-community/repl/blob/8cca59562eabefce8494fb4600c4bbfa1c3b335b/REPL/JSON.lean).
+"""
+
 from collections import deque
 from typing import Annotated, Generator, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Self
-
-# Classes and attributes are aligned with the Lean REPL: https://github.com/leanprover-community/repl/blob/2f0a3cb876b045cc0fe550ca3a625bc479816739/REPL/JSON.lean
 
 
 class REPLBaseModel(BaseModel):
@@ -30,106 +36,100 @@ class BaseREPLQuery(REPLBaseModel):
 
 
 class CommandOptions(REPLBaseModel):
-    """Options for commands.
-    Attributes:
-        all_tactics: If true, return all tactics used in the command with their associated information.
-        root_goals: If true, return root goals, i.e. initial goals of all declarations in the command, even if they already have a proof.
-        infotree: Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored.
-    """
+    """Common options for `Command` and `FileCommand`."""
 
     all_tactics: Annotated[bool | None, Field(alias="allTactics")] = None
+    """If true, return all tactics used in the command with their associated information."""
+
     root_goals: Annotated[bool | None, Field(alias="rootGoals")] = None
+    """If true, return root goals, i.e. initial goals of all declarations in the command, even if they already have a proof."""
+
     infotree: str | None = None
+    """Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored."""
 
 
 class Command(BaseREPLQuery, CommandOptions):
-    """Command to be executed in the REPL.
-    Attributes:
-        cmd: The command to be executed.
-        env: The environment to be used (optional). If `env = None`, starts a new session (in which you can use `import`).
-            If `env` is set, the command is executed in the given environment.
-        all_tactics: If true, return all tactics used in the command with their associated information.
-        root_goals: If true, return root goals, i.e. initial goals of all declarations in the command, even if they already have a proof.
-        infotree: Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored.
-    """
+    """Command to be executed in the REPL."""
 
     cmd: Annotated[str, Field(min_length=1)]
+    """The command to be executed."""
+
     env: int | None = None
+    """The environment to be used. If `env = None`, starts a new session (in which you can use `import`).
+       If `env` is set, the command is executed in the given environment.
+    """
 
 
 class FileCommand(BaseREPLQuery, CommandOptions):
-    """Command for file operations in the REPL.
-    Attributes:
-        path: The path of the file to be operated on.
-        env: The environment to be used (optional). If `env = None`, starts a new session (in which you can use `import`).
-            If `env` is set, the command is executed in the given environment.
-        all_tactics: If true, return all tactics used in the command with their associated information.
-        root_goals: If true, return root goals, i.e. initial goals of all declarations in the command, even if they already have a proof.
-        infotree: Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored.
-    """
+    """Command for file operations in the REPL."""
 
     path: Annotated[str, Field(min_length=1)]
+    """The path of the file to be operated on."""
+
     env: int | None = None
+    """The environment to be used. If `env = None`, starts a new session (in which you can use `import`).
+       If `env` is set, the command is executed in the given environment.
+    """
 
 
 class ProofStep(BaseREPLQuery):
-    """Proof step in the REPL.
-    Attributes:
-        proof_state: The proof state to start from.
-        tactic: The tactic to be applied.
-    """
+    """Proof step in the REPL."""
 
     proof_state: Annotated[int, Field(alias="proofState")]
+    """The proof state to start from."""
+
     tactic: Annotated[str, Field(min_length=1)]
+    """The tactic to be applied."""
 
 
 class PickleEnvironment(BaseREPLQuery):
-    """Environment for pickling in the REPL.
-    Attributes:
-        env: The environment to be used.
-        pickle_to: The path to save the pickle file.
-    """
+    """Environment for pickling in the REPL."""
 
     env: int
+    """The environment to be pickled."""
+
     pickle_to: Annotated[str, Field(min_length=1, alias="pickleTo")]
+    """The path to save the pickle file."""
 
 
 class UnpickleEnvironment(BaseREPLQuery):
-    """Environment for unpickling in the REPL.
-    Attributes:
-        unpickle_env_from: The path to the pickle file.
-    """
+    """Environment for unpickling in the REPL."""
 
     unpickle_env_from: Annotated[str, Field(min_length=1, alias="unpickleEnvFrom")]
+    """The path to the pickle file."""
 
 
 class PickleProofState(BaseREPLQuery):
-    """Proof state for pickling in the REPL.
-    Attributes:
-        proof_state: The proof state to be pickled.
-        pickle_to: The path to save the pickle file.
-    """
+    """Proof state for pickling in the REPL."""
 
     proof_state: Annotated[int, Field(alias="proofState")]
+    """The proof state to be pickled."""
+
     pickle_to: Annotated[str, Field(min_length=1, alias="pickleTo")]
+    """The path to save the pickle file."""
 
 
 class UnpickleProofState(BaseREPLQuery):
-    """Environment for unpickling in the REPL.
-    Attributes:
-        unpickle_proof_state_from: The path to the pickle file.
-    """
+    """Environment for unpickling in the REPL."""
 
     unpickle_proof_state_from: Annotated[str, Field(min_length=1, alias="unpickleProofStateFrom")]
+    """The path to the pickle file containing the proof state to be unpickled."""
+
     env: int | None = None
+    """The environment to be used as a context for unpickling."""
 
 
 # Intermediate classes
 
 
 class Pos(REPLBaseModel):
+    """Position in the Lean code."""
+
     line: int
+    """The line number of the position."""
+
     column: int
+    """The column number of the position."""
 
     def __le__(self, other: "Pos") -> bool:
         if self.line < other.line:
@@ -143,52 +143,57 @@ class Pos(REPLBaseModel):
 
 
 class Message(REPLBaseModel):
-    """Message in the REPL.
-    Attributes:
-        start_pos: The starting position of the message.
-        end_pos: The ending position of the message.
-        severity: The severity of the message.
-        data: The data associated with the message.
-    """
+    """Message in the REPL."""
 
     start_pos: Annotated[Pos, Field(alias="pos")]
+    """The starting position of the message."""
+
     end_pos: Annotated[Pos | None, Field(alias="endPos")] = None
+    """The ending position of the message."""
+
     severity: Literal["error", "warning", "info", "trace"]
+    """The severity of the message. Possible values: `error`, `warning`, `info`, `trace`."""
+
     data: str
+    """The data associated with the message."""
 
 
 class Sorry(REPLBaseModel):
-    """Sorry message in the REPL.
-    Attributes:
-        start_pos: The starting position of the sorry message.
-        end_pos: The ending position of the sorry message.
-        goal: The proof goal at the sorry location.
-        proof_state: The proof state associated to the sorry.
-    """
+    """Sorry message in the REPL."""
 
     start_pos: Annotated[Pos | None, Field(alias="pos")] = None
+    """The starting position of the sorry message."""
+
     end_pos: Annotated[Pos | None, Field(alias="endPos")] = None
+    """The ending position of the sorry message."""
+
     goal: str
+    """The proof goal at the sorry location."""
+
     proof_state: Annotated[int | None, Field(alias="proofState")] = None
+    """The proof state associated to the sorry."""
 
 
 class Tactic(REPLBaseModel):
-    """Tactic in the REPL.
-    Attributes:
-        start_pos: The starting position of the tactic.
-        end_pos: The ending position of the tactic.
-        goals: The goals associated with the tactic.
-        tactic: The applied tactic.
-        proof_state: The proof state associated with the tactic.
-        used_constants: The constants used in the tactic.
-    """
+    """Tactic in the REPL."""
 
     start_pos: Annotated[Pos, Field(alias="pos")]
+    """The starting position of the tactic."""
+
     end_pos: Annotated[Pos, Field(alias="endPos")]
+    """The ending position of the tactic."""
+
     goals: str
+    """The goals associated with the tactic."""
+
     tactic: str
+    """The applied tactic."""
+
     proof_state: Annotated[int | None, Field(alias="proofState")] = None
+    """The proof state associated with the tactic."""
+
     used_constants: Annotated[list[str], Field(default_factory=list, alias="usedConstants")]
+    """The constants used in the tactic."""
 
 
 def message_intersects_code(msg: Message | Sorry, start_pos: Pos | None, end_pos: Pos | None) -> bool:
@@ -200,98 +205,91 @@ def message_intersects_code(msg: Message | Sorry, start_pos: Pos | None, end_pos
     return res
 
 
-class Range(BaseModel):
-    """Range of a Syntax object.
-    Attributes:
-        start: The starting position of the syntax.
-        finish: The ending position of the syntax.
-        synthetic: Boolean whether the syntax is synthetic or not.
-    """
+class Range(REPLBaseModel):
+    """Range of a Syntax object."""
 
     synthetic: bool
+    """Whether the syntax is synthetic or not."""
+
     start: Pos
+    """The starting position of the syntax."""
+
     finish: Pos
+    """The ending position of the syntax."""
 
     def __eq__(self, other):
         return self.start == other.start and self.finish == other.finish
 
 
-class Syntax(BaseModel):
-    """Lean Syntax object.
-    Attributes:
-        pp: Pretty-printed string of the syntax.
-        range: Range of the syntax.
-        kind: SyntaxNodeKind for the syntax.
-        arg_kinds: SyntaxNodeKinds for the children of the syntax.
-    """
+class Syntax(REPLBaseModel):
+    """Lean Syntax object."""
 
     pp: str | None
+    """The pretty-printed string of the syntax."""
+
     range: Range
+    """The range of the syntax."""
+
     kind: str
+    """The kind of the syntax.."""
+
     arg_kinds: list[str] = Field(default_factory=list, alias="argKinds")
+    """The kinds of the arguments of the syntax."""
 
 
-class BaseNode(BaseModel):
-    """Base for the nodes of the InfoTree.
-    Attributes:
-        stx: Syntax object of the node.
-    """
+class BaseNode(REPLBaseModel):
+    """Base for the nodes of the InfoTree."""
 
     stx: Syntax
+    """The syntax object of the node."""
 
 
 class TacticNode(BaseNode):
-    """A tactic node of the InfoTree.
-    Attributes:
-        stx: Syntax object of the node.
-        name: Optional name of the tactic.
-        goals_before: Goals before tactic application.
-        goals_after: Goals after tactic application.
-    """
+    """A tactic node of the InfoTree."""
 
     name: str | None
+    """The name of the tactic, if available."""
+
     goals_before: list[str] = Field(default_factory=list, alias="goalsBefore")
+    """Goals before tactic application."""
+
     goals_after: list[str] = Field(default_factory=list, alias="goalsAfter")
+    """Goals after tactic application."""
 
 
 class CommandNode(BaseNode):
-    """A command node of the InfoTree.
-    Attributes:
-        stx: Syntax object of the node.
-        elaborator: The elaborator used to elaborate the command.
-    """
+    """A command node of the InfoTree."""
 
     elaborator: str
+    """The elaborator used to elaborate the command."""
 
 
 class TermNode(BaseNode):
-    """A term node of the InfoTree.
-    Attributes:
-        stx: Syntax object of the node.
-        is_binder: Whether the node is a binder or not.
-        expr: Expression string.
-        expected_type: Expected type.
-        elaborator: Optionally, the elaborator used.
-    """
+    """A term node of the InfoTree."""
 
     is_binder: bool = Field(alias="isBinder")
+    """Whether the node is a binder or not."""
+
     expr: str
+    """The expression string of the term node."""
+
     expected_type: str | None = Field(default=None, alias="expectedType")
+    """The expected type of the term node, if available."""
+
     elaborator: str | None
+    """The elaborator used for the term node, if available."""
 
 
 Node = TacticNode | CommandNode | TermNode | None
+"""A node of the InfoTree, which can be a TacticNode, CommandNode, TermNode, or None."""
 
 
-class InfoTree(BaseModel):
-    """An InfoTree representation of the Lean code.
-    Attributes:
-        node: The root node of the InfoTree.
-        kind: The kind of the InfoTree.
-        children: Children of the InfoTree.
-    """
+class InfoTree(REPLBaseModel):
+    """An InfoTree representation of the Lean code."""
 
     node: Node
+    """The root node of the InfoTree, which can be a TacticNode, CommandNode, TermNode, or None."""
+
     kind: Literal[
         "TacticInfo",
         "TermInfo",
@@ -308,11 +306,15 @@ class InfoTree(BaseModel):
         "ChoiceInfo",
         "DelabTermInfo",
     ]
+    """The kind of the InfoTree."""
+
     children: list[Self] = Field(default_factory=list)
+    """Children of the InfoTree, which are also InfoTrees."""
 
     def dfs_walk(self) -> Generator[Self, None, None]:
         """
         Walk the InfoTree using Depth-First-Search.
+
         Returns:
             Yields the subsequent InfoTree.
         """
@@ -327,6 +329,7 @@ class InfoTree(BaseModel):
     def leaves(self) -> Generator[Self, None, None]:
         """
         Get the InfoTree leaves of the Depth-First-Search
+
         Returns:
             Yield the leaves of the InfoTree.
         """
@@ -337,6 +340,7 @@ class InfoTree(BaseModel):
     def commands(self) -> Generator[Self, None, None]:
         """
         Get all InfoTrees that represent commands
+
         Returns:
             Yields the command nodes of the InfoTree.
         """
@@ -349,6 +353,7 @@ class InfoTree(BaseModel):
     def variables(self) -> Generator[Self, None, None]:
         """
         Get children corresponding to variable expressions.
+
         Returns:
             Yields the variable nodes of the InfoTree.
         """
@@ -360,6 +365,7 @@ class InfoTree(BaseModel):
     def theorems(self) -> Generator[Self, None, None]:
         """
         Get children corresponding to theorems (including lemmas).
+
         Returns:
              Yields the theorems of the InfoTree.
         """
@@ -373,6 +379,7 @@ class InfoTree(BaseModel):
     def docs(self) -> Generator[Self, None, None]:
         """
         Get children corresponding to DocStrings.
+
         Returns:
              Yields the InfoTree nodes representing Docstrings.
         """
@@ -384,6 +391,7 @@ class InfoTree(BaseModel):
     def namespaces(self) -> Generator[Self, None, None]:
         """
         Get children corresponding to namespaces.
+
         Returns:
              Yields the InfoTree nodes for namespaces.
         """
@@ -414,8 +422,10 @@ class InfoTree(BaseModel):
     def theorem_for_sorry(self, sorry: Sorry) -> Self | None:
         """
         Get the theorem InfoTree for a given sorry, if found in this tree.
+
         Args:
             sorry: The sorry to search a theorem for
+
         Returns:
             The found InfoTree, if found, else None
         """
@@ -436,14 +446,13 @@ class InfoTree(BaseModel):
 
 
 class BaseREPLResponse(REPLBaseModel):
-    """Base class for all Lean responses.
-    Attributes:
-        messages: List of messages in the response.
-        sorries: List of sorries found in the submitted code.
-    """
+    """Base class for all Lean responses."""
 
     messages: list[Message] = Field(default_factory=list)
+    """List of messages in the response."""
+
     sorries: list[Sorry] = Field(default_factory=list)
+    """List of sorries found in the submitted code."""
 
     def __init__(self, **data):
         if self.__class__ == BaseREPLResponse:
@@ -484,36 +493,37 @@ class BaseREPLResponse(REPLBaseModel):
 
 
 class CommandResponse(BaseREPLResponse):
-    """Response to a command in the REPL.
-    Attributes:
-        env: The environment state after running the code in the command
-        tactics: List of tactics in the code. Returned only if `all_tactics` is true.
-        infotree: The infotree of the code. Returned only if `infotree` is true.
-        messages: List of messages in the response.
-        sorries: List of sorries found in the submitted code.
-    """
+    """Response to a command in the REPL."""
 
     env: int
+    """The new environment state after running the code in the command."""
+
     tactics: list[Tactic] = Field(default_factory=list)
+    """List of tactics in the code. Returned only if `all_tactics` is true."""
+
     infotree: list[InfoTree] | None = None
+    """The infotree of the code. Returned only if `infotree` is true."""
 
 
 class ProofStepResponse(BaseREPLResponse):
-    """Response to a proof step in the REPL.
-    Attributes:
-        proof_status: The proof status of the whole proof. Possible values: `Completed`, `Incomplete`, `Error`.
-        proof_state: The proof state after the proof step.
-        goals: List of goals after the proof step.
-        traces: List of traces in the proof step.
-        messages: List of messages in the response.
-        sorries: List of sorries found in the submitted code.
-    """
+    """Response to a proof step in the REPL."""
 
     proof_status: Annotated[str, Field(alias="proofStatus")]
+    """The proof status of the whole proof. Possible values: `Completed`, `Incomplete`, `Error`.
+    It may contain additional information, e.g. `Incomplete: contains sorry`."""
+
     proof_state: Annotated[int, Field(alias="proofState")]
+    """The proof state after the proof step."""
+
     goals: list[str] = Field(default_factory=list)
+    """List of goals after the proof step."""
+
     traces: list[str] = Field(default_factory=list)
+    """List of traces in the proof step."""
 
 
 class LeanError(REPLBaseModel):
+    """Represents an error in the Lean REPL."""
+
     message: str = ""
+    """The error message."""

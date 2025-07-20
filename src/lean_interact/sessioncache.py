@@ -1,10 +1,35 @@
+"""
+**Module:** `lean_interact.sessioncache`
+
+This module implements the session cache classes responsible for storing and retrieving Lean proof states and environments.
+Session cache is used internally by the `AutoLeanServer` class.
+It enables efficient resumption of proofs and environments after server restarts, timeouts, and automated recover from crashes.
+While by default `AutoLeanServer` instantiates a fresh `PickleSessionCache` instance, you can also use a custom one.
+It can be useful to share a session cache between multiple `AutoLeanServer` instances, or to use a custom session cache implementation.
+
+Examples:
+    ```python
+    from lean_interact.sessioncache import PickleSessionCache
+    from lean_interact.server import AutoLeanServer
+
+    # Create a session cache
+    cache = PickleSessionCache(working_dir="./cache")
+
+    # Create a Lean server with the cache
+    server = AutoLeanServer(config=..., session_cache=cache)
+    ```
+"""
+
 import hashlib
 import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from os import PathLike
 from pathlib import Path
-from typing import Iterator
+from typing import TYPE_CHECKING, Iterator
+
+if TYPE_CHECKING:
+    from lean_interact.server import LeanServer
 
 from filelock import FileLock
 
@@ -34,13 +59,17 @@ class BaseSessionCache(ABC):
         """Initialize the session cache."""
 
     @abstractmethod
-    def add(self, lean_server, request: BaseREPLQuery, response: BaseREPLResponse, verbose: bool = False) -> int:
+    def add(
+        self, lean_server: "LeanServer", request: BaseREPLQuery, response: BaseREPLResponse, verbose: bool = False
+    ) -> int:
         """Add a new item into the session cache.
+
         Args:
             lean_server: The Lean server to use.
             request: The request to send to the Lean server.
             response: The response from the Lean server.
             verbose: Whether to print verbose output.
+
         Returns:
             An identifier session_state_id, that can be used to access or remove the item.
         """
@@ -48,13 +77,14 @@ class BaseSessionCache(ABC):
     @abstractmethod
     def remove(self, session_state_id: int, verbose: bool = False) -> None:
         """Remove an item from the session cache.
+
         Args:
             session_state_id: The identifier of the item to remove.
             verbose: Whether to print verbose output.
         """
 
     @abstractmethod
-    def reload(self, lean_server, timeout_per_state: int | float | None, verbose: bool = False) -> None:
+    def reload(self, lean_server: "LeanServer", timeout_per_state: int | float | None, verbose: bool = False) -> None:
         """Reload the session cache.
         This is useful when the Lean server has been restarted and the session cache
         needs to be reloaded.
@@ -70,7 +100,12 @@ class BaseSessionCache(ABC):
         """Check if the session cache is empty."""
 
     @abstractmethod
-    def clear(self, verbose: bool = False) -> None: ...
+    def clear(self, verbose: bool = False) -> None:
+        """Clear the session cache by removing all items.
+
+        Args:
+            verbose: Whether to print verbose output.
+        """
 
     @abstractmethod
     def __iter__(self) -> Iterator[SessionState]: ...
@@ -96,16 +131,16 @@ class PickleSessionState(SessionState):
 
 
 class PickleSessionCache(BaseSessionCache):
-    """A session cache based on the local file storage and the REPL pickle feature.
-
-    Will maintain a separate session cache per server."""
+    """A session cache based on the local file storage and the REPL pickle feature."""
 
     def __init__(self, working_dir: str | PathLike):
         self._cache: dict[int, PickleSessionState] = {}
         self._state_counter = 0
         self._working_dir = Path(working_dir)
 
-    def add(self, lean_server, request: BaseREPLQuery, response: BaseREPLResponse, verbose: bool = False) -> int:
+    def add(
+        self, lean_server: "LeanServer", request: BaseREPLQuery, response: BaseREPLResponse, verbose: bool = False
+    ) -> int:
         self._state_counter -= 1
         process_id = os.getpid()  # use process id to avoid conflicts in multiprocessing
         hash_key = f"request_{type(request).__name__}_{id(request)}"
@@ -129,10 +164,10 @@ class PickleSessionCache(BaseSessionCache):
         # Use file lock when accessing the pickle file to prevent cache invalidation
         # from concurrent access
         with FileLock(f"{pickle_file}.lock", timeout=60):
-            response = lean_server.run(request, verbose=verbose)
-            if isinstance(response, LeanError):
+            response_pickle = lean_server.run(request, verbose=verbose)
+            if isinstance(response_pickle, LeanError):
                 raise ValueError(
-                    f"Could not store the result in the session cache. The Lean server returned an error: {response.message}"
+                    f"Could not store the result in the session cache. The Lean server returned an error: {response_pickle.message}"
                 )
 
             self._cache[self._state_counter] = PickleSessionState(
@@ -150,10 +185,7 @@ class PickleSessionCache(BaseSessionCache):
                 if os.path.exists(pickle_file):
                     os.remove(pickle_file)
 
-    def reload(self, lean_server, timeout_per_state: int | float | None, verbose: bool = False) -> None:
-        """
-        Reload the session cache. This method should be called only after a restart of the Lean REPL.
-        """
+    def reload(self, lean_server: "LeanServer", timeout_per_state: int | float | None, verbose: bool = False) -> None:
         for state_data in self:
             # Use file lock when accessing the pickle file to prevent cache invalidation
             # from multiple concurrent processes

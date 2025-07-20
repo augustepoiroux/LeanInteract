@@ -1,12 +1,14 @@
 # LeanInteract
 
-[![Docs](https://img.shields.io/badge/docs-latest-blue.svg)](https://augustepoiroux.github.io/LeanInteract/)
+[![Documentation](https://img.shields.io/badge/docs-latest-purple.svg)](https://augustepoiroux.github.io/LeanInteract/)
 [![PyPI version](https://img.shields.io/pypi/v/lean-interact.svg)](https://pypi.org/project/lean-interact/)
 [![PyPI downloads](https://img.shields.io/pepy/dt/lean-interact.svg)](https://pypi.org/project/lean-interact/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **LeanInteract** is a Python package designed to seamlessly interact with Lean 4 through the [Lean REPL](https://github.com/leanprover-community/repl).
+
+Check the [documentation](https://augustepoiroux.github.io/LeanInteract/) for detailed usage and examples.
 
 ## Key Features
 
@@ -43,7 +45,6 @@
   - [Custom Lean REPL](#custom-lean-repl)
 - [Similar tools](#similar-tools)
 - [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
 - [Citation](#citation)
 - [License](#license)
 
@@ -494,16 +495,6 @@ If you get an error similar to the following one, you are likely affected by thi
     New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -Value 1 -PropertyType DWord -Force
     git config --system core.longpaths true
     ```
-
-## Contributing
-
-Contributions are welcome! Here's how you can help:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit your changes: `git commit -am 'Add new feature'`
-4. Push to the branch: `git push origin feature-name`
-5. Submit a pull request
 
 ## Citation
 

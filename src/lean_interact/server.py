@@ -1,3 +1,10 @@
+"""
+**Module:** `lean_interact.server`
+
+This module provides the `LeanServer` and `AutoLeanServer` classes, which are used to interact with the Lean REPL (Read-Eval-Print Loop).
+The `LeanServer` class is a simple wrapper around the Lean REPL, while the `AutoLeanServer` class adds automatic memory management and session caching features.
+"""
+
 import asyncio
 import gc
 import json
@@ -42,9 +49,10 @@ class LeanServer:
         This class is a Python wrapper for the Lean REPL. Please refer to the \
         [documentation](https://augustepoiroux.github.io/LeanInteract/stable/user-guide/basic-usage/) for usage examples.
 
-        \u26a0 Multiprocessing: instantiate one config before starting multiprocessing. Then instantiate one `LeanServer`
-        per process by passing the config instance to the constructor. This will ensure that the REPL is already set up
-        for your specific environment and avoid concurrency conflicts.
+        Warning:
+            Instantiate a single config before starting multiprocessing. Then instantiate one `LeanServer`
+            per process by passing the config instance to the constructor. This will ensure that the REPL is already set up
+            for your specific environment and avoid concurrency conflicts.
 
         Args:
             config: The configuration for the Lean server.
@@ -57,9 +65,11 @@ class LeanServer:
 
     @property
     def lean_version(self) -> str | None:
+        """Get the Lean version used by the Lean REPL server."""
         return self.config.lean_version
 
     def start(self) -> None:
+        """Start the Lean REPL server process. This is called automatically in the constructor."""
         self._proc = subprocess.Popen(
             [
                 str(self.config.lake_path),
@@ -85,9 +95,11 @@ class LeanServer:
         self._proc.stdin.flush()
 
     def is_alive(self) -> bool:
+        """Check if the Lean REPL server process is running."""
         return self._proc is not None and self._proc.poll() is None
 
     def kill(self) -> None:
+        """Kill the Lean REPL server process and its children."""
         if self._proc:
             try:
                 proc = psutil.Process(self._proc.pid)
@@ -122,6 +134,7 @@ class LeanServer:
         gc.collect()
 
     def restart(self) -> None:
+        """Restart the Lean REPL server."""
         self.kill()
         self.start()
 
@@ -131,6 +144,7 @@ class LeanServer:
     def get_memory_usage(self) -> float:
         """
         Get the memory usage of the Lean REPL server process in MB.
+
         Returns:
             Memory usage in MB.
         """
@@ -143,7 +157,21 @@ class LeanServer:
             return 0.0
 
     def _execute_cmd_in_repl(self, json_query: str, verbose: bool, timeout: float | None) -> str:
-        """Send JSON queries to the Lean REPL and wait for the standard delimiter."""
+        """Send JSON queries to the Lean REPL and wait for the standard delimiter.
+
+        Args:
+            json_query: The JSON query to send to the Lean REPL.
+            verbose: Whether to print verbose output.
+            timeout: The timeout for the query in seconds.
+
+        Returns:
+            The raw output from the Lean REPL.
+
+        Raises:
+            TimeoutError: If the Lean REPL does not respond within the specified timeout.
+            BrokenPipeError: If the Lean REPL closes unexpectedly.
+            AssertionError: If the Lean REPL process is not properly initialized.
+        """
         assert self._proc is not None and self._proc.stdin is not None and self._proc.stdout is not None
         with self._lock:
             if verbose:
@@ -178,7 +206,18 @@ class LeanServer:
             raise BrokenPipeError(f"The Lean server closed unexpectedly with the output:\n`{output}`")
 
     def _parse_repl_output(self, raw_output: str, verbose: bool) -> dict:
-        """Parse JSON response."""
+        """Parse JSON response.
+
+        Args:
+            raw_output: The raw output from the Lean REPL.
+            verbose: Whether to print verbose output.
+
+        Returns:
+            Parsed JSON response as a dictionary.
+
+        Raises:
+            json.JSONDecodeError: If the raw output is not valid JSON.
+        """
         if verbose:
             logger.info("Server output: `%s`", raw_output)
         try:
@@ -191,12 +230,32 @@ class LeanServer:
     def run_dict(self, request: dict, verbose: bool = False, timeout: float | None = DEFAULT_TIMEOUT) -> dict:
         """
         Run a Lean REPL dictionary request and return the Lean server output as a dictionary.
+
+        Info:
+            When working with custom REPL implementations that might have incompatible interfaces with
+            LeanInteract's standard commands, you can use the `run_dict` method to communicate directly
+            with the REPL using the raw JSON protocol. This method bypasses the command-specific parsing
+            and validation, allowing you to work with custom REPL interfaces.
+
+        Examples:
+            ```python
+            # Using run_dict to send a raw command to the REPL
+            result = server.run_dict({"cmd": "your Lean code here"})
+            ```
+
         Args:
             request: The Lean REPL request to execute. Must be a dictionary.
             verbose: Whether to print additional information during the verification process.
             timeout: The timeout for the request in seconds
+
         Returns:
             The output of the Lean server as a dictionary.
+
+        Raises:
+            TimeoutError: If the Lean server does not respond within the specified timeout.
+            ConnectionAbortedError: If the Lean server closes unexpectedly.
+            ChildProcessError: If the Lean server is not running.
+            JsonDecodeError: If the Lean server output is not valid JSON.
         """
         if not self.is_alive():
             raise ChildProcessError("The Lean server is not running.")
@@ -244,25 +303,19 @@ class LeanServer:
         """
         Run a Lean REPL request.
 
-        Thread-safe: Uses a threading.Lock to ensure only one operation runs at a time.
+        Note:
+            **Thread-safe:** Uses a `threading.Lock` to ensure only one operation runs at a time.
 
         Args:
             request: The Lean REPL request to execute. Must be one of the following types:
-                - `Command`
-                - `File`
-                - `ProofStep`
-                - `PickleEnvironment`
-                - `PickleProofState`
-                - `UnpickleEnvironment`
-                - `UnpickleProofState`
+                `Command`, `FileCommand`, `ProofStep`, `PickleEnvironment`, `PickleProofState`,
+                `UnpickleEnvironment`, or `UnpickleProofState`
             verbose: Whether to print additional information
             timeout: The timeout for the request in seconds
 
         Returns:
             Depending on the request type, the response will be one of the following:
-            - `CommandResponse`
-            - `ProofStepResponse`
-            - `LeanError`
+                `CommandResponse`, `ProofStepResponse`, or `LeanError`
         """
         request_dict = request.model_dump(exclude_none=True, by_alias=True)
         result_dict = self.run_dict(request=request_dict, verbose=verbose, timeout=timeout, **kwargs)
@@ -300,9 +353,21 @@ class LeanServer:
         self, request: BaseREPLQuery, *, verbose: bool = False, timeout: float | None = DEFAULT_TIMEOUT, **kwargs
     ) -> BaseREPLResponse | LeanError:
         """
-        Asynchronous version of run(). Runs the blocking run() in a thread pool.
+        Asynchronous version of `run()`. Runs the blocking `run()` in a thread pool.
 
-        Thread-safe: Uses a threading.Lock to ensure only one operation runs at a time.
+        Note:
+            **Thread-safe:** Uses a `threading.Lock` to ensure only one operation runs at a time.
+
+        Args:
+            request: The Lean REPL request to execute. Must be one of the following types:
+                `Command`, `FileCommand`, `ProofStep`, `PickleEnvironment`, `PickleProofState`,
+                `UnpickleEnvironment`, or `UnpickleProofState`
+            verbose: Whether to print additional information
+            timeout: The timeout for the request in seconds
+
+        Returns:
+            Depending on the request type, the response will be one of the following:
+                `CommandResponse`, `ProofStepResponse`, or `LeanError`
         """
         return await asyncio.to_thread(self.run, request, verbose=verbose, timeout=timeout, **kwargs)  # type: ignore
 
@@ -319,23 +384,26 @@ class AutoLeanServer(LeanServer):
         """
         This class is a Python wrapper for the Lean REPL. `AutoLeanServer` differs from `LeanServer` by automatically \
         restarting when it runs out of memory to clear Lean environment states. \
-        It also automatically recovers from timeouts (). \
+        It also automatically recovers from timeouts. \
         An exponential backoff strategy is used to restart the server, making this class slightly more friendly for multiprocessing
         than `LeanServer` when multiple instances are competing for resources. \
         Please refer to the [documentation](https://augustepoiroux.github.io/LeanInteract/stable/user-guide/basic-usage/) for usage examples.
 
-        A session cache is implemented to keep user-selected environment / proof states across these automatic restarts. \
-        Use the `add_to_session_cache` parameter in the different class methods to add the command to \
-        the session cache. `AutoLeanServer` works best when only a few states are cached simultaneously. \
-        You can use `remove_from_session_cache` and `clear_session_cache` to clear the session cache. \
-        Cached state indices are negative integers starting from -1 to not conflict with the positive integers used by the Lean REPL.
+        Note:
+            A session cache is implemented to keep user-selected environment / proof states across these automatic restarts. \
+            Use the `add_to_session_cache` parameter in the different class methods to add the command to \
+            the session cache. `AutoLeanServer` works best when only a few states are cached simultaneously. \
+            You can use `remove_from_session_cache` and `clear_session_cache` to clear the session cache. \
+            Cached state indices are negative integers starting from -1 to not conflict with the positive integers used by the Lean REPL.
 
-        **Note:** the session cache is specific to each `AutoLeanServer` instance and is cleared when the instance is deleted. \
-        If you want truly persistent states, you can use the `pickle` and `unpickle` methods to save and load states to disk.
+        Note:
+            The session cache is specific to each `AutoLeanServer` instance and is cleared when the instance is deleted. \
+            If you want truly persistent states, you can use the `pickle` and `unpickle` methods to save and load states to disk.
 
-        \u26a0 Multiprocessing: instantiate the config before starting multiprocessing. Then instantiate one `LeanServer`
-        per process by passing the config instance to the constructor. This will ensure that the REPL is already set up
-        for your specific environment and avoid concurrency conflicts.
+        Warning:
+            Instantiate a single config before starting multiprocessing. Then instantiate one `LeanServer`
+            per process by passing the config instance to the constructor. This will ensure that the REPL is already set up
+            for your specific environment and avoid concurrency conflicts.
 
         Args:
             config: The configuration for the Lean server.
@@ -361,6 +429,12 @@ class AutoLeanServer(LeanServer):
         return state_id
 
     def restart(self, verbose: bool = False) -> None:
+        """
+        Restart the Lean REPL server and reload the session cache.
+
+        Args:
+            verbose: Whether to print additional information during the restart process.
+        """
         super().restart()
         self._session_cache.reload(self, timeout_per_state=DEFAULT_TIMEOUT, verbose=verbose)
 
@@ -427,6 +501,14 @@ class AutoLeanServer(LeanServer):
         return super().run_dict(request=request, verbose=verbose, timeout=timeout)
 
     def run_dict(self, request: dict, verbose: bool = False, timeout: float | None = DEFAULT_TIMEOUT) -> dict:
+        """
+        Warning:
+            This method is not available with automated memory management. Please use `run`, or use `run_dict` from the `LeanServer` class.
+
+        Raises:
+            NotImplementedError: This method is not available with automated memory management.
+                Please use `run`, or use `run_dict` from the `LeanServer` class.
+        """
         raise NotImplementedError(
             "This method is not available with automated memory management. Please use `run`, or use `run_dict` from the `LeanServer` class."
         )
@@ -465,21 +547,14 @@ class AutoLeanServer(LeanServer):
 
         Args:
             request: The Lean REPL request to execute. Must be one of the following types:
-                - `Command`
-                - `File`
-                - `ProofStep`
-                - `PickleEnvironment`
-                - `PickleProofState`
-                - `UnpickleEnvironment`
-                - `UnpickleProofState`
+                `Command`, `File`, `ProofStep`, `PickleEnvironment`, `PickleProofState`,
+                `UnpickleEnvironment`, or `UnpickleProofState`
             verbose: Whether to print additional information
             timeout: The timeout for the request in seconds
 
         Returns:
             Depending on the request type, the response will be one of the following:
-            - `CommandResponse`
-            - `ProofStepResponse`
-            - `LeanError`
+                `CommandResponse`, `ProofStepResponse`, or `LeanError`
         """
         request_dict = request.model_dump(exclude_none=True, by_alias=True)
         result_dict = self._run_dict_backoff(request=request_dict, verbose=verbose, timeout=timeout)
@@ -531,7 +606,20 @@ class AutoLeanServer(LeanServer):
         add_to_session_cache: bool = False,
     ) -> BaseREPLResponse | LeanError:
         """
-        Asynchronous version of run() for AutoLeanServer. Runs the blocking run() in a thread pool.
+        Asynchronous version of `run()` for AutoLeanServer. Runs the blocking `run()` in a thread pool.
+
+        Args:
+            request: The Lean REPL request to execute. Must be one of the following types:
+                `Command`, `FileCommand`, `ProofStep`, `PickleEnvironment`, `PickleProofState`,
+                `UnpickleEnvironment`, or `UnpickleProofState`
+            verbose: Whether to print additional information
+            timeout: The timeout for the request in seconds
+            add_to_session_cache: Whether to add the command to the session cache. \
+                If `True`, the command will be added to the session cache and the response will be updated with the new environment or proof state id.
+
+        Returns:
+            Depending on the request type, the response will be one of the following:
+                `CommandResponse`, `ProofStepResponse`, or `LeanError`
         """
         return await asyncio.to_thread(
             self.run,

@@ -1,3 +1,10 @@
+"""
+**Module:** `lean_interact.config`
+
+This module provides the `LeanREPLConfig` class, which is used to configure the Lean REPL (Read-Eval-Print Loop) used
+by the Lean servers in `lean_interact.server`.
+"""
+
 import shutil
 import subprocess
 from os import PathLike
@@ -75,9 +82,32 @@ class LeanREPLConfig:
                 The maximum memory usage in MB for the Lean server. Setting this value too low may lead to more command processing failures.
                 Only available on Linux platforms.
                 Default is `None`, which means no limit.
-            timeout_lock:
             verbose:
                 Whether to print additional information during the setup process.
+
+        Examples:
+            ```python
+            # Basic configuration with default settings
+            config = LeanREPLConfig(verbose=True)
+
+            # Configuration with specific Lean version
+            config = LeanREPLConfig(lean_version="v4.19.0", verbose=True)
+
+            # Configuration with memory limits
+            config = LeanREPLConfig(memory_hard_limit_mb=2000)
+
+            # Configuration with custom REPL version and repository
+            config = LeanREPLConfig(
+                repl_rev="v4.21.0-rc3",
+                repl_git="https://github.com/leanprover-community/repl"
+            )
+
+            # Working with projects
+            config = LeanREPLConfig(
+                project=LocalProject(directory="/path/to/project"),
+                verbose=True
+            )
+            ```
         """
         if project is not None and lean_version is not None:
             raise ValueError(

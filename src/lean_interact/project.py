@@ -1,3 +1,12 @@
+"""
+**Module:** `lean_interact.project`
+
+This module provides classes for managing Lean projects, including local directories and git repositories.
+It supports automatic building and dependency management using `lake`, and can be used to create temporary projects
+with specific configurations.
+It is useful for setting up Lean environments for development, testing, or running benchmarks without manual setup.
+"""
+
 import hashlib
 import shutil
 import subprocess
@@ -96,7 +105,19 @@ class BaseProject:
 
 @dataclass(frozen=True, kw_only=True)
 class LocalProject(BaseProject):
-    """Configuration for using an existing local Lean project directory."""
+    """Configuration for using an existing local Lean project directory.
+
+    Examples:
+        ```python
+        # Use an existing local project
+        project = LocalProject(
+            directory="/path/to/my/lean/project",
+            auto_build=True  # Build the project automatically
+        )
+
+        config = LeanREPLConfig(project=project)
+        ```
+    """
 
     directory: str | PathLike
     """Path to the local Lean project directory."""
@@ -109,7 +130,21 @@ class LocalProject(BaseProject):
 
 @dataclass(frozen=True, kw_only=True)
 class GitProject(BaseProject):
-    """Configuration for using an online git repository containing a Lean project."""
+    """Configuration for using an online git repository containing a Lean project.
+
+    Examples:
+        ```python
+        # Clone and use a Git repository
+        project = GitProject(
+            url="https://github.com/user/lean-project",
+            rev="main",  # Optional: specific branch/tag/commit
+            directory="/custom/cache/dir",  # Optional: custom directory
+            force_pull=False  # Optional: force update on each use
+        )
+
+        config = LeanREPLConfig(project=project)
+        ```
+    """
 
     url: str
     """The git URL of the repository to clone."""
@@ -313,7 +348,29 @@ class BaseTempProject(BaseProject):
 
 @dataclass(frozen=True, kw_only=True)
 class TemporaryProject(BaseTempProject):
-    """Configuration for creating a temporary Lean project with custom lakefile content."""
+    """Configuration for creating a temporary Lean project with custom lakefile content.
+
+    Examples:
+        ```python
+        # Create a temporary project with custom lakefile
+        project = TemporaryProject(
+            lean_version="v4.19.0",
+            content=\"\"\"
+        import Lake
+        open Lake DSL
+
+        package "my_temp_project" where
+        version := v!"0.1.0"
+
+        require mathlib from git
+        "https://github.com/leanprover-community/mathlib4.git" @ "v4.19.0"
+        \"\"\",
+            lakefile_type="lean"  # or "toml"
+        )
+
+        config = LeanREPLConfig(project=project)
+        ```
+    """
 
     content: str
     """The content to write to the lakefile (either lakefile.lean or lakefile.toml format)."""
@@ -335,7 +392,7 @@ class TemporaryProject(BaseTempProject):
 
 @dataclass(frozen=True)
 class LeanRequire:
-    """Lean project dependency specification for lakefile.lean files."""
+    """Lean project dependency specification for `lakefile.lean` files."""
 
     name: str
     """The name of the dependency package."""
@@ -359,11 +416,32 @@ class TempRequireProject(BaseTempProject):
     version of mathlib will be used. This feature has been developed mostly to be able to run
     benchmarks using Mathlib as a dependency (such as ProofNet# or MiniF2F) without having
     to manually set up a Lean project.
+
+    Examples:
+        ```python
+        # Create a temporary project with Mathlib
+        project = TempRequireProject(
+            lean_version="v4.19.0",
+            require="mathlib"  # Shortcut for Mathlib
+        )
+
+        # Or with custom dependencies
+        project = TempRequireProject(
+            lean_version="v4.19.0",
+            require=[
+                LeanRequire("mathlib", "https://github.com/leanprover-community/mathlib4.git", "v4.19.0"),
+                LeanRequire("my_lib", "https://github.com/user/my-lib.git", "v1.0.0")
+            ]
+        )
+
+        config = LeanREPLConfig(project=project)
+        ```
     """
 
     require: Literal["mathlib"] | LeanRequire | list[LeanRequire | Literal["mathlib"]]
     """
     The dependencies to include in the project. Can be:
+
     - "mathlib" for automatic Mathlib dependency matching the Lean version
     - A single LeanRequire object for a custom dependency
     - A list of dependencies (mix of "mathlib" and LeanRequire objects)

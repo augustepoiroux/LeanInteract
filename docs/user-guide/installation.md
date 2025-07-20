@@ -12,11 +12,7 @@ Before installing LeanInteract, ensure you have the following prerequisites:
 - Git (for Lean installation)
 - [Lean 4](https://leanprover-community.github.io/get_started.html) (optional - LeanInteract can install it for you)
 
-Your system should be one of:
-
-- Windows
-- macOS
-- Linux
+We recommend using Linux or macOS for the best experience, but LeanInteract also supports Windows.
 
 ## Installation Steps
 

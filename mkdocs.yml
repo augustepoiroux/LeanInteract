@@ -11,6 +11,7 @@ copyright: Copyright &copy; 2025 Auguste Poiroux
 
 theme:
   name: material
+  custom_dir: docs/theme
   palette:
     # Light mode - respect browser preference and use as default
     - media: "(prefers-color-scheme: light)"
@@ -30,9 +31,13 @@ theme:
         name: Switch to light mode
   features:
     - navigation.instant
+    - navigation.instant.progress
     - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
     - navigation.expand
+    - navigation.path
     - navigation.top
     - search.suggest
     - search.highlight
@@ -62,6 +67,7 @@ extra:
   version:
     provider: mike
     default: stable
+    alias: true
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/augustepoiroux/LeanInteract
@@ -80,13 +86,24 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          selection:
-            docstring_style: google
-          rendering:
-            show_source: true
+          options:
             show_root_heading: true
-            show_category_heading: true
+            show_root_full_path: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            inherited_members: true
             members_order: source
+            filters: ["!^_"]
+            docstring_style: google
+            merge_init_into_class: true
+            show_if_no_docstring: true
+            show_source: true
+            annotations_path: brief
+            separate_signature: true
+            show_signature_annotations: true
+            show_overloads: false
+            unwrap_annotated: true
+            signature_crossrefs: true
   - execute:
       execute_without_tag: [] # Don't execute any files by default
       include:
@@ -120,21 +137,21 @@ markdown_extensions:
       custom_checkbox: true
 
 nav:
-  - Home: index.md
-  - Installation: installation.md
+  - LeanInteract: index.md
   - User Guide:
+      - Installation: user-guide/installation.md
       - Getting Started: user-guide/getting-started.md
       - Basic Usage: user-guide/basic-usage.md
       - Tactic Mode: user-guide/tactic-mode.md
+      - Examples: user-guide/examples.md
       - Custom Lean Configuration: user-guide/custom-lean-configuration.md
+      - Troubleshooting: user-guide/troubleshooting.md
   - API Reference:
-      - LeanREPLConfig: api/config.md
-      - LeanServer: api/server.md
+      - REPL Configuration: api/config.md
+      - Lean Server: api/server.md
+      - Interface: api/interface.md
       - Projects: api/project.md
       - Session Cache: api/sessioncache.md
-      - Interface: api/interface.md
       - Utils: api/utils.md
-  - Examples: examples.md
-  - Troubleshooting: troubleshooting.md
   - Contributing: contributing.md
   - Changelog: changelog.md

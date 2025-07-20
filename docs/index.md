@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # LeanInteract
 
 [![PyPI version](https://img.shields.io/pypi/v/lean-interact.svg)](https://pypi.org/project/lean-interact/)
@@ -46,4 +51,4 @@ server = LeanServer(config)
 server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id"))
 ```
 
-Check out the [Installation](installation.md) guide for detailed setup instructions and the [User Guide](user-guide/getting-started.md) for usage examples.
+Check out the [Installation](user-guide/installation.md) guide for detailed setup instructions and the [User Guide](user-guide/getting-started.md) for usage examples.
