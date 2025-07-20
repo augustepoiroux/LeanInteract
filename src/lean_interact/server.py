@@ -40,7 +40,7 @@ class LeanServer:
     def __init__(self, config: LeanREPLConfig):
         """
         This class is a Python wrapper for the Lean REPL. Please refer to the \
-        [Lean REPL documentation](https://github.com/leanprover-community/repl) to learn more about the Lean REPL commands.
+        [documentation](https://augustepoiroux.github.io/LeanInteract/stable/user-guide/basic-usage/) for usage examples.
 
         \u26a0 Multiprocessing: instantiate one config before starting multiprocessing. Then instantiate one `LeanServer`
         per process by passing the config instance to the constructor. This will ensure that the REPL is already set up
@@ -173,7 +173,9 @@ class LeanServer:
                 raise TimeoutError(f"The Lean server did not respond in time ({timeout=}) and is now killed.")
             if output:
                 return output
-            raise BrokenPipeError("The Lean server returned no output.")
+            if output.strip() == "":
+                raise BrokenPipeError("The Lean server returned no output.")
+            raise BrokenPipeError(f"The Lean server closed unexpectedly with the output:\n`{output}`")
 
     def _parse_repl_output(self, raw_output: str, verbose: bool) -> dict:
         """Parse JSON response."""
@@ -209,7 +211,7 @@ class LeanServer:
             self.kill()
             raise ConnectionAbortedError(
                 "The Lean server closed unexpectedly. Possible reasons (not exhaustive):\n"
-                "- An uncaught exception in the Lean REPL (for example, an inexistent file has been requested)\n"
+                "- An uncaught exception in the Lean REPL\n"
                 "- Not enough memory and/or compute available\n"
                 "- The cached Lean REPL is corrupted. In this case, clear the cache"
                 " using the `clear-lean-cache` command."
@@ -320,8 +322,7 @@ class AutoLeanServer(LeanServer):
         It also automatically recovers from timeouts (). \
         An exponential backoff strategy is used to restart the server, making this class slightly more friendly for multiprocessing
         than `LeanServer` when multiple instances are competing for resources. \
-        Please refer to the original [Lean REPL documentation](https://github.com/leanprover-community/repl) to learn more about the \
-        Lean REPL commands.
+        Please refer to the [documentation](https://augustepoiroux.github.io/LeanInteract/stable/user-guide/basic-usage/) for usage examples.
 
         A session cache is implemented to keep user-selected environment / proof states across these automatic restarts. \
         Use the `add_to_session_cache` parameter in the different class methods to add the command to \
