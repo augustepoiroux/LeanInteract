@@ -135,9 +135,10 @@
           <aside class="md-banner md-banner--warning">
             <div class="md-banner__inner md-grid md-typeset">
               
-  
-  
-  
+  You're not viewing the latest stable version of LeanInteract.
+  <a href="../../..">
+    <strong>Click here to go to the stable version.</strong>
+  </a>
 
             </div>
             <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
@@ -1133,7 +1134,7 @@
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Run a simple theorem</span>
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := id&quot;</span><span class="p">))</span>
 </span></code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[23:05:53] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[23:09:19] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         06cfce9a065d673bf0b803e652469462df6efe84                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
 </pre>
 
@@ -1152,7 +1153,7 @@
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Use environment state 0 for the next command</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;#check x&quot;</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">response1</span><span class="o">.</span><span class="n">env</span><span class="p">))</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=2, messages=[Message(end_pos=Pos(column=6, line=1), severity=&#39;info&#39;, data=&#39;x : Nat&#39;, start_pos=Pos(column=0, line=1))])
+<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=2, messages=[Message(severity=&#39;info&#39;, start_pos=Pos(column=0, line=1), data=&#39;x : Nat&#39;, end_pos=Pos(column=6, line=1))])
 </code></pre></div>
 <h2 id="processing-lean-files">Processing Lean Files<a class="headerlink" href="#processing-lean-files" title="Permanent link">&para;</a></h2>
 <p>You can process entire Lean files using the <code>FileCommand</code> class:</p>
@@ -1178,14 +1179,14 @@
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">))</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">tactics</span><span class="p">)</span>  <span class="c1"># Shows tactics used</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[Tactic(end_pos=Pos(column=47, line=1), used_constants=[&#39;instOfNatNat&#39;, &#39;imp_self._simp_1&#39;, &#39;Nat&#39;, &#39;of_eq_true&#39;, &#39;OfNat.ofNat&#39;, &#39;Eq&#39;], proof_state=0, goals=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, tactic=&#39;simp&#39;, start_pos=Pos(column=43, line=1))]
+<div class="language-text highlight"><pre><span></span><code>[Tactic(proof_state=0, goals=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, tactic=&#39;simp&#39;, start_pos=Pos(column=43, line=1), end_pos=Pos(column=47, line=1), used_constants=[&#39;instOfNatNat&#39;, &#39;imp_self._simp_1&#39;, &#39;Nat&#39;, &#39;of_eq_true&#39;, &#39;OfNat.ofNat&#39;, &#39;Eq&#39;])]
 </code></pre></div>
 <h2 id="working-with-sorries">Working with Sorries<a class="headerlink" href="#working-with-sorries" title="Permanent link">&para;</a></h2>
 <p>When Lean code contains <code>sorry</code> (incomplete proofs), LeanInteract returns information about these <code>sorry</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := sorry&quot;</span><span class="p">))</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">sorries</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Sorry(proof_state=1, end_pos=Pos(column=45, line=1), goal=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, start_pos=Pos(column=40, line=1))
+<div class="language-text highlight"><pre><span></span><code>Sorry(start_pos=Pos(column=40, line=1), proof_state=1, goal=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, end_pos=Pos(column=45, line=1))
 </code></pre></div>
 <p>This response will include a list of <code>Sorry</code> objects, each containing:</p>
 <ul>
@@ -1206,7 +1207,7 @@
 </span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 </span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Command succeeded: CommandResponse(env=5, messages=[Message(end_pos=Pos(column=7, line=1), severity=&#39;error&#39;, data=&#39;unexpected identifier; expected command&#39;, start_pos=Pos(column=0, line=1))])
+<div class="language-text highlight"><pre><span></span><code>Command succeeded: CommandResponse(env=5, messages=[Message(severity=&#39;error&#39;, start_pos=Pos(column=0, line=1), data=&#39;unexpected identifier; expected command&#39;, end_pos=Pos(column=7, line=1))])
 </code></pre></div>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <p>Now that you understand basic operations, you can:</p>
