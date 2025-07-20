@@ -107,7 +107,7 @@ def format_release(release):
 
 def generate_changelog(releases):
     """Generate new changelog content with all releases"""
-    header = "# Changelog\n\nThis page documents the notable changes to LeanInteract."
+    header = "---\nhide:\n  - navigation\n---\n# Changelog\n\nThis page documents the notable changes to LeanInteract."
 
     content = header
     for release in releases:
