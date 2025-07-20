@@ -1,8 +1,21 @@
 {% extends "base.html" %}
 
 {% block outdated %}
-  You're not viewing the latest version.
-  <a href="{{ '../' ~ base_url }}">
-    <strong>Click here to go to latest.</strong>
-  </a>
+  {% set current = config.extra.version.current %}
+  {% set latest = config.extra.version.latest %}
+  {% if current == 'dev' %}
+    <div class="admonition warning">
+      <p>
+        <strong>Development version:</strong>
+        You are viewing the <code>dev</code> documentation. This version is only available if you install LeanInteract directly from GitHub:<br>
+        <code>pip install git+https://github.com/augustepoiroux/LeanInteract.git</code><br>
+        The latest stable features are available on <a href="{{ '../' ~ base_url }}"><strong>PyPI</strong></a>.
+      </p>
+    </div>
+  {% elif current and latest and current != latest and current not in ['latest'] %}
+    You're not viewing the latest version.
+    <a href="{{ '../' ~ base_url }}">
+      <strong>Click here to go to latest.</strong>
+    </a>
+  {% endif %}
 {% endblock %}
