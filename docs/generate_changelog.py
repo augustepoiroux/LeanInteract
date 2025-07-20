@@ -107,7 +107,7 @@ def format_release(release):
 
 def generate_changelog(releases):
     """Generate new changelog content with all releases"""
-    header = "---\nhide:\n  - navigation\n---\n# Changelog\n\nThis page documents the notable changes to LeanInteract."
+    header = "# Changelog\n\nThis page documents the notable changes to LeanInteract."
 
     content = header
     for release in releases:
@@ -117,6 +117,9 @@ def generate_changelog(releases):
     content += f"For development history prior to the first release, please see the [GitHub commit history](https://github.com/{REPO_OWNER}/{REPO_NAME}/commits/main)."
 
     content = mdformat.text(content, extensions={"mkdocs"})
+
+    # add header content for mkdocs
+    content = "---\nhide:\n  - navigation\n---\n\n" + content
 
     with open(CHANGELOG_PATH, "w", encoding="utf-8") as f:
         f.write(content)
