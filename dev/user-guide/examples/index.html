@@ -12,16 +12,16 @@
         <meta name="author" content="Auguste Poiroux">
       
       
-        <link rel="canonical" href="https://augustepoiroux.github.io/LeanInteract/dev/examples/">
+        <link rel="canonical" href="https://augustepoiroux.github.io/LeanInteract/dev/user-guide/examples/">
       
       
-        <link rel="prev" href="../api/utils/">
+        <link rel="prev" href="../tactic-mode/">
       
       
-        <link rel="next" href="../troubleshooting/">
+        <link rel="next" href="../custom-lean-configuration/">
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
     
     
@@ -30,10 +30,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
   
@@ -93,9 +93,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -132,6 +132,18 @@
     
       <div data-md-color-scheme="default" data-md-component="outdated" hidden>
         
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You're not viewing the latest version.
+  <a href="../../..">
+    <strong>Click here to go to latest.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
       </div>
     
     
@@ -139,9 +151,9 @@
 
   
 
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="LeanInteract" class="md-header__button md-logo" aria-label="LeanInteract" data-md-component="logo">
+    <a href="../.." title="LeanInteract" class="md-header__button md-logo" aria-label="LeanInteract" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -256,13 +268,121 @@
     
   </nav>
   
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  LeanInteract
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../installation/" class="md-tabs__link">
+          
+  
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/config/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../contributing/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
 </header>
     
     <div class="md-container" data-md-component="container">
       
       
-        
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -276,10 +396,12 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="LeanInteract" class="md-nav__button md-logo" aria-label="LeanInteract" data-md-component="logo">
+    <a href="../.." title="LeanInteract" class="md-nav__button md-logo" aria-label="LeanInteract" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -309,12 +431,12 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Home
+    LeanInteract
     
   </span>
   
@@ -326,6 +448,54 @@
     
       
       
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guide
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            User Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
   
   
   
@@ -345,51 +515,7 @@
     </li>
   
 
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    User Guide
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
-            <span class="md-nav__icon md-icon"></span>
-            User Guide
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+              
             
               
                 
@@ -398,7 +524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../user-guide/getting-started/" class="md-nav__link">
+      <a href="../getting-started/" class="md-nav__link">
         
   
   
@@ -421,7 +547,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../user-guide/basic-usage/" class="md-nav__link">
+      <a href="../basic-usage/" class="md-nav__link">
         
   
   
@@ -444,7 +570,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../user-guide/tactic-mode/" class="md-nav__link">
+      <a href="../tactic-mode/" class="md-nav__link">
         
   
   
@@ -462,226 +588,6 @@
             
               
                 
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../user-guide/custom-lean-configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Custom Lean Configuration
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    API Reference
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            API Reference
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/config/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    LeanREPLConfig
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/server/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    LeanServer
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/project/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Projects
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/sessioncache/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Session Cache
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/interface/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Interface
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/utils/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Utils
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
   
   
     
@@ -779,9 +685,33 @@
     </li>
   
 
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-lean-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Lean Configuration
     
-      
-      
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
   
   
   
@@ -801,6 +731,204 @@
     </li>
   
 
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    REPL Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lean Server
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/interface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Projects
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/sessioncache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Session Cache
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Utils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
@@ -809,7 +937,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
@@ -831,7 +959,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
+      <a href="../../changelog/" class="md-nav__link">
         
   
   
@@ -945,11 +1073,7 @@
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="s2">  | succ a ih =&gt; sorry</span>
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="s2">&quot;&quot;&quot;</span><span class="p">))</span>
 </span></code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[21:21:24] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#346" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">346</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         06cfce9a065d673bf0b803e652469462df6efe84                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
-</pre>
-
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=0, sorries=[Sorry(goal=&#39;case succ\nb a : Nat\nih : a + b = b + a\n⊢ a + 1 + b = b + (a + 1)&#39;, proof_state=0, end_pos=Pos(column=22, line=5), start_pos=Pos(column=17, line=5))], messages=[Message(severity=&#39;warning&#39;, end_pos=Pos(column=16, line=2), start_pos=Pos(column=8, line=2), data=&quot;declaration uses &#39;sorry&#39;&quot;)])
+<div class="language-text highlight"><pre><span></span><code>CommandResponse(sorries=[Sorry(goal=&#39;case succ\nb a : Nat\nih : a + b = b + a\n⊢ a + 1 + b = b + (a + 1)&#39;, start_pos=Pos(line=5, column=17), proof_state=0, end_pos=Pos(line=5, column=22))], messages=[Message(start_pos=Pos(line=2, column=8), data=&quot;declaration uses &#39;sorry&#39;&quot;, severity=&#39;warning&#39;, end_pos=Pos(line=2, column=16))], env=0)
 </code></pre></div>
 <h2 id="working-with-mathlib">Working with Mathlib<a class="headerlink" href="#working-with-mathlib" title="Permanent link">&para;</a></h2>
 <p>This example shows how to use Mathlib to work with more advanced mathematical concepts:</p>
@@ -975,7 +1099,7 @@
 
 info: installing /home/runner/.elan/toolchains/leanprover--lean4---v4.19.0
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[21:21:59] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Preparing Lean environment with dependencies <span style="font-weight: bold">(</span>may take a while the first         <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">project.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py#294" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">294</span></a>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[22:49:54] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Preparing Lean environment with dependencies <span style="font-weight: bold">(</span>may take a while the first         <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">project.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py#329" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">329</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         time<span style="font-weight: bold">)</span><span style="color: #808000; text-decoration-color: #808000">...</span>                                                                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
 </pre>
 
@@ -1031,17 +1155,17 @@ info: mathlib: running post-update hooks
 
 
 ✔ [6/12] Built Cache.Requests
-✔ [7/12] Built Cache.Hashing:c.o
 
 
-✔ [8/12] Built Cache.Main
+✔ [7/12] Built Cache.Main
+✔ [8/12] Built Cache.Hashing:c.o
 
 
 ✔ [9/12] Built Cache.IO:c.o
-✔ [10/12] Built Cache.Main:c.o
 
 
-✔ [11/12] Built Cache.Requests:c.o
+✔ [10/12] Built Cache.Requests:c.o
+✔ [11/12] Built Cache.Main:c.o
 
 
 ✔ [12/12] Built cache
@@ -1052,85 +1176,44 @@ info: mathlib: running post-update hooks
 </code></pre></div>
 <p>0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0</p>
-<p>100 1075k  100 1075k    0     0  3449k      0 --:--:-- --:--:-- --:--:-- 3449k</p>
+<p>100 1075k  100 1075k    0     0  6213k      0 --:--:-- --:--:-- --:--:-- 6213k</p>
 <div class="language-text highlight"><pre><span></span><code>installing leantar 0.1.15
 
 
 Attempting to download 6641 file(s)
 </code></pre></div>
 <p>Downloaded: 1 file(s) [attempted 1/6641 = 0%]
-Downloaded: 72 file(s) [attempted 72/6641 = 1%]
-Downloaded: 160 file(s) [attempted 160/6641 = 2%]</p>
-<p>Downloaded: 252 file(s) [attempted 252/6641 = 3%]
-Downloaded: 357 file(s) [attempted 357/6641 = 5%]</p>
-<p>Downloaded: 456 file(s) [attempted 456/6641 = 6%]
-Downloaded: 563 file(s) [attempted 563/6641 = 8%]</p>
-<p>Downloaded: 665 file(s) [attempted 665/6641 = 10%]
-Downloaded: 770 file(s) [attempted 770/6641 = 11%]</p>
-<p>Downloaded: 883 file(s) [attempted 883/6641 = 13%]
-Downloaded: 993 file(s) [attempted 993/6641 = 14%]</p>
-<p>Downloaded: 1099 file(s) [attempted 1099/6641 = 16%]
-Downloaded: 1201 file(s) [attempted 1201/6641 = 18%]</p>
-<p>Downloaded: 1310 file(s) [attempted 1310/6641 = 19%]
-Downloaded: 1426 file(s) [attempted 1426/6641 = 21%]</p>
-<p>Downloaded: 1528 file(s) [attempted 1528/6641 = 23%]
-Downloaded: 1630 file(s) [attempted 1630/6641 = 24%]</p>
-<p>Downloaded: 1739 file(s) [attempted 1739/6641 = 26%]
-Downloaded: 1848 file(s) [attempted 1848/6641 = 27%]
-Downloaded: 1953 file(s) [attempted 1953/6641 = 29%]</p>
-<p>Downloaded: 2057 file(s) [attempted 2057/6641 = 30%]
-Downloaded: 2164 file(s) [attempted 2164/6641 = 32%]</p>
-<p>Downloaded: 2270 file(s) [attempted 2270/6641 = 34%]
-Downloaded: 2379 file(s) [attempted 2379/6641 = 35%]</p>
-<p>Downloaded: 2488 file(s) [attempted 2488/6641 = 37%]
-Downloaded: 2597 file(s) [attempted 2597/6641 = 39%]</p>
-<p>Downloaded: 2704 file(s) [attempted 2704/6641 = 40%]
-Downloaded: 2808 file(s) [attempted 2808/6641 = 42%]</p>
-<p>Downloaded: 2920 file(s) [attempted 2920/6641 = 43%]
-Downloaded: 3031 file(s) [attempted 3031/6641 = 45%]
-Downloaded: 3133 file(s) [attempted 3133/6641 = 47%]</p>
-<p>Downloaded: 3238 file(s) [attempted 3238/6641 = 48%]
-Downloaded: 3346 file(s) [attempted 3346/6641 = 50%]</p>
-<p>Downloaded: 3456 file(s) [attempted 3456/6641 = 52%]
-Downloaded: 3562 file(s) [attempted 3562/6641 = 53%]</p>
-<p>Downloaded: 3667 file(s) [attempted 3667/6641 = 55%]
-Downloaded: 3776 file(s) [attempted 3776/6641 = 56%]</p>
-<p>Downloaded: 3875 file(s) [attempted 3875/6641 = 58%]
-Downloaded: 3984 file(s) [attempted 3984/6641 = 59%]
-Downloaded: 4088 file(s) [attempted 4088/6641 = 61%]</p>
-<p>Downloaded: 4198 file(s) [attempted 4198/6641 = 63%]
-Downloaded: 4304 file(s) [attempted 4304/6641 = 64%]
-Downloaded: 4411 file(s) [attempted 4411/6641 = 66%]</p>
-<p>Downloaded: 4518 file(s) [attempted 4518/6641 = 68%]
-Downloaded: 4622 file(s) [attempted 4622/6641 = 69%]</p>
-<p>Downloaded: 4726 file(s) [attempted 4726/6641 = 71%]
-Downloaded: 4835 file(s) [attempted 4835/6641 = 72%]</p>
-<p>Downloaded: 4939 file(s) [attempted 4939/6641 = 74%]
-Downloaded: 5049 file(s) [attempted 5049/6641 = 76%]
-Downloaded: 5153 file(s) [attempted 5153/6641 = 77%]</p>
-<p>Downloaded: 5259 file(s) [attempted 5259/6641 = 79%]
-Downloaded: 5364 file(s) [attempted 5364/6641 = 80%]</p>
-<p>Downloaded: 5470 file(s) [attempted 5470/6641 = 82%]
-Downloaded: 5577 file(s) [attempted 5577/6641 = 83%]
-Downloaded: 5686 file(s) [attempted 5686/6641 = 85%]</p>
-<p>Downloaded: 5793 file(s) [attempted 5793/6641 = 87%]
-Downloaded: 5897 file(s) [attempted 5897/6641 = 88%]</p>
-<p>Downloaded: 6004 file(s) [attempted 6004/6641 = 90%]
-Downloaded: 6113 file(s) [attempted 6113/6641 = 92%]</p>
-<p>Downloaded: 6224 file(s) [attempted 6224/6641 = 93%]
-Downloaded: 6331 file(s) [attempted 6331/6641 = 95%]
-Downloaded: 6430 file(s) [attempted 6430/6641 = 96%]</p>
-<p>Downloaded: 6537 file(s) [attempted 6537/6641 = 98%]
-Downloaded: 6641 file(s) [attempted 6641/6641 = 100%]
+Downloaded: 167 file(s) [attempted 167/6641 = 2%]</p>
+<p>Downloaded: 449 file(s) [attempted 449/6641 = 6%]
+Downloaded: 746 file(s) [attempted 746/6641 = 11%]</p>
+<p>Downloaded: 1054 file(s) [attempted 1054/6641 = 15%]
+Downloaded: 1367 file(s) [attempted 1367/6641 = 20%]
+Downloaded: 1665 file(s) [attempted 1665/6641 = 25%]</p>
+<p>Downloaded: 1976 file(s) [attempted 1976/6641 = 29%]
+Downloaded: 2289 file(s) [attempted 2289/6641 = 34%]</p>
+<p>Downloaded: 2594 file(s) [attempted 2594/6641 = 39%]
+Downloaded: 2900 file(s) [attempted 2900/6641 = 43%]</p>
+<p>Downloaded: 3208 file(s) [attempted 3208/6641 = 48%]
+Downloaded: 3514 file(s) [attempted 3514/6641 = 52%]</p>
+<p>Downloaded: 3829 file(s) [attempted 3829/6641 = 57%]
+Downloaded: 4142 file(s) [attempted 4142/6641 = 62%]
+Downloaded: 4452 file(s) [attempted 4452/6641 = 67%]</p>
+<p>Downloaded: 4756 file(s) [attempted 4756/6641 = 71%]
+Downloaded: 5061 file(s) [attempted 5061/6641 = 76%]</p>
+<p>Downloaded: 5372 file(s) [attempted 5372/6641 = 80%]
+Downloaded: 5668 file(s) [attempted 5668/6641 = 85%]
+Downloaded: 5975 file(s) [attempted 5975/6641 = 89%]</p>
+<p>Downloaded: 6273 file(s) [attempted 6273/6641 = 94%]
+Downloaded: 6592 file(s) [attempted 6592/6641 = 99%]
 Downloaded: 6641 file(s) [attempted 6641/6641 = 100%] (100% success)</p>
 <div class="language-text highlight"><pre><span></span><code>Decompressing 6641 file(s)
-Unpacked in 14961 ms
+Unpacked in 14311 ms
 Completed successfully!
 
 
 No files to download
 Decompressing 6641 file(s)
-Unpacked in 154 ms
+Unpacked in 94 ms
 Completed successfully!
 
 
@@ -1139,11 +1222,11 @@ Completed successfully!
 ✔ [4/4] Built dummy
 Build completed successfully.
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[21:23:19] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#346" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">346</span></a>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[22:51:05] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         a72a2c9aea205f6f50416621a92da1553d1e65d4                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
 </pre>
 
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=0, messages=[Message(severity=&#39;info&#39;, end_pos=Pos(column=12, line=8), start_pos=Pos(column=0, line=4), data=&#39;Goals accomplished!&#39;)])
+<div class="language-text highlight"><pre><span></span><code>CommandResponse(messages=[Message(start_pos=Pos(line=4, column=0), data=&#39;Goals accomplished!&#39;, severity=&#39;info&#39;, end_pos=Pos(line=8, column=12))], env=0)
 </code></pre></div>
 <h2 id="using-custom-repl-versions">Using Custom REPL Versions<a class="headerlink" href="#using-custom-repl-versions" title="Permanent link">&para;</a></h2>
 <p>This example demonstrates how to use a specific REPL version from a custom repository:</p>
@@ -1165,7 +1248,7 @@ Build completed successfully.
 </span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run_dict</span><span class="p">({</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;#eval Lean.versionString&quot;</span><span class="p">})</span>
 </span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># Example raw output from the REPL</span>
 </span></code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[21:23:35] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#346" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">346</span></a>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[22:51:20] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         ab9da2b867c54d709fa3720790ea7406606be28a                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
 </pre>
 
@@ -1276,13 +1359,15 @@ Build completed successfully.
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "header.autohide", "toc.follow"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "stable", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "header.autohide", "toc.follow"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
       
     
   </body>
