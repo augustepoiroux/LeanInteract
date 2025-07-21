@@ -10,7 +10,6 @@ import gc
 import json
 import os
 import platform
-import resource
 import subprocess
 import threading
 from copy import deepcopy
@@ -75,6 +74,8 @@ class LeanServer:
         # increasing stack size to avoid stack overflow in Lean REPL
         if platform.system() in ("Linux", "Darwin"):
             try:
+                import resource
+
                 resource.setrlimit(resource.RLIMIT_STACK, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
             except Exception:
                 pass
