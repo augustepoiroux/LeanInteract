@@ -273,7 +273,7 @@ def beq_plus(
         provable_without_have = False
         try:
             res_without_have = server.run(
-                Command(cmd=formal_2_code + proof_all_have, env=context_env), timeout=timeout_per_proof
+                Command(cmd=formal_code + proof_all_have, env=context_env), timeout=timeout_per_proof
             )
             if isinstance(res_without_have, CommandResponse):
                 provable_without_have = res_without_have.lean_code_is_valid(allow_sorry=False)
