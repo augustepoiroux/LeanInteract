@@ -71,15 +71,6 @@ class LeanServer:
     def start(self) -> None:
         """Start the Lean REPL server process. This is called automatically in the constructor."""
 
-        # increasing stack size to avoid stack overflow in Lean REPL
-        if platform.system() in ("Linux", "Darwin"):
-            try:
-                import resource
-
-                resource.setrlimit(resource.RLIMIT_STACK, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
-            except Exception:
-                pass
-
         self._proc = subprocess.Popen(
             [
                 str(self.config.lake_path),
