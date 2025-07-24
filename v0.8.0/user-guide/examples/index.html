@@ -1073,7 +1073,7 @@
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="s2">  | succ a ih =&gt; sorry</span>
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="s2">&quot;&quot;&quot;</span><span class="p">))</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=0, sorries=[Sorry(proof_state=0, start_pos=Pos(column=17, line=5), end_pos=Pos(column=22, line=5), goal=&#39;case succ\nb a : Nat\nih : a + b = b + a\n⊢ a + 1 + b = b + (a + 1)&#39;)], messages=[Message(data=&quot;declaration uses &#39;sorry&#39;&quot;, severity=&#39;warning&#39;, start_pos=Pos(column=8, line=2), end_pos=Pos(column=16, line=2))])
+<div class="language-text highlight"><pre><span></span><code>CommandResponse(messages=[Message(start_pos=Pos(column=8, line=2), end_pos=Pos(column=16, line=2), data=&quot;declaration uses &#39;sorry&#39;&quot;, severity=&#39;warning&#39;)], env=0, sorries=[Sorry(start_pos=Pos(column=17, line=5), goal=&#39;case succ\nb a : Nat\nih : a + b = b + a\n⊢ a + 1 + b = b + (a + 1)&#39;, proof_state=0, end_pos=Pos(column=22, line=5))])
 </code></pre></div>
 <h2 id="working-with-mathlib">Working with Mathlib<a class="headerlink" href="#working-with-mathlib" title="Permanent link">&para;</a></h2>
 <p>This example shows how to use Mathlib to work with more advanced mathematical concepts:</p>
@@ -1094,139 +1094,7 @@
 </span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="s2">  assumption</span>
 </span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="s2">&quot;&quot;&quot;</span><span class="p">))</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>info: downloading https://releases.lean-lang.org/lean4/v4.19.0/lean-4.19.0-linux.tar.zst
-
-
-info: installing /home/runner/.elan/toolchains/leanprover--lean4---v4.19.0
-</code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[09:06:12] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Preparing Lean environment with dependencies <span style="font-weight: bold">(</span>may take a while the first         <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">project.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py#329" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">329</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         time<span style="font-weight: bold">)</span><span style="color: #808000; text-decoration-color: #808000">...</span>                                                                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
-</pre>
-
-<div class="language-text highlight"><pre><span></span><code>info: dummy: no previous manifest, creating one from scratch
-
-
-info: mathlib: cloning https://github.com/leanprover-community/mathlib4.git
-info: mathlib: checking out revision &#39;c44e0c8ee63ca166450922a373c7409c5d26b00b&#39;
-info: toolchain not updated; already up-to-date
-
-
-info: plausible: cloning https://github.com/leanprover-community/plausible
-info: plausible: checking out revision &#39;77e08eddc486491d7b9e470926b3dbe50319451a&#39;
-
-
-info: LeanSearchClient: cloning https://github.com/leanprover-community/LeanSearchClient
-info: LeanSearchClient: checking out revision &#39;25078369972d295301f5a1e53c3e5850cf6d9d4c&#39;
-
-
-info: importGraph: cloning https://github.com/leanprover-community/import-graph
-info: importGraph: checking out revision &#39;e6a9f0f5ee3ccf7443a0070f92b62f8db12ae82b&#39;
-
-
-info: proofwidgets: cloning https://github.com/leanprover-community/ProofWidgets4
-info: proofwidgets: checking out revision &#39;c4919189477c3221e6a204008998b0d724f49904&#39;
-
-
-info: aesop: cloning https://github.com/leanprover-community/aesop
-info: aesop: checking out revision &#39;5d50b08dedd7d69b3d9b3176e0d58a23af228884&#39;
-
-
-info: Qq: cloning https://github.com/leanprover-community/quote4
-info: Qq: checking out revision &#39;fa4f7f15d97591a9cf3aa7724ba371c7fc6dda02&#39;
-
-
-info: batteries: cloning https://github.com/leanprover-community/batteries
-info: batteries: checking out revision &#39;f5d04a9c4973d401c8c92500711518f7c656f034&#39;
-
-
-info: Cli: cloning https://github.com/leanprover/lean4-cli
-info: Cli: checking out revision &#39;02dbd02bc00ec4916e99b04b2245b30200e200d0&#39;
-info: mathlib: running post-update hooks
-
-
-✔ [2/12] Built Cache.Lean
-✔ [3/12] Built Cache.Lean:c.o
-
-
-✔ [4/12] Built Cache.IO
-
-
-✔ [5/12] Built Cache.Hashing
-
-
-✔ [6/12] Built Cache.Requests
-
-
-✔ [7/12] Built Cache.Hashing:c.o
-
-
-✔ [8/12] Built Cache.Main
-✔ [9/12] Built Cache.IO:c.o
-
-
-✔ [10/12] Built Cache.Main:c.o
-✔ [11/12] Built Cache.Requests:c.o
-
-
-✔ [12/12] Built cache
-
-
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-</code></pre></div>
-<p>0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0</p>
-<p>100 1075k  100 1075k    0     0  6789k      0 --:--:-- --:--:-- --:--:-- 6789k</p>
-<div class="language-text highlight"><pre><span></span><code>installing leantar 0.1.15
-
-
-Attempting to download 6641 file(s)
-</code></pre></div>
-<p>Downloaded: 1 file(s) [attempted 1/6641 = 0%]
-Downloaded: 248 file(s) [attempted 248/6641 = 3%]
-Downloaded: 544 file(s) [attempted 544/6641 = 8%]</p>
-<p>Downloaded: 836 file(s) [attempted 836/6641 = 12%]
-Downloaded: 1140 file(s) [attempted 1140/6641 = 17%]
-Downloaded: 1444 file(s) [attempted 1444/6641 = 21%]</p>
-<p>Downloaded: 1711 file(s) [attempted 1711/6641 = 25%]
-Downloaded: 1987 file(s) [attempted 1987/6641 = 29%]
-Downloaded: 2293 file(s) [attempted 2293/6641 = 34%]</p>
-<p>Downloaded: 2586 file(s) [attempted 2586/6641 = 38%]
-Downloaded: 2895 file(s) [attempted 2895/6641 = 43%]
-Downloaded: 3208 file(s) [attempted 3208/6641 = 48%]</p>
-<p>Downloaded: 3521 file(s) [attempted 3521/6641 = 53%]
-Downloaded: 3836 file(s) [attempted 3836/6641 = 57%]</p>
-<p>Downloaded: 4135 file(s) [attempted 4135/6641 = 62%]
-Downloaded: 4448 file(s) [attempted 4448/6641 = 66%]
-Downloaded: 4746 file(s) [attempted 4746/6641 = 71%]</p>
-<p>Downloaded: 5024 file(s) [attempted 5024/6641 = 75%]
-Downloaded: 5324 file(s) [attempted 5324/6641 = 80%]
-Downloaded: 5626 file(s) [attempted 5626/6641 = 84%]</p>
-<p>Downloaded: 5918 file(s) [attempted 5918/6641 = 89%]
-Downloaded: 6188 file(s) [attempted 6188/6641 = 93%]</p>
-<p>Downloaded: 6494 file(s) [attempted 6494/6641 = 97%]
-Downloaded: 6641 file(s) [attempted 6641/6641 = 100%] (100% success)</p>
-<div class="language-text highlight"><pre><span></span><code>Decompressing 6641 file(s)
-Unpacked in 15198 ms
-Completed successfully!
-
-
-No files to download
-Decompressing 6641 file(s)
-Unpacked in 94 ms
-Completed successfully!
-
-
-✔ [2/4] Built Main
-✔ [3/4] Built Main:c.o
-✔ [4/4] Built dummy
-Build completed successfully.
-</code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[09:07:26] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         bcd7a4921ccb784db20dafe4c2a438560a192efb                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
-</pre>
-
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=0, messages=[Message(data=&#39;Goals accomplished!&#39;, severity=&#39;info&#39;, start_pos=Pos(column=0, line=4), end_pos=Pos(column=12, line=8))])
+<div class="language-text highlight"><pre><span></span><code>CommandResponse(messages=[Message(start_pos=Pos(column=0, line=4), end_pos=Pos(column=12, line=8), data=&#39;Goals accomplished!&#39;, severity=&#39;info&#39;)], env=0)
 </code></pre></div>
 <h2 id="using-custom-repl-versions">Using Custom REPL Versions<a class="headerlink" href="#using-custom-repl-versions" title="Permanent link">&para;</a></h2>
 <p>This example demonstrates how to use a specific REPL version from a custom repository:</p>
@@ -1248,13 +1116,7 @@ Build completed successfully.
 </span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run_dict</span><span class="p">({</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;#eval Lean.versionString&quot;</span><span class="p">})</span>
 </span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># Example raw output from the REPL</span>
 </span></code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[09:07:41] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         ab9da2b867c54d709fa3720790ea7406606be28a                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
-</pre>
-
 <div class="language-text highlight"><pre><span></span><code>&quot;4.21.0-rc3&quot;
-
-
 {&#39;messages&#39;: [{&#39;severity&#39;: &#39;info&#39;, &#39;pos&#39;: {&#39;line&#39;: 1, &#39;column&#39;: 0}, &#39;endPos&#39;: {&#39;line&#39;: 1, &#39;column&#39;: 5}, &#39;data&#39;: &#39;&quot;4.21.0-rc3&quot;&#39;}], &#39;env&#39;: 1}
 </code></pre></div>
 <h2 id="real-world-examples">Real-World Examples<a class="headerlink" href="#real-world-examples" title="Permanent link">&para;</a></h2>
