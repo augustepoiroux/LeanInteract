@@ -61,10 +61,12 @@ uv run mkdocs serve
 
 ## Reporting Issues & Getting Help
 
-- **Bugs/Feature requests:**
-  1. Check [GitHub issues](https://github.com/augustepoiroux/LeanInteract/issues) first (open or closed).
-  2. If new, open an issue with a clear description and steps to reproduce.
-- **Contact:** For questions, contact the [maintainer](mailto:auguste.poiroux@epfl.ch).
+**Bugs/Feature requests:**
+
+1. Check [GitHub issues](https://github.com/augustepoiroux/LeanInteract/issues) first (open or closed).
+2. If new, open an issue with a clear description and steps to reproduce.
+
+**Contact:** For questions, contact the [maintainer](mailto:auguste.poiroux@epfl.ch).
 
 ---
 
