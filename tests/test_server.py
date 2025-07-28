@@ -401,7 +401,7 @@ lean_exe "dummy" where
 
     @unittest.mock.patch("lean_interact.server.LeanServer.run_dict")
     def test_process_request_with_negative_env_id(self, mock_super):
-        server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
+        server = AutoLeanServer(config=LeanREPLConfig(verbose=True, enable_parallel_elaboration=False))
         # Prepare restart_persistent_session_cache
         assert isinstance(server._session_cache, PickleSessionCache)
         server._session_cache._cache[-1] = PickleSessionState(-1, 10, False, "")
