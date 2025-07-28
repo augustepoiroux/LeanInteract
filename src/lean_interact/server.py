@@ -318,6 +318,10 @@ class LeanServer:
             Depending on the request type, the response will be one of the following:
                 `CommandResponse`, `ProofStepResponse`, or `LeanError`
         """
+        if isinstance(request, (Command, FileCommand)) and self.config.enable_parallel_elaboration:
+            set_options = list(request.set_options) if request.set_options is not None else []
+            set_options.append((["Elab", "async"], True))
+            request = request.model_copy(update={"set_options": set_options})
         request_dict = request.model_dump(exclude_none=True, by_alias=True)
         result_dict = self.run_dict(request=request_dict, verbose=verbose, timeout=timeout, **kwargs)
 
@@ -557,6 +561,10 @@ class AutoLeanServer(LeanServer):
             Depending on the request type, the response will be one of the following:
                 `CommandResponse`, `ProofStepResponse`, or `LeanError`
         """
+        if isinstance(request, (Command, FileCommand)) and self.config.enable_parallel_elaboration:
+            set_options = list(request.set_options) if request.set_options is not None else []
+            set_options.append((["Elab", "async"], True))
+            request = request.model_copy(update={"set_options": set_options})
         request_dict = request.model_dump(exclude_none=True, by_alias=True)
         result_dict = self._run_dict_backoff(request=request_dict, verbose=verbose, timeout=timeout)
 

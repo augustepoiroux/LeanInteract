@@ -35,6 +35,13 @@ class BaseREPLQuery(REPLBaseModel):
     """Base class for all Lean requests."""
 
 
+Name = list[str]
+
+DataValue = bool | int | str | Name
+
+Options = list[tuple[Name, DataValue]]
+
+
 class CommandOptions(REPLBaseModel):
     """Common options for `Command` and `FileCommand`."""
 
@@ -49,6 +56,9 @@ class CommandOptions(REPLBaseModel):
 
     infotree: str | None = None
     """Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored."""
+
+    set_options: Annotated[Options | None, Field(alias="setOptions")] = None
+    """Options to be set before executing the command (i.e. `set_option` commands in Lean)."""
 
 
 class Command(BaseREPLQuery, CommandOptions):

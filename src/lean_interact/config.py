@@ -40,6 +40,7 @@ class LeanREPLConfig:
         build_repl: bool = True,
         lake_path: str | PathLike = "lake",
         memory_hard_limit_mb: int | None = None,
+        enable_parallel_elaboration: bool = True,
         verbose: bool = False,
     ):
         """
@@ -82,6 +83,9 @@ class LeanREPLConfig:
                 The maximum memory usage in MB for the Lean server. Setting this value too low may lead to more command processing failures.
                 Only available on Linux platforms.
                 Default is `None`, which means no limit.
+            enable_parallel_elaboration:
+                Whether to enable parallel elaboration in the Lean REPL. This can significantly speed up processing
+                of commands, especially in large files. Only available for Lean >= v4.19.0. Default is `True`.
             verbose:
                 Whether to print additional information during the setup process.
 
@@ -128,6 +132,7 @@ class LeanREPLConfig:
         self.local_repl_path = Path(local_repl_path) if local_repl_path else None
         self.build_repl = build_repl
         self.memory_hard_limit_mb = memory_hard_limit_mb
+        self.enable_parallel_elaboration = enable_parallel_elaboration
         self.lake_path = Path(lake_path)
         self.verbose = verbose
         self._timeout_lock = 300
