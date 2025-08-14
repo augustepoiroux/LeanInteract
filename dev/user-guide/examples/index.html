@@ -1096,7 +1096,7 @@
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="s2">  | succ a ih =&gt; sorry</span>
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="s2">&quot;&quot;&quot;</span><span class="p">))</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(sorries=[Sorry(proof_state=0, goal=&#39;case succ\nb a : Nat\nih : a + b = b + a\n⊢ a + 1 + b = b + (a + 1)&#39;, start_pos=Pos(column=17, line=5), end_pos=Pos(column=22, line=5))], env=0, messages=[Message(severity=&#39;warning&#39;, data=&quot;declaration uses &#39;sorry&#39;&quot;, start_pos=Pos(column=8, line=2), end_pos=Pos(column=16, line=2))])
+<div class="language-text highlight"><pre><span></span><code>CommandResponse(sorries=[Sorry(proof_state=0, start_pos=Pos(line=5, column=17), goal=&#39;case succ\nb a : Nat\nih : a + b = b + a\n⊢ a + 1 + b = b + (a + 1)&#39;, end_pos=Pos(line=5, column=22))], messages=[Message(severity=&#39;warning&#39;, start_pos=Pos(line=2, column=8), data=&quot;declaration uses &#39;sorry&#39;&quot;, end_pos=Pos(line=2, column=16))], env=0)
 </code></pre></div>
 <h2 id="working-with-mathlib">Working with Mathlib<a class="headerlink" href="#working-with-mathlib" title="Permanent link">&para;</a></h2>
 <p>This example shows how to use Mathlib to work with more advanced mathematical concepts:</p>
@@ -1122,7 +1122,7 @@
 
 info: installing /home/runner/.elan/toolchains/leanprover--lean4---v4.19.0
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[12:08:30] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Preparing Lean environment with dependencies <span style="font-weight: bold">(</span>may take a while the first         <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">project.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py#329" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">329</span></a>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[12:15:54] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Preparing Lean environment with dependencies <span style="font-weight: bold">(</span>may take a while the first         <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">project.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py#329" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">329</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         time<span style="font-weight: bold">)</span><span style="color: #808000; text-decoration-color: #808000">...</span>                                                                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
 </pre>
 
@@ -1136,6 +1136,8 @@ info: toolchain not updated; already up-to-date
 
 info: plausible: cloning https://github.com/leanprover-community/plausible
 info: plausible: checking out revision &#39;77e08eddc486491d7b9e470926b3dbe50319451a&#39;
+
+
 info: LeanSearchClient: cloning https://github.com/leanprover-community/LeanSearchClient
 info: LeanSearchClient: checking out revision &#39;25078369972d295301f5a1e53c3e5850cf6d9d4c&#39;
 
@@ -1176,16 +1178,16 @@ info: mathlib: running post-update hooks
 
 
 ✔ [6/12] Built Cache.Requests
+
+
 ✔ [7/12] Built Cache.Hashing:c.o
-
-
 ✔ [8/12] Built Cache.Main
+
+
 ✔ [9/12] Built Cache.IO:c.o
 
 
 ✔ [10/12] Built Cache.Requests:c.o
-
-
 ✔ [11/12] Built Cache.Main:c.o
 
 
@@ -1197,79 +1199,80 @@ info: mathlib: running post-update hooks
 </code></pre></div>
 <p>0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0</p>
-<p>100 1075k  100 1075k    0     0  5984k      0 --:--:-- --:--:-- --:--:-- 5984k</p>
+<p>100 1075k  100 1075k    0     0  3657k      0 --:--:-- --:--:-- --:--:-- 3657k</p>
 <div class="language-text highlight"><pre><span></span><code>installing leantar 0.1.15
 
 
 Attempting to download 6641 file(s)
 </code></pre></div>
 <p>Downloaded: 1 file(s) [attempted 1/6641 = 0%]
-Downloaded: 76 file(s) [attempted 76/6641 = 1%]
-Downloaded: 164 file(s) [attempted 164/6641 = 2%]</p>
-<p>Downloaded: 266 file(s) [attempted 266/6641 = 4%]
-Downloaded: 375 file(s) [attempted 375/6641 = 5%]
-Downloaded: 494 file(s) [attempted 494/6641 = 7%]</p>
-<p>Downloaded: 613 file(s) [attempted 613/6641 = 9%]
-Downloaded: 726 file(s) [attempted 726/6641 = 10%]</p>
-<p>Downloaded: 838 file(s) [attempted 838/6641 = 12%]
-Downloaded: 956 file(s) [attempted 956/6641 = 14%]</p>
-<p>Downloaded: 1075 file(s) [attempted 1075/6641 = 16%]
-Downloaded: 1196 file(s) [attempted 1196/6641 = 18%]
-Downloaded: 1310 file(s) [attempted 1310/6641 = 19%]</p>
-<p>Downloaded: 1428 file(s) [attempted 1428/6641 = 21%]
-Downloaded: 1546 file(s) [attempted 1546/6641 = 23%]</p>
-<p>Downloaded: 1662 file(s) [attempted 1662/6641 = 25%]
-Downloaded: 1781 file(s) [attempted 1781/6641 = 26%]</p>
-<p>Downloaded: 1897 file(s) [attempted 1897/6641 = 28%]
-Downloaded: 2013 file(s) [attempted 2013/6641 = 30%]</p>
-<p>Downloaded: 2129 file(s) [attempted 2129/6641 = 32%]
-Downloaded: 2248 file(s) [attempted 2248/6641 = 33%]</p>
-<p>Downloaded: 2364 file(s) [attempted 2364/6641 = 35%]
-Downloaded: 2475 file(s) [attempted 2475/6641 = 37%]
-Downloaded: 2596 file(s) [attempted 2596/6641 = 39%]</p>
-<p>Downloaded: 2712 file(s) [attempted 2712/6641 = 40%]
-Downloaded: 2826 file(s) [attempted 2826/6641 = 42%]</p>
-<p>Downloaded: 2944 file(s) [attempted 2944/6641 = 44%]
-Downloaded: 3058 file(s) [attempted 3058/6641 = 46%]
-Downloaded: 3176 file(s) [attempted 3176/6641 = 47%]</p>
-<p>Downloaded: 3292 file(s) [attempted 3292/6641 = 49%]
-Downloaded: 3416 file(s) [attempted 3416/6641 = 51%]</p>
-<p>Downloaded: 3528 file(s) [attempted 3528/6641 = 53%]
-Downloaded: 3644 file(s) [attempted 3644/6641 = 54%]
-Downloaded: 3761 file(s) [attempted 3761/6641 = 56%]</p>
-<p>Downloaded: 3878 file(s) [attempted 3878/6641 = 58%]
-Downloaded: 3996 file(s) [attempted 3996/6641 = 60%]
-Downloaded: 4112 file(s) [attempted 4112/6641 = 61%]</p>
-<p>Downloaded: 4228 file(s) [attempted 4228/6641 = 63%]
-Downloaded: 4351 file(s) [attempted 4351/6641 = 65%]
-Downloaded: 4470 file(s) [attempted 4470/6641 = 67%]</p>
-<p>Downloaded: 4586 file(s) [attempted 4586/6641 = 69%]
-Downloaded: 4704 file(s) [attempted 4704/6641 = 70%]</p>
-<p>Downloaded: 4818 file(s) [attempted 4818/6641 = 72%]
-Downloaded: 4936 file(s) [attempted 4936/6641 = 74%]</p>
-<p>Downloaded: 5055 file(s) [attempted 5055/6641 = 76%]
-Downloaded: 5169 file(s) [attempted 5169/6641 = 77%]
-Downloaded: 5280 file(s) [attempted 5280/6641 = 79%]</p>
-<p>Downloaded: 5408 file(s) [attempted 5408/6641 = 81%]
-Downloaded: 5526 file(s) [attempted 5526/6641 = 83%]</p>
-<p>Downloaded: 5635 file(s) [attempted 5635/6641 = 84%]
-Downloaded: 5756 file(s) [attempted 5756/6641 = 86%]</p>
-<p>Downloaded: 5872 file(s) [attempted 5872/6641 = 88%]
-Downloaded: 5988 file(s) [attempted 5988/6641 = 90%]</p>
-<p>Downloaded: 6107 file(s) [attempted 6107/6641 = 91%]
-Downloaded: 6225 file(s) [attempted 6225/6641 = 93%]
-Downloaded: 6339 file(s) [attempted 6339/6641 = 95%]</p>
-<p>Downloaded: 6460 file(s) [attempted 6460/6641 = 97%]
-Downloaded: 6577 file(s) [attempted 6577/6641 = 99%]
+Downloaded: 88 file(s) [attempted 88/6641 = 1%]</p>
+<p>Downloaded: 176 file(s) [attempted 176/6641 = 2%]
+Downloaded: 285 file(s) [attempted 285/6641 = 4%]</p>
+<p>Downloaded: 399 file(s) [attempted 399/6641 = 6%]
+Downloaded: 515 file(s) [attempted 515/6641 = 7%]</p>
+<p>Downloaded: 629 file(s) [attempted 629/6641 = 9%]
+Downloaded: 748 file(s) [attempted 748/6641 = 11%]</p>
+<p>Downloaded: 859 file(s) [attempted 859/6641 = 12%]
+Downloaded: 973 file(s) [attempted 973/6641 = 14%]</p>
+<p>Downloaded: 1089 file(s) [attempted 1089/6641 = 16%]
+Downloaded: 1201 file(s) [attempted 1201/6641 = 18%]
+Downloaded: 1319 file(s) [attempted 1319/6641 = 19%]</p>
+<p>Downloaded: 1432 file(s) [attempted 1432/6641 = 21%]
+Downloaded: 1549 file(s) [attempted 1549/6641 = 23%]</p>
+<p>Downloaded: 1663 file(s) [attempted 1663/6641 = 25%]
+Downloaded: 1776 file(s) [attempted 1776/6641 = 26%]</p>
+<p>Downloaded: 1892 file(s) [attempted 1892/6641 = 28%]
+Downloaded: 2013 file(s) [attempted 2013/6641 = 30%]
+Downloaded: 2122 file(s) [attempted 2122/6641 = 31%]</p>
+<p>Downloaded: 2242 file(s) [attempted 2242/6641 = 33%]
+Downloaded: 2357 file(s) [attempted 2357/6641 = 35%]</p>
+<p>Downloaded: 2468 file(s) [attempted 2468/6641 = 37%]
+Downloaded: 2586 file(s) [attempted 2586/6641 = 38%]
+Downloaded: 2700 file(s) [attempted 2700/6641 = 40%]</p>
+<p>Downloaded: 2814 file(s) [attempted 2814/6641 = 42%]
+Downloaded: 2935 file(s) [attempted 2935/6641 = 44%]</p>
+<p>Downloaded: 3048 file(s) [attempted 3048/6641 = 45%]
+Downloaded: 3162 file(s) [attempted 3162/6641 = 47%]</p>
+<p>Downloaded: 3276 file(s) [attempted 3276/6641 = 49%]
+Downloaded: 3392 file(s) [attempted 3392/6641 = 51%]</p>
+<p>Downloaded: 3510 file(s) [attempted 3510/6641 = 52%]
+Downloaded: 3626 file(s) [attempted 3626/6641 = 54%]</p>
+<p>Downloaded: 3743 file(s) [attempted 3743/6641 = 56%]
+Downloaded: 3859 file(s) [attempted 3859/6641 = 58%]</p>
+<p>Downloaded: 3975 file(s) [attempted 3975/6641 = 59%]
+Downloaded: 4091 file(s) [attempted 4091/6641 = 61%]</p>
+<p>Downloaded: 4207 file(s) [attempted 4207/6641 = 63%]
+Downloaded: 4321 file(s) [attempted 4321/6641 = 65%]
+Downloaded: 4439 file(s) [attempted 4439/6641 = 66%]</p>
+<p>Downloaded: 4548 file(s) [attempted 4548/6641 = 68%]
+Downloaded: 4664 file(s) [attempted 4664/6641 = 70%]
+Downloaded: 4778 file(s) [attempted 4778/6641 = 71%]</p>
+<p>Downloaded: 4881 file(s) [attempted 4881/6641 = 73%]
+Downloaded: 4993 file(s) [attempted 4993/6641 = 75%]</p>
+<p>Downloaded: 5107 file(s) [attempted 5107/6641 = 76%]
+Downloaded: 5218 file(s) [attempted 5218/6641 = 78%]</p>
+<p>Downloaded: 5337 file(s) [attempted 5337/6641 = 80%]
+Downloaded: 5453 file(s) [attempted 5453/6641 = 82%]</p>
+<p>Downloaded: 5564 file(s) [attempted 5564/6641 = 83%]
+Downloaded: 5678 file(s) [attempted 5678/6641 = 85%]
+Downloaded: 5797 file(s) [attempted 5797/6641 = 87%]</p>
+<p>Downloaded: 5908 file(s) [attempted 5908/6641 = 88%]
+Downloaded: 6020 file(s) [attempted 6020/6641 = 90%]
+Downloaded: 6133 file(s) [attempted 6133/6641 = 92%]</p>
+<p>Downloaded: 6247 file(s) [attempted 6247/6641 = 94%]
+Downloaded: 6358 file(s) [attempted 6358/6641 = 95%]</p>
+<p>Downloaded: 6476 file(s) [attempted 6476/6641 = 97%]
+Downloaded: 6590 file(s) [attempted 6590/6641 = 99%]
 Downloaded: 6641 file(s) [attempted 6641/6641 = 100%] (100% success)</p>
 <div class="language-text highlight"><pre><span></span><code>Decompressing 6641 file(s)
-Unpacked in 14435 ms
+Unpacked in 14651 ms
 Completed successfully!
 
 
 No files to download
 Decompressing 6641 file(s)
-Unpacked in 96 ms
+Unpacked in 94 ms
 Completed successfully!
 
 
@@ -1278,11 +1281,11 @@ Completed successfully!
 ✔ [4/4] Built dummy
 Build completed successfully.
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[12:09:47] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         bcd7a4921ccb784db20dafe4c2a438560a192efb                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[12:17:20] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         450aa9e09632aa77f7307f5c659ba9da4374c901                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
 </pre>
 
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=0, messages=[Message(severity=&#39;info&#39;, data=&#39;Goals accomplished!&#39;, start_pos=Pos(column=0, line=4), end_pos=Pos(column=12, line=8))])
+<div class="language-text highlight"><pre><span></span><code>CommandResponse(messages=[Message(severity=&#39;info&#39;, start_pos=Pos(line=4, column=0), data=&#39;Goals accomplished!&#39;, end_pos=Pos(line=8, column=12))], env=0)
 </code></pre></div>
 <h2 id="using-custom-repl-versions">Using Custom REPL Versions<a class="headerlink" href="#using-custom-repl-versions" title="Permanent link">&para;</a></h2>
 <p>This example demonstrates how to use a specific REPL version from a custom repository:</p>
@@ -1304,7 +1307,7 @@ Build completed successfully.
 </span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run_dict</span><span class="p">({</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;#eval Lean.versionString&quot;</span><span class="p">})</span>
 </span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># Example raw output from the REPL</span>
 </span></code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[12:10:03] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[12:17:36] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         ab9da2b867c54d709fa3720790ea7406606be28a                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
 </pre>
 
