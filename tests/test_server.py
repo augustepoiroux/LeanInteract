@@ -517,7 +517,7 @@ lean_exe "dummy" where
         with self.assertRaises(TimeoutError):
             server.run(
                 Command(
-                    cmd="theorem amc12a_2003_p1 (u v : ℕ → ℕ) (h₀ : ∀ n, u n = 2 * n + 2) (h₁ : ∀ n, v n = 2 * n + 1) :\n    ((∑ k in Finset.range 2003, u k) - ∑ k in Finset.range 2003, v k) = 2003 := by simp only [h₀, h₁, Finset.sum_range_succ, Finset.sum_range_zero]; rfl",
+                    cmd="def fib : Nat → Nat\n  | 0 => 0\n  | 1 => 1\n  | n + 2 => fib (n + 1) + fib n\n\n#eval fib 40",
                     env=root_env,
                 ),
                 timeout=2,

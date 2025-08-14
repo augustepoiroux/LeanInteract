@@ -4,8 +4,6 @@ execute: true
 
 # Getting Started with LeanInteract
 
-This guide will help you take your first steps with LeanInteract and understand its core concepts.
-
 ## Overview
 
 LeanInteract provides a Python interface to the Lean 4 theorem prover via the Lean REPL (Read-Evaluate-Print Loop). It enables you to:
@@ -13,11 +11,8 @@ LeanInteract provides a Python interface to the Lean 4 theorem prover via the Le
 - Execute Lean code from Python
 - Process Lean files
 - Interact with proofs step by step
-- Save and restore proof states
 
 ## Quick Example
-
-Here's a minimal example to help you get started:
 
 ```python tags=["execute"]
 from lean_interact import LeanREPLConfig, LeanServer, Command
@@ -37,14 +32,12 @@ print(response)
 
 This will:
 
-1. Initialize a Lean REPL configuration
+1. Initialize a Lean REPL configuration: downloads and initializes the Lean environment
 2. Start a Lean server
 3. Execute a simple Lean theorem
 4. Return a response containing the Lean environment state and any messages
 
-## Understanding Core Components
-
-Let's break down the key components:
+## Core Components
 
 ### LeanREPLConfig
 
@@ -52,7 +45,7 @@ Let's break down the key components:
 
 ```python
 config = LeanREPLConfig(
-    lean_version="v4.19.0",  # Specify Lean version (optional)
+    lean_version="v4.19.0",  # Specify Lean version (optional, default is latest)
     verbose=True,            # Print detailed logs
 )
 ```
@@ -83,12 +76,10 @@ LeanInteract provides several types of commands:
 Basic command execution:
 
 ```python
-response = server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id"))
+server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id"))
 ```
 
 ## Next Steps
-
-Now that you understand the basics, you can:
 
 - Learn about [basic usage patterns](basic-usage.md)
 - Explore [tactic mode](tactic-mode.md) for step-by-step proof interaction

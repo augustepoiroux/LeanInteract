@@ -19,7 +19,7 @@ This guide covers common issues you might encounter when using LeanInteract.
 
   ```python
   from lean_interact import AutoLeanServer, LeanREPLConfig
-  server = AutoLeanServer(LeanREPLConfig(memory_hard_limit_mb=1000)) # Limit to 1GB
+  server = AutoLeanServer(LeanREPLConfig(memory_hard_limit_mb=8192)) # Limit to 8GB
   ```
 
 - If you are working with large files or complex proofs in a single session, consider breaking them into smaller, more manageable pieces.
