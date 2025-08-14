@@ -77,7 +77,7 @@ print(result)  # Example raw output from the REPL
 
 For more comprehensive examples, check out the following scripts in the examples directory:
 
-1. [**multiprocessing.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/multiprocessing.py)  
+1. [**multi_processing.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/multi_processing.py)  
    Shows how to use multiprocessing with LeanInteract for parallel proof checking.
 
 2. [**proof_generation_and_autoformalization.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/proof_generation_and_autoformalization.py)  
