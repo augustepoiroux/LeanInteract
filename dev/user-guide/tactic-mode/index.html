@@ -18,7 +18,7 @@
         <link rel="prev" href="../basic-usage/">
       
       
-        <link rel="next" href="../examples/">
+        <link rel="next" href="../multi-processing/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -695,6 +695,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi-processing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../examples/" class="md-nav__link">
         
   
@@ -1107,7 +1130,7 @@
 <p>Tactic mode in LeanInteract allows you to work with Lean's proof tactics step-by-step, providing an interactive way to develop and explore proofs.</p>
 <div class="admonition warning">
 <p class="admonition-title">Experimental Feature</p>
-<p>The tactic mode feature is experimental in Lean REPL and may not work as expected in all situations. Some valid proofs might be incorrectly rejected. Please report any issues you encounter on the <a href="https://github.com/leanprover-community/repl/issues">Lean REPL GitHub repository</a>.</p>
+<p>The tactic mode feature is experimental may not work as expected in all situations. Some valid proofs might be incorrectly rejected.</p>
 </div>
 <h2 id="getting-started-with-tactics">Getting Started with Tactics<a class="headerlink" href="#getting-started-with-tactics" title="Permanent link">&para;</a></h2>
 <p>Using tactics in LeanInteract involves two main steps:</p>
@@ -1124,10 +1147,10 @@
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Define a theorem with sorry</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := sorry&quot;</span><span class="p">))</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := by sorry&quot;</span><span class="p">))</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">sorries</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Sorry(end_pos=Pos(column=45, line=1), goal=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, start_pos=Pos(column=40, line=1), proof_state=0)
+<div class="language-text highlight"><pre><span></span><code>Sorry(start_pos=Pos(column=43, line=1), goal=&#39;n : Nat\n⊢ n = 5 → n = 5&#39;, proof_state=0, end_pos=Pos(column=48, line=1))
 </code></pre></div>
 <p>This response contains a <code>Sorry</code> object that includes:</p>
 <ul>
@@ -1149,7 +1172,7 @@
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1"># Apply a single tactic (intro) to the proof state</span>
 </span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">ProofStep</span><span class="p">(</span><span class="n">tactic</span><span class="o">=</span><span class="s2">&quot;intro h&quot;</span><span class="p">,</span> <span class="n">proof_state</span><span class="o">=</span><span class="n">proof_state_id</span><span class="p">))</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>ProofStepResponse(proof_status=&#39;Incomplete: open goals remain&#39;, goals=[&#39;n : Nat\nh : n = 5\n⊢ n = 5&#39;], proof_state=1)
+<div class="language-text highlight"><pre><span></span><code>ProofStepResponse(goals=[&#39;n : Nat\nh : n = 5\n⊢ n = 5&#39;], proof_status=&#39;Incomplete: open goals remain&#39;, proof_state=1)
 </code></pre></div>
 <p>The response contains:</p>
 <ul>
@@ -1175,7 +1198,7 @@
 </span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c1"># Apply &#39;exact&#39; tactic to the resulting proof state</span>
 </span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">ProofStep</span><span class="p">(</span><span class="n">tactic</span><span class="o">=</span><span class="s2">&quot;exact h&quot;</span><span class="p">,</span> <span class="n">proof_state</span><span class="o">=</span><span class="n">intro_response</span><span class="o">.</span><span class="n">proof_state</span><span class="p">))</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>ProofStepResponse(proof_status=&#39;Completed&#39;, goals=[], proof_state=2)
+<div class="language-text highlight"><pre><span></span><code>ProofStepResponse(goals=[], proof_status=&#39;Completed&#39;, proof_state=2)
 </code></pre></div>
 <h3 id="applying-multiple-tactics-at-once">Applying Multiple Tactics at Once<a class="headerlink" href="#applying-multiple-tactics-at-once" title="Permanent link">&para;</a></h3>
 <p>You can also apply multiple tactics at once by wrapping them in parentheses:</p>
@@ -1196,7 +1219,7 @@
 </span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="s2">)&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">proof_state</span><span class="o">=</span><span class="n">proof_state_id</span><span class="p">))</span>
 </span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="nb">print</span><span class="p">(</span><span class="n">multi_response</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>ProofStepResponse(proof_status=&#39;Completed&#39;, goals=[], proof_state=1)
+<div class="language-text highlight"><pre><span></span><code>ProofStepResponse(goals=[], proof_status=&#39;Completed&#39;, proof_state=1)
 </code></pre></div>
 <h2 id="complete-proof-session">Complete Proof Session<a class="headerlink" href="#complete-proof-session" title="Permanent link">&para;</a></h2>
 <p>The <code>ProofStepResponse</code> contains a <code>proof_status</code> field that indicates whether the proof is complete.

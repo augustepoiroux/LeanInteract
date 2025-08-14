@@ -593,6 +593,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi-processing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../examples/" class="md-nav__link">
         
   
@@ -1191,7 +1214,7 @@
 <li>Limit the maximum amount of memory usage allocated to the REPL with <code>LeanREPLConfig</code>:</li>
 </ul>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoLeanServer</span><span class="p">,</span> <span class="n">LeanREPLConfig</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">memory_hard_limit_mb</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span> <span class="c1"># Limit to 1GB</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">memory_hard_limit_mb</span><span class="o">=</span><span class="mi">8192</span><span class="p">))</span> <span class="c1"># Limit to 8GB</span>
 </span></code></pre></div>
 <ul>
 <li>If you are working with large files or complex proofs in a single session, consider breaking them into smaller, more manageable pieces.</li>

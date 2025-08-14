@@ -12,13 +12,13 @@
         <meta name="author" content="Auguste Poiroux">
       
       
-        <link rel="canonical" href="https://augustepoiroux.github.io/LeanInteract/dev/user-guide/examples/">
+        <link rel="canonical" href="https://augustepoiroux.github.io/LeanInteract/dev/user-guide/multi-processing/">
       
       
-        <link rel="prev" href="../multi-processing/">
+        <link rel="prev" href="../tactic-mode/">
       
       
-        <link rel="next" href="../custom-lean-configuration/">
+        <link rel="next" href="../examples/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Examples - LeanInteract</title>
+        <title>Multi-processing - LeanInteract</title>
       
     
     
@@ -121,7 +121,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#examples" class="md-skip">
+        <a href="#multi-processing-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -173,7 +173,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Examples
+              Multi-processing
             
           </span>
         </div>
@@ -590,29 +590,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../multi-processing/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Multi-processing
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -630,7 +607,7 @@
   
   
   <span class="md-ellipsis">
-    Examples
+    Multi-processing
     
   </span>
   
@@ -643,7 +620,7 @@
   
   
   <span class="md-ellipsis">
-    Examples
+    Multi-processing
     
   </span>
   
@@ -666,38 +643,110 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#basic-theorem-proving" class="md-nav__link">
+  <a href="#best-practices-summary" class="md-nav__link">
     <span class="md-ellipsis">
-      Basic Theorem Proving
+      Best Practices Summary
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#working-with-mathlib" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
-      Working with Mathlib
+      Quick Start
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-custom-repl-versions" class="md-nav__link">
+  <a href="#core-principles" class="md-nav__link">
     <span class="md-ellipsis">
-      Using Custom REPL Versions
+      Core Principles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-pre-instantiate-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Pre-instantiate Configuration
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#real-world-examples" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#2-one-server-per-process" class="md-nav__link">
     <span class="md-ellipsis">
-      Real-World Examples
+      2. One Server Per Process
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      Thread Safety
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Thread Safety">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#within-a-single-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Within a Single Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#across-processes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Across Processes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memory Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memory-configuration-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Configuration Options
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -705,6 +754,29 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -1024,38 +1096,110 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#basic-theorem-proving" class="md-nav__link">
+  <a href="#best-practices-summary" class="md-nav__link">
     <span class="md-ellipsis">
-      Basic Theorem Proving
+      Best Practices Summary
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#working-with-mathlib" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
-      Working with Mathlib
+      Quick Start
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-custom-repl-versions" class="md-nav__link">
+  <a href="#core-principles" class="md-nav__link">
     <span class="md-ellipsis">
-      Using Custom REPL Versions
+      Core Principles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-pre-instantiate-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Pre-instantiate Configuration
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#real-world-examples" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#2-one-server-per-process" class="md-nav__link">
     <span class="md-ellipsis">
-      Real-World Examples
+      2. One Server Per Process
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      Thread Safety
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Thread Safety">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#within-a-single-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Within a Single Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#across-processes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Across Processes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memory Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memory-configuration-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Configuration Options
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1078,261 +1222,139 @@
   
 
 
-<h1 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h1>
-<p>This page provides practical examples of using LeanInteract in different scenarios. You can find a few full example scripts in the <a href="https://github.com/augustepoiroux/LeanInteract/tree/main/examples"><code>examples</code></a> directory of the repository.</p>
-<h2 id="basic-theorem-proving">Basic Theorem Proving<a class="headerlink" href="#basic-theorem-proving" title="Permanent link">&para;</a></h2>
-<p>This example demonstrates how to define a simple theorem with a partial proof in Lean using LeanInteract:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span><span class="p">,</span> <span class="n">Command</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Initialize configuration and server</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">()</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Define a simple theorem</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="s2">theorem add_comm (a b : Nat) : a + b = b + a := by</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="s2">  induction a with</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="s2">  | zero =&gt; simp</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="s2">  | succ a ih =&gt; sorry</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="s2">&quot;&quot;&quot;</span><span class="p">))</span>
-</span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(sorries=[Sorry(proof_state=0, goal=&#39;case succ\nb a : Nat\nih : a + b = b + a\n⊢ a + 1 + b = b + (a + 1)&#39;, start_pos=Pos(column=17, line=5), end_pos=Pos(column=22, line=5))], env=0, messages=[Message(severity=&#39;warning&#39;, data=&quot;declaration uses &#39;sorry&#39;&quot;, start_pos=Pos(column=8, line=2), end_pos=Pos(column=16, line=2))])
-</code></pre></div>
-<h2 id="working-with-mathlib">Working with Mathlib<a class="headerlink" href="#working-with-mathlib" title="Permanent link">&para;</a></h2>
-<p>This example shows how to use Mathlib to work with more advanced mathematical concepts:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">TempRequireProject</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Create configuration with Mathlib</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">TempRequireProject</span><span class="p">(</span><span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.19.0&quot;</span><span class="p">,</span> <span class="n">require</span><span class="o">=</span><span class="s2">&quot;mathlib&quot;</span><span class="p">))</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># Define a theorem using Mathlib&#39;s real numbers</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="s2">import Mathlib</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="s2">theorem irrational_plus_rational </span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="s2">  (x : ℝ) (y : ℚ) : Irrational x → Irrational (x + y) := by</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="s2">  intro h</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="s2">  simp</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="s2">  assumption</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="s2">&quot;&quot;&quot;</span><span class="p">))</span>
-</span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>info: downloading https://releases.lean-lang.org/lean4/v4.19.0/lean-4.19.0-linux.tar.zst
-
-
-info: installing /home/runner/.elan/toolchains/leanprover--lean4---v4.19.0
-</code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[12:08:30] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Preparing Lean environment with dependencies <span style="font-weight: bold">(</span>may take a while the first         <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">project.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/project.py#329" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">329</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         time<span style="font-weight: bold">)</span><span style="color: #808000; text-decoration-color: #808000">...</span>                                                                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
-</pre>
-
-<div class="language-text highlight"><pre><span></span><code>info: dummy: no previous manifest, creating one from scratch
-
-
-info: mathlib: cloning https://github.com/leanprover-community/mathlib4.git
-info: mathlib: checking out revision &#39;c44e0c8ee63ca166450922a373c7409c5d26b00b&#39;
-info: toolchain not updated; already up-to-date
-
-
-info: plausible: cloning https://github.com/leanprover-community/plausible
-info: plausible: checking out revision &#39;77e08eddc486491d7b9e470926b3dbe50319451a&#39;
-info: LeanSearchClient: cloning https://github.com/leanprover-community/LeanSearchClient
-info: LeanSearchClient: checking out revision &#39;25078369972d295301f5a1e53c3e5850cf6d9d4c&#39;
-
-
-info: importGraph: cloning https://github.com/leanprover-community/import-graph
-info: importGraph: checking out revision &#39;e6a9f0f5ee3ccf7443a0070f92b62f8db12ae82b&#39;
-
-
-info: proofwidgets: cloning https://github.com/leanprover-community/ProofWidgets4
-info: proofwidgets: checking out revision &#39;c4919189477c3221e6a204008998b0d724f49904&#39;
-
-
-info: aesop: cloning https://github.com/leanprover-community/aesop
-info: aesop: checking out revision &#39;5d50b08dedd7d69b3d9b3176e0d58a23af228884&#39;
-
-
-info: Qq: cloning https://github.com/leanprover-community/quote4
-info: Qq: checking out revision &#39;fa4f7f15d97591a9cf3aa7724ba371c7fc6dda02&#39;
-
-
-info: batteries: cloning https://github.com/leanprover-community/batteries
-info: batteries: checking out revision &#39;f5d04a9c4973d401c8c92500711518f7c656f034&#39;
-
-
-info: Cli: cloning https://github.com/leanprover/lean4-cli
-info: Cli: checking out revision &#39;02dbd02bc00ec4916e99b04b2245b30200e200d0&#39;
-info: mathlib: running post-update hooks
-
-
-✔ [2/12] Built Cache.Lean
-✔ [3/12] Built Cache.Lean:c.o
-
-
-✔ [4/12] Built Cache.IO
-
-
-✔ [5/12] Built Cache.Hashing
-
-
-✔ [6/12] Built Cache.Requests
-✔ [7/12] Built Cache.Hashing:c.o
-
-
-✔ [8/12] Built Cache.Main
-✔ [9/12] Built Cache.IO:c.o
-
-
-✔ [10/12] Built Cache.Requests:c.o
-
-
-✔ [11/12] Built Cache.Main:c.o
-
-
-✔ [12/12] Built cache
-
-
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-</code></pre></div>
-<p>0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0</p>
-<p>100 1075k  100 1075k    0     0  5984k      0 --:--:-- --:--:-- --:--:-- 5984k</p>
-<div class="language-text highlight"><pre><span></span><code>installing leantar 0.1.15
-
-
-Attempting to download 6641 file(s)
-</code></pre></div>
-<p>Downloaded: 1 file(s) [attempted 1/6641 = 0%]
-Downloaded: 76 file(s) [attempted 76/6641 = 1%]
-Downloaded: 164 file(s) [attempted 164/6641 = 2%]</p>
-<p>Downloaded: 266 file(s) [attempted 266/6641 = 4%]
-Downloaded: 375 file(s) [attempted 375/6641 = 5%]
-Downloaded: 494 file(s) [attempted 494/6641 = 7%]</p>
-<p>Downloaded: 613 file(s) [attempted 613/6641 = 9%]
-Downloaded: 726 file(s) [attempted 726/6641 = 10%]</p>
-<p>Downloaded: 838 file(s) [attempted 838/6641 = 12%]
-Downloaded: 956 file(s) [attempted 956/6641 = 14%]</p>
-<p>Downloaded: 1075 file(s) [attempted 1075/6641 = 16%]
-Downloaded: 1196 file(s) [attempted 1196/6641 = 18%]
-Downloaded: 1310 file(s) [attempted 1310/6641 = 19%]</p>
-<p>Downloaded: 1428 file(s) [attempted 1428/6641 = 21%]
-Downloaded: 1546 file(s) [attempted 1546/6641 = 23%]</p>
-<p>Downloaded: 1662 file(s) [attempted 1662/6641 = 25%]
-Downloaded: 1781 file(s) [attempted 1781/6641 = 26%]</p>
-<p>Downloaded: 1897 file(s) [attempted 1897/6641 = 28%]
-Downloaded: 2013 file(s) [attempted 2013/6641 = 30%]</p>
-<p>Downloaded: 2129 file(s) [attempted 2129/6641 = 32%]
-Downloaded: 2248 file(s) [attempted 2248/6641 = 33%]</p>
-<p>Downloaded: 2364 file(s) [attempted 2364/6641 = 35%]
-Downloaded: 2475 file(s) [attempted 2475/6641 = 37%]
-Downloaded: 2596 file(s) [attempted 2596/6641 = 39%]</p>
-<p>Downloaded: 2712 file(s) [attempted 2712/6641 = 40%]
-Downloaded: 2826 file(s) [attempted 2826/6641 = 42%]</p>
-<p>Downloaded: 2944 file(s) [attempted 2944/6641 = 44%]
-Downloaded: 3058 file(s) [attempted 3058/6641 = 46%]
-Downloaded: 3176 file(s) [attempted 3176/6641 = 47%]</p>
-<p>Downloaded: 3292 file(s) [attempted 3292/6641 = 49%]
-Downloaded: 3416 file(s) [attempted 3416/6641 = 51%]</p>
-<p>Downloaded: 3528 file(s) [attempted 3528/6641 = 53%]
-Downloaded: 3644 file(s) [attempted 3644/6641 = 54%]
-Downloaded: 3761 file(s) [attempted 3761/6641 = 56%]</p>
-<p>Downloaded: 3878 file(s) [attempted 3878/6641 = 58%]
-Downloaded: 3996 file(s) [attempted 3996/6641 = 60%]
-Downloaded: 4112 file(s) [attempted 4112/6641 = 61%]</p>
-<p>Downloaded: 4228 file(s) [attempted 4228/6641 = 63%]
-Downloaded: 4351 file(s) [attempted 4351/6641 = 65%]
-Downloaded: 4470 file(s) [attempted 4470/6641 = 67%]</p>
-<p>Downloaded: 4586 file(s) [attempted 4586/6641 = 69%]
-Downloaded: 4704 file(s) [attempted 4704/6641 = 70%]</p>
-<p>Downloaded: 4818 file(s) [attempted 4818/6641 = 72%]
-Downloaded: 4936 file(s) [attempted 4936/6641 = 74%]</p>
-<p>Downloaded: 5055 file(s) [attempted 5055/6641 = 76%]
-Downloaded: 5169 file(s) [attempted 5169/6641 = 77%]
-Downloaded: 5280 file(s) [attempted 5280/6641 = 79%]</p>
-<p>Downloaded: 5408 file(s) [attempted 5408/6641 = 81%]
-Downloaded: 5526 file(s) [attempted 5526/6641 = 83%]</p>
-<p>Downloaded: 5635 file(s) [attempted 5635/6641 = 84%]
-Downloaded: 5756 file(s) [attempted 5756/6641 = 86%]</p>
-<p>Downloaded: 5872 file(s) [attempted 5872/6641 = 88%]
-Downloaded: 5988 file(s) [attempted 5988/6641 = 90%]</p>
-<p>Downloaded: 6107 file(s) [attempted 6107/6641 = 91%]
-Downloaded: 6225 file(s) [attempted 6225/6641 = 93%]
-Downloaded: 6339 file(s) [attempted 6339/6641 = 95%]</p>
-<p>Downloaded: 6460 file(s) [attempted 6460/6641 = 97%]
-Downloaded: 6577 file(s) [attempted 6577/6641 = 99%]
-Downloaded: 6641 file(s) [attempted 6641/6641 = 100%] (100% success)</p>
-<div class="language-text highlight"><pre><span></span><code>Decompressing 6641 file(s)
-Unpacked in 14435 ms
-Completed successfully!
-
-
-No files to download
-Decompressing 6641 file(s)
-Unpacked in 96 ms
-Completed successfully!
-
-
-✔ [2/4] Built Main
-✔ [3/4] Built Main:c.o
-✔ [4/4] Built dummy
-Build completed successfully.
-</code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[12:09:47] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         bcd7a4921ccb784db20dafe4c2a438560a192efb                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
-</pre>
-
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=0, messages=[Message(severity=&#39;info&#39;, data=&#39;Goals accomplished!&#39;, start_pos=Pos(column=0, line=4), end_pos=Pos(column=12, line=8))])
-</code></pre></div>
-<h2 id="using-custom-repl-versions">Using Custom REPL Versions<a class="headerlink" href="#using-custom-repl-versions" title="Permanent link">&para;</a></h2>
-<p>This example demonstrates how to use a specific REPL version from a custom repository:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span><span class="p">,</span> <span class="n">Command</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Use a specific REPL version from the official Lean repository</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">repl_rev</span><span class="o">=</span><span class="s2">&quot;v4.21.0-rc3&quot;</span><span class="p">,</span> 
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">repl_git</span><span class="o">=</span><span class="s2">&quot;https://github.com/leanprover-community/repl&quot;</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">)</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c1"># Check the Lean version</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;#eval Lean.versionString&quot;</span><span class="p">))</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># Output: &quot;4.21.0-rc3&quot;</span>
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c1"># If you encounter interface compatibility issues with custom REPLs,</span>
-</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="c1"># you can use run_dict to communicate directly with the REPL:</span>
-</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run_dict</span><span class="p">({</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;#eval Lean.versionString&quot;</span><span class="p">})</span>
-</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># Example raw output from the REPL</span>
-</span></code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[12:10:03] </span><span style="color: #000080; text-decoration-color: #000080">INFO    </span> Updated version-specific REPL cache to commit                                     <a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">config.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/LeanInteract/LeanInteract/src/lean_interact/config.py#376" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">376</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         ab9da2b867c54d709fa3720790ea7406606be28a                                          <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">             </span>
-</pre>
-
-<div class="language-text highlight"><pre><span></span><code>&quot;4.21.0-rc3&quot;
-
-
-{&#39;messages&#39;: [{&#39;severity&#39;: &#39;info&#39;, &#39;pos&#39;: {&#39;line&#39;: 1, &#39;column&#39;: 0}, &#39;endPos&#39;: {&#39;line&#39;: 1, &#39;column&#39;: 5}, &#39;data&#39;: &#39;&quot;4.21.0-rc3&quot;&#39;}], &#39;env&#39;: 1}
-</code></pre></div>
-<h2 id="real-world-examples">Real-World Examples<a class="headerlink" href="#real-world-examples" title="Permanent link">&para;</a></h2>
-<p>For more comprehensive examples, check out the following scripts in the examples directory:</p>
+<h1 id="multi-processing-guide">Multi-processing Guide<a class="headerlink" href="#multi-processing-guide" title="Permanent link">&para;</a></h1>
+<p>LeanInteract is designed with multi-processing in mind, allowing you to leverage multiple CPU cores for parallel theorem proving and verification tasks. This guide covers the best practices, patterns, and potential pitfalls when using LeanInteract in multi-process environments.</p>
+<p>We recommend using <code>AutoLeanServer</code>.
+It is specifically designed for multi-process environments with
+automated restart on fatal Lean errors, timeouts, and when memory limits are reached.
+On automated restarts, only commands run with <code>add_to_session_cache=True</code> (attribute of the <code>AutoLeanServer.run</code> method) will be preserved.</p>
+<p><code>AutoLeanServer</code> is still experimental, any feedback or issues encountered while using it are welcome.</p>
+<h2 id="best-practices-summary">Best Practices Summary<a class="headerlink" href="#best-practices-summary" title="Permanent link">&para;</a></h2>
 <ol>
-<li>
-<p><a href="https://github.com/augustepoiroux/LeanInteract/blob/main/examples/multi_processing.py"><strong>multi_processing.py</strong></a><br />
-   Shows how to use multiprocessing with LeanInteract for parallel proof checking.</p>
-</li>
-<li>
-<p><a href="https://github.com/augustepoiroux/LeanInteract/blob/main/examples/proof_generation_and_autoformalization.py"><strong>proof_generation_and_autoformalization.py</strong></a><br />
-   Shows how to use models like DeepSeek-Prover-V1.5 and Goedel-Prover on MiniF2F and ProofNet# benchmarks.</p>
-</li>
-<li>
-<p><a href="https://github.com/augustepoiroux/LeanInteract/blob/main/examples/beq_plus.py"><strong>beq_plus.py</strong></a><br />
-   Demonstrates how to run the autoformalization BEq+ metric on the ProofNetVerif benchmark.</p>
-</li>
-<li>
-<p><a href="https://github.com/augustepoiroux/LeanInteract/blob/main/examples/type_check.py"><strong>type_check.py</strong></a><br />
-   Shows how to optimize type checking using environment states.</p>
-</li>
+<li><strong>Always pre-instantiate</strong> <code>LeanREPLConfig</code> before multiprocessing</li>
+<li><strong>One lean server per process</strong></li>
+<li><strong>Use <code>AutoLeanServer</code></strong></li>
+<li><strong>Configure memory limits</strong> to prevent system overload</li>
+<li><strong>Set appropriate timeouts</strong> for long-running operations</li>
+<li><strong>Use session caching</strong> to keep context between requests</li>
+<li><strong>Consider using <code>maxtasksperchild</code></strong> to limit memory accumulation</li>
 </ol>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<p>Here is a minimal example of using LeanInteract with multiple processes:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">AutoLeanServer</span><span class="p">,</span> <span class="n">Command</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Worker function that runs in each process&quot;&quot;&quot;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;#eval </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> * </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;messages&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Error&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="c1"># Pre-instantiate config before multiprocessing</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="c1"># LeanREPLConfig downloads and initializes resources</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="c1"># Create processes</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">ctx</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;spawn&quot;</span><span class="p">)</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        <span class="n">tasks</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="p">[(</span><span class="n">config</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">])</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span></code></pre></div>
+<p>For more examples, check the <a href="https://github.com/augustepoiroux/LeanInteract/tree/main/examples">examples directory</a>.</p>
+<h2 id="core-principles">Core Principles<a class="headerlink" href="#core-principles" title="Permanent link">&para;</a></h2>
+<h3 id="1-pre-instantiate-configuration">1. Pre-instantiate Configuration<a class="headerlink" href="#1-pre-instantiate-configuration" title="Permanent link">&para;</a></h3>
+<p>Always create your <code>LeanREPLConfig</code> instance <strong>before</strong> starting multiprocessing:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">AutoLeanServer</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># ✅ CORRECT: Config created in main process</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">correct_approach</span><span class="p">():</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">()</span>  <span class="c1"># Pre-setup in main process</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>  <span class="c1"># Use pre-configured config</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        <span class="c1"># ... your work here</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        <span class="k">pass</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">ctx</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;spawn&quot;</span><span class="p">)</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="p">[</span><span class="n">config</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="c1"># ❌ INCORRECT: Config created in each process</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="k">def</span><span class="w"> </span><span class="nf">incorrect_approach</span><span class="p">():</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">():</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">()</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>        <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>        <span class="c1"># ... your work here</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>        <span class="k">pass</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>    <span class="n">ctx</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;spawn&quot;</span><span class="p">)</span> 
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>        <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="2-one-server-per-process">2. One Server Per Process<a class="headerlink" href="#2-one-server-per-process" title="Permanent link">&para;</a></h3>
+<p>Each process should have its own <code>LeanServer</code> or <code>AutoLeanServer</code> instance.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">task_data</span><span class="p">):</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="c1"># Each process gets its own server</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="c1"># Process your tasks</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">task_data</span><span class="p">:</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="c1"># Handle result</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="k">return</span> <span class="n">results</span>
+</span></code></pre></div>
+<h2 id="thread-safety">Thread Safety<a class="headerlink" href="#thread-safety" title="Permanent link">&para;</a></h2>
+<h3 id="within-a-single-process">Within a Single Process<a class="headerlink" href="#within-a-single-process" title="Permanent link">&para;</a></h3>
+<p><code>LeanServer</code> and <code>AutoLeanServer</code> are thread-safe within a single process thanks to internal locking mechanisms.
+All concurrent requests will be processed sequentially.</p>
+<h3 id="across-processes">Across Processes<a class="headerlink" href="#across-processes" title="Permanent link">&para;</a></h3>
+<p>Servers are <strong>NOT</strong> safe to share across processes. Each process must have its own server instance:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoLeanServer</span><span class="p">,</span> <span class="n">LeanREPLConfig</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># ✅ CORRECT: Each process creates its own server</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">correct_multiprocess_worker</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">worker_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>  <span class="c1"># New server per process</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="c1"># ... work with server</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c1"># ❌ INCORRECT: Don&#39;t share servers across processes</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="k">def</span><span class="w"> </span><span class="nf">incorrect_multiprocess_pattern</span><span class="p">():</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">()</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">(</span><span class="n">worker_id</span><span class="p">):</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        <span class="c1"># This will cause issues - server can&#39;t be pickled/shared</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">))</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>        <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>  <span class="c1"># Will fail!</span>
+</span></code></pre></div>
+<h2 id="memory-management">Memory Management<a class="headerlink" href="#memory-management" title="Permanent link">&para;</a></h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoLeanServer</span><span class="p">,</span> <span class="n">LeanREPLConfig</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># Configure memory limits for multi-process safety</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">memory_hard_limit_mb</span><span class="o">=</span><span class="mi">8192</span><span class="p">)</span>  <span class="c1"># 8GB per server, works on Linux only</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">config</span><span class="p">,</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="n">max_total_memory</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>      <span class="c1"># Restart when system uses &gt;80% memory</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">max_process_memory</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>    <span class="c1"># Restart when process uses &gt;80% of limit</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="n">max_restart_attempts</span><span class="o">=</span><span class="mi">5</span>     <span class="c1"># Allow up to 5 restart attempts per command</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="memory-configuration-options">Memory Configuration Options<a class="headerlink" href="#memory-configuration-options" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>max_total_memory</code>: System-wide memory threshold (0.0-1.0)</li>
+<li><code>max_process_memory</code>: Per-process memory threshold (0.0-1.0)</li>
+<li><code>memory_hard_limit_mb</code>: Hard memory limit in MB (Linux only)</li>
+<li><code>max_restart_attempts</code>: Maximum consecutive restart attempts</li>
+</ul>
 
 
 

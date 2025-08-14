@@ -592,13 +592,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#understanding-core-components" class="md-nav__link">
+  <a href="#core-components" class="md-nav__link">
     <span class="md-ellipsis">
-      Understanding Core Components
+      Core Components
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Understanding Core Components">
+    <nav class="md-nav" aria-label="Core Components">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -687,6 +687,29 @@
   
   <span class="md-ellipsis">
     Tactic Mode
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi-processing
     
   </span>
   
@@ -1052,13 +1075,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#understanding-core-components" class="md-nav__link">
+  <a href="#core-components" class="md-nav__link">
     <span class="md-ellipsis">
-      Understanding Core Components
+      Core Components
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Understanding Core Components">
+    <nav class="md-nav" aria-label="Core Components">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1122,17 +1145,14 @@
 
 
 <h1 id="getting-started-with-leaninteract">Getting Started with LeanInteract<a class="headerlink" href="#getting-started-with-leaninteract" title="Permanent link">&para;</a></h1>
-<p>This guide will help you take your first steps with LeanInteract and understand its core concepts.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>LeanInteract provides a Python interface to the Lean 4 theorem prover via the Lean REPL (Read-Evaluate-Print Loop). It enables you to:</p>
 <ul>
 <li>Execute Lean code from Python</li>
 <li>Process Lean files</li>
 <li>Interact with proofs step by step</li>
-<li>Save and restore proof states</li>
 </ul>
 <h2 id="quick-example">Quick Example<a class="headerlink" href="#quick-example" title="Permanent link">&para;</a></h2>
-<p>Here's a minimal example to help you get started:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span><span class="p">,</span> <span class="n">Command</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Create a Lean REPL configuration</span>
@@ -1154,17 +1174,16 @@ CommandResponse(env=0)
 </code></pre></div>
 <p>This will:</p>
 <ol>
-<li>Initialize a Lean REPL configuration</li>
+<li>Initialize a Lean REPL configuration: downloads and initializes the Lean environment</li>
 <li>Start a Lean server</li>
 <li>Execute a simple Lean theorem</li>
 <li>Return a response containing the Lean environment state and any messages</li>
 </ol>
-<h2 id="understanding-core-components">Understanding Core Components<a class="headerlink" href="#understanding-core-components" title="Permanent link">&para;</a></h2>
-<p>Let's break down the key components:</p>
+<h2 id="core-components">Core Components<a class="headerlink" href="#core-components" title="Permanent link">&para;</a></h2>
 <h3 id="leanreplconfig">LeanREPLConfig<a class="headerlink" href="#leanreplconfig" title="Permanent link">&para;</a></h3>
 <p><code>LeanREPLConfig</code> sets up the Lean environment:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.19.0&quot;</span><span class="p">,</span>  <span class="c1"># Specify Lean version (optional)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.19.0&quot;</span><span class="p">,</span>  <span class="c1"># Specify Lean version (optional, default is latest)</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>            <span class="c1"># Print detailed logs</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">)</span>
 </span></code></pre></div>
@@ -1186,10 +1205,11 @@ CommandResponse(env=0)
 <li><code>ProofStep</code>: Work with proofs step by step using tactics</li>
 </ul>
 <p>Basic command execution:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := id&quot;</span><span class="p">))</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := id&quot;</span><span class="p">))</span>
 </span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=0, messages=[Message(severity=&#39;info&#39;, end_pos=Pos(column=42, line=1), data=&#39;Goals accomplished!&#39;, start_pos=Pos(column=0, line=1))])
+</code></pre></div>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
-<p>Now that you understand the basics, you can:</p>
 <ul>
 <li>Learn about <a href="../basic-usage/">basic usage patterns</a></li>
 <li>Explore <a href="../tactic-mode/">tactic mode</a> for step-by-step proof interaction</li>

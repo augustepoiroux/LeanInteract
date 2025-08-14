@@ -728,6 +728,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi-processing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../examples/" class="md-nav__link">
         
   
@@ -1184,10 +1207,14 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip install lean-interact
 </span></code></pre></div>
 <h3 id="2-install-lean-4-if-not-already-installed">2. Install Lean 4 (if not already installed)<a class="headerlink" href="#2-install-lean-4-if-not-already-installed" title="Permanent link">&para;</a></h3>
-<p>LeanInteract provides a convenient command to install Lean 4 via the Elan version manager:</p>
+<p>LeanInteract provides a convenient command to install Lean 4 along with its official <a href="https://github.com/leanprover/elan">Elan</a> version manager:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>install-lean
 </span></code></pre></div>
-<p>This command will install Elan, which manages Lean versions. Your Elan version should be at least 4.0.0.</p>
+<p>This command will install Elan, which manages Lean versions.</p>
+<div class="admonition warning">
+<p class="admonition-title">Elan Version</p>
+<p>Your Elan version should be at least 4.0.0.</p>
+</div>
 <h2 id="verifying-installation">Verifying Installation<a class="headerlink" href="#verifying-installation" title="Permanent link">&para;</a></h2>
 <p>You can verify that LeanInteract is properly installed by running a simple Python script:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span><span class="p">,</span> <span class="n">Command</span>
@@ -1205,12 +1232,12 @@
 <div class="language-text highlight"><pre><span></span><code>Build completed successfully.
 
 
-CommandResponse(messages=[Message(severity=&#39;info&#39;, data=&#39;4&#39;, start_pos=Pos(line=1, column=0), end_pos=Pos(line=1, column=5))], env=0)
+CommandResponse(messages=[Message(data=&#39;4&#39;, start_pos=Pos(column=0, line=1), end_pos=Pos(column=5, line=1), severity=&#39;info&#39;)], env=0)
 </code></pre></div>
 <p>If everything is set up correctly, the script should output a successful response.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The first time you run LeanInteract, it might take some time as it downloads and builds Lean REPL. Subsequent runs will be significantly faster due to caching.</p>
+<p>The first time you run LeanInteract, it might take some time as it downloads the requested Lean version and builds Lean REPL. Subsequent runs will be significantly faster due to caching.</p>
 </div>
 <h2 id="system-specific-notes">System-Specific Notes<a class="headerlink" href="#system-specific-notes" title="Permanent link">&para;</a></h2>
 <h3 id="windows">Windows<a class="headerlink" href="#windows" title="Permanent link">&para;</a></h3>
