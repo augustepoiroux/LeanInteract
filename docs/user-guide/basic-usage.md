@@ -24,7 +24,7 @@ server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id"))
 The response contains:
 
 - An environment state (`env`) that can be used for subsequent commands
-- Messages returned by Lean (errors, information, etc.)
+- Messages returned by Lean if any (errors, information, etc.)
 
 ### Working with Environment States
 
@@ -59,6 +59,7 @@ Both `Command` and `FileCommand` support several options:
 - `all_tactics`: Get information about tactics used
 - `root_goals`: Get information about goals in theorems and definitions
 - `infotree`: Get Lean infotree containing various informations about declarations and tactics
+- `env`: The environment from a previous command to be used as context. If `env = None`, starts from scratch.
 
 Example with options:
 
@@ -87,8 +88,6 @@ This response will include a list of `Sorry` objects, each containing:
 
 ## Error Handling
 
-It's good practice to handle errors that might occur during execution:
-
 ```python tags=["execute"]
 from lean_interact.interface import LeanError
 
@@ -103,8 +102,6 @@ except Exception as e:
 ```
 
 ## Next Steps
-
-Now that you understand basic operations, you can:
 
 - Learn about [tactic mode](tactic-mode.md) for step-by-step proof interaction
 - Configure [custom Lean environments](custom-lean-configuration.md)

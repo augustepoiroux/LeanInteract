@@ -4,7 +4,7 @@ execute: true
 
 # Examples
 
-This page provides practical examples of using LeanInteract in different scenarios. You can find the full examples in the [`examples`](https://github.com/augustepoiroux/LeanInteract/tree/main/examples) directory of the repository.
+This page provides practical examples of using LeanInteract in different scenarios. You can find a few full example scripts in the [`examples`](https://github.com/augustepoiroux/LeanInteract/tree/main/examples) directory of the repository.
 
 ## Basic Theorem Proving
 
@@ -77,11 +77,14 @@ print(result)  # Example raw output from the REPL
 
 For more comprehensive examples, check out the following scripts in the examples directory:
 
-1. [**proof_generation_and_autoformalization.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/proof_generation_and_autoformalization.py)  
+1. [**multiprocessing.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/multiprocessing.py)  
+   Shows how to use multiprocessing with LeanInteract for parallel proof checking.
+
+2. [**proof_generation_and_autoformalization.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/proof_generation_and_autoformalization.py)  
    Shows how to use models like DeepSeek-Prover-V1.5 and Goedel-Prover on MiniF2F and ProofNet# benchmarks.
 
-2. [**beq_plus.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/beq_plus.py)  
+3. [**beq_plus.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/beq_plus.py)  
    Demonstrates how to run the autoformalization BEq+ metric on the ProofNetVerif benchmark.
 
-3. [**type_check.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/type_check.py)  
+4. [**type_check.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/type_check.py)  
    Shows how to optimize type checking using environment states.

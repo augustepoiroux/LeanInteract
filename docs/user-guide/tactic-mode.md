@@ -7,7 +7,7 @@ execute: true
 Tactic mode in LeanInteract allows you to work with Lean's proof tactics step-by-step, providing an interactive way to develop and explore proofs.
 
 !!! warning "Experimental Feature"
-    The tactic mode feature is experimental in Lean REPL and may not work as expected in all situations. Some valid proofs might be incorrectly rejected. Please report any issues you encounter on the [Lean REPL GitHub repository](https://github.com/leanprover-community/repl/issues).
+    The tactic mode feature is experimental may not work as expected in all situations. Some valid proofs might be incorrectly rejected.
 
 ## Getting Started with Tactics
 
@@ -28,7 +28,7 @@ config = LeanREPLConfig()
 server = LeanServer(config)
 
 # Define a theorem with sorry
-response = server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := sorry"))
+response = server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := by sorry"))
 print(response.sorries[0])
 ```
 
