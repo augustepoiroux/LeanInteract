@@ -465,6 +465,7 @@ class DeclModifiers(REPLBaseModel):
     visibility: Literal["regular", "private", "protected", "public"] = "regular"
     compute_kind: Annotated[Literal["regular", "meta", "noncomputable"], Field(default="regular", alias="computeKind")]
     rec_kind: Annotated[Literal["default", "partial", "nonrec"], Field(default="default", alias="recKind")]
+    is_protected: Annotated[bool, Field(default=False, alias="isProtected")]
     is_unsafe: Annotated[bool, Field(default=False, alias="isUnsafe")]
     attributes: list[str] = Field(default_factory=list)
 

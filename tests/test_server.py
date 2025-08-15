@@ -575,6 +575,7 @@ lean_exe "dummy" where
                             visibility="regular",
                             compute_kind="regular",
                             rec_kind="default",
+                            is_protected=False,
                             is_unsafe=False,
                             attributes=[],
                         ),
@@ -632,6 +633,7 @@ lean_exe "dummy" where
                         modifiers=DeclModifiers(
                             doc_string=None,
                             is_unsafe=False,
+                            is_protected=False,
                             rec_kind="default",
                             attributes=[],
                             visibility="regular",
