@@ -1,6 +1,7 @@
 import os
 import platform
 import shutil
+import subprocess
 import tempfile
 import time
 import unittest
@@ -120,6 +121,9 @@ class TestLeanServer(unittest.TestCase):
         self.assertIsInstance(response, CommandResponse)
         # Re-use the existing build
         with unittest.mock.patch("subprocess.run") as run_mock:
+            run_mock.return_value = subprocess.CompletedProcess(
+                args=["lake", "--version"], returncode=0, stdout="", stderr=""
+            )
             new_config = LeanREPLConfig(
                 project=LocalProject(directory=base_config.working_dir, auto_build=False), verbose=True
             )
