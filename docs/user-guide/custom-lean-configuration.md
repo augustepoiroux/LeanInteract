@@ -14,10 +14,10 @@ config = LeanREPLConfig(lean_version="v4.7.0")
 server = LeanServer(config)
 ```
 
+## Working with Existing Projects
+
 !!! note
     When using a project through the `project` attribute, the Lean version is automatically inferred from the project. You cannot specify both `lean_version` and `project` parameters.
-
-## Working with Existing Projects
 
 ### Local Lean Projects
 
@@ -53,7 +53,7 @@ project = GitProject(
     url="https://github.com/yangky11/lean4-example",
     rev="main",  # Optional: specific branch, tag, or commit
     directory="/custom/cache/path",  # Optional: custom directory where the project will be cloned
-    force_pull=False  # Optional: force update from remote. Useful in case you already have the project cloned.
+    force_pull=False  # Optional: force update from remote. Useful in case you already have the project cloned and the branch has been updated.
 )
 config = LeanREPLConfig(project=project)
 server = LeanServer(config)
@@ -61,34 +61,16 @@ server = LeanServer(config)
 
 The `GitProject` will automatically:
 
-- Clone the repository if it doesn't exist
+- Clone the repository if it doesn't exist (including submodules if present)
 - Update to the specified revision
-- Build the project using Lake
-- Handle submodules if present
-
-### Using a Local REPL Installation
-
-If you're developing the Lean REPL or have a custom version, you can use your local copy instead of downloading from the Git repository:
-
-```python
-from lean_interact import LeanREPLConfig, LeanServer
-
-config = LeanREPLConfig(local_repl_path="path/to/your/local/repl", build_repl=True)
-server = LeanServer(config)
-```
-
-!!! note
-    When using `local_repl_path`, any specified `repl_rev`, and `repl_git` parameters are ignored as the local REPL is used directly.
-
-!!! note
-    You are responsible for using a compatible Lean version between your local REPL and the project you will interact with.
+- Build the project with `lake build`
 
 !!! tip
-    Setting `build_repl=False` will skip building the local REPL, which can be useful if you've already built it and want to avoid rebuilding.
+    Use the `directory` parameter to control where projects are cached
 
 ## Working with Temporary Projects
 
-LeanInteract allows you to create temporary projects with dependencies for experimentation without affecting your local environment.
+LeanInteract allows you to create temporary projects with dependencies for quick experimentation and automated reproducible setups.
 
 ### Simple Temporary Projects with Dependencies
 
@@ -151,7 +133,7 @@ Alternatively, you can define the lakefile content using the TOML format by sett
 
 ## Using Custom REPL Revisions
 
-LeanInteract uses a Lean REPL (Read-Eval-Print Loop) from a Git repository to interact with Lean. By default, it uses a specific version (`v1.0.9`) of the REPL from the default repository (`https://github.com/augustepoiroux/repl`). However, you can customize this by specifying a different REPL revision or repository:
+LeanInteract uses the Lean REPL from a git repository to interact with Lean. By default, it uses a specific version of the REPL from the default forked repository (`https://github.com/augustepoiroux/repl`) which manages compatibility with Lean versions. However, you can customize this by specifying a different REPL revision or repository:
 
 ```python
 from lean_interact import LeanREPLConfig, LeanServer
@@ -172,19 +154,29 @@ When you specify a `repl_rev`, LeanInteract will try to:
 
 This approach allows for better matching between REPL versions and Lean versions, ensuring compatibility.
 
-- Always check `config.is_setup()` before creating servers
 !!! warning
-    Custom/older REPL implementations may have interfaces that are incompatible with LeanInteract's standard commands. If you encounter issues, consider using the `run_dict` method from `LeanServer` to communicate directly with the REPL:
+    Custom/older REPL implementations may have interfaces that are incompatible with LeanInteract's current commands. If you encounter issues, consider using the `run_dict` method from `LeanServer` to communicate directly with the REPL:
 
     ```python
-    # Using run_dict instead of the standard commands
     result = server.run_dict({"cmd": "your_command_here"})
     ```
 
 !!! note
     The `repl_rev` and `repl_git` parameters are ignored if you specify `local_repl_path`.
 
-## Best Practices
+### Using a Local REPL Installation
 
-- **Custom Directories**: Use the `directory` parameter to control where projects are cached
-- **Build Control**: Use `auto_build=False` to skip building if you've already built a project
+If you are developing the Lean REPL or have a custom version, you can use your local copy instead of downloading from a git repository:
+
+```python
+from lean_interact import LeanREPLConfig, LeanServer
+
+config = LeanREPLConfig(local_repl_path="path/to/your/local/repl", build_repl=True)
+server = LeanServer(config)
+```
+
+!!! note
+    When using `local_repl_path`, any specified `repl_rev`, and `repl_git` parameters are ignored as the local REPL is used directly.
+
+!!! note
+    Make sure you are using a compatible Lean version between your local REPL and the project you will interact with.

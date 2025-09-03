@@ -26,13 +26,16 @@ pip install lean-interact
 
 ### 2. Install Lean 4 (if not already installed)
 
-LeanInteract provides a convenient command to install Lean 4 via the Elan version manager:
+LeanInteract provides a convenient command to install Lean 4 along with its official [Elan](https://github.com/leanprover/elan) version manager:
 
 ```
 install-lean
 ```
 
-This command will install Elan, which manages Lean versions. Your Elan version should be at least 4.0.0.
+This command will install Elan, which manages Lean versions.
+
+!!! warning "Elan Version"
+    Your Elan version should be at least 4.0.0.
 
 ## Verifying Installation
 
@@ -55,7 +58,7 @@ print(response)
 If everything is set up correctly, the script should output a successful response.
 
 !!! note
-    The first time you run LeanInteract, it might take some time as it downloads and builds Lean REPL. Subsequent runs will be significantly faster due to caching.
+    The first time you run LeanInteract, it might take some time as it downloads the requested Lean version and builds Lean REPL. Subsequent runs will be significantly faster due to caching.
 
 ## System-Specific Notes
 
