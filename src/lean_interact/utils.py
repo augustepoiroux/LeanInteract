@@ -92,11 +92,22 @@ def check_lake(lake_path: str | PathLike) -> None:
     lake_path = Path(lake_path)
 
     try:
-        subprocess.run([str(lake_path), "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    except subprocess.CalledProcessError:
+        result = subprocess.run(
+            [str(lake_path), "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except FileNotFoundError as e:
         raise RuntimeError(
-            f"Lean 4 build system (`{lake_path}`) is not installed or not found in PATH. "
-            "You can try to run `install-lean` or find installation instructions here: https://leanprover-community.github.io/get_started.html"
+            f"Lean 4 build system executable not found at `{lake_path}`: {e}. "
+            "You can try to run `install-lean` or follow: https://leanprover-community.github.io/get_started.html"
+        ) from e
+
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"Lean 4 build system (`{lake_path}`) failed with exit code {result.returncode}.\n"
+            f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}"
         )
 
 
