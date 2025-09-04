@@ -12,6 +12,7 @@ __pycache__
 
 sandbox*
 .vscode
+*.lock
 
 # Doc build
 site

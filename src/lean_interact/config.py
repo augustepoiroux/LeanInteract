@@ -383,16 +383,27 @@ class LeanREPLConfig:
         check_lake(self.lake_path)
 
         try:
-            subprocess.run(
+            # Capture build output so failures can be diagnosed
+            res = subprocess.run(
                 [str(self.lake_path), "build"],
                 cwd=self._cache_repl_dir,
-                check=True,
-                stdout=None if self.verbose else subprocess.DEVNULL,
-                stderr=None if self.verbose else subprocess.DEVNULL,
+                stdout=None if self.verbose else subprocess.PIPE,
+                stderr=None if self.verbose else subprocess.PIPE,
+                text=True,
             )
-        except subprocess.CalledProcessError as e:
-            logger.error("Failed to build the REPL at %s: %s", self._cache_repl_dir, e)
-            raise
+        except FileNotFoundError as e:
+            raise RuntimeError(
+                f"Lean 4 build system executable not found at `{self.lake_path}`. "
+                "You can try to run `install-lean` or follow: https://leanprover-community.github.io/get_started.html"
+            ) from e
+
+        if res.returncode != 0:
+            out = res.stdout or ""
+            err = res.stderr or ""
+            raise RuntimeError(
+                f"Failed to build the REPL at {self._cache_repl_dir}"
+                f"\n{'-' * 50}\nstdout:\n{out}\n{'-' * 50}\nstderr:\n{err}\n{'-' * 50}"
+            )
 
     def _get_available_lean_versions(self) -> list[tuple[str, str | None]]:
         """
