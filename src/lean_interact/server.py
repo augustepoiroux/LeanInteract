@@ -89,6 +89,19 @@ class LeanServer:
             if platform.system() != "Linux"
             else lambda: _limit_memory(self.config.memory_hard_limit_mb),
         )
+        if not self.is_alive():
+            stdout, stderr = self.get_stdout_stderr()
+            raise ChildProcessError(f"The Lean server could not be started:\nstdout: {stdout}\nstderr: {stderr}")
+
+    def get_stdout_stderr(self) -> tuple[str, str]:
+        """Get the stdout and stderr output from the Lean REPL.
+
+        Returns:
+            A tuple containing the stdout and stderr output.
+        """
+        stdout = self._proc.stdout.read() if self._proc and self._proc.stdout else ""
+        stderr = self._proc.stderr.read() if self._proc and self._proc.stderr else ""
+        return stdout, stderr
 
     def _sendline(self, line: str) -> None:
         assert self._proc is not None and self._proc.stdin is not None
@@ -200,11 +213,9 @@ class LeanServer:
             if t.is_alive():
                 self.kill()
                 raise TimeoutError(f"The Lean server did not respond in time ({timeout=}) and is now killed.")
-            if output:
+            if output.strip():
                 return output
-            if output.strip() == "":
-                raise BrokenPipeError("The Lean server returned no output.")
-            raise BrokenPipeError(f"The Lean server closed unexpectedly with the output:\n`{output}`")
+            raise BrokenPipeError("The Lean server returned no output.")
 
     def _parse_repl_output(self, raw_output: str, verbose: bool) -> dict:
         """Parse JSON response.
@@ -259,7 +270,10 @@ class LeanServer:
             JsonDecodeError: If the Lean server output is not valid JSON.
         """
         if not self.is_alive():
-            raise ChildProcessError("The Lean server is not running.")
+            stdout, stderr = self.get_stdout_stderr()
+            raise ChildProcessError(
+                f"The Lean server is not running.\n{'-' * 50}\nstdout:\n{stdout}\n{'-' * 50}\nstderr:\n{stderr}\n{'-' * 50}"
+            )
 
         json_query = json.dumps(request, ensure_ascii=False)
         try:
@@ -268,13 +282,15 @@ class LeanServer:
             self.kill()
             raise TimeoutError(f"The Lean server did not respond in time ({timeout=}) and is now killed.") from e
         except BrokenPipeError as e:
+            stdout, stderr = self.get_stdout_stderr()
             self.kill()
             raise ConnectionAbortedError(
-                "The Lean server closed unexpectedly. Possible reasons (not exhaustive):\n"
-                "- An uncaught exception in the Lean REPL\n"
+                f"The Lean server closed unexpectedly."
+                f"\n{'-' * 50}\nstdout:\n{stdout}\n{'-' * 50}\nstderr:\n{stderr}\n{'-' * 50}"
+                f"If stdout and stderr are empty or obscure, here is a list of possible reasons (not exhaustive):\n"
                 "- Not enough memory and/or compute available\n"
-                "- The cached Lean REPL is corrupted. In this case, clear the cache"
-                " using the `clear-lean-cache` command."
+                "- The cached Lean REPL is corrupted. In this case, clear the cache using the `clear-lean-cache` command.\n"
+                "- An uncaught exception in the Lean REPL"
             ) from e
 
         return self._parse_repl_output(raw_output, verbose)
