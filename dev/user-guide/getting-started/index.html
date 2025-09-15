@@ -1207,7 +1207,7 @@ CommandResponse(env=0)
 <p>Basic command execution:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := id&quot;</span><span class="p">))</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>CommandResponse(messages=[Message(severity=&#39;info&#39;, data=&#39;Goals accomplished!&#39;, start_pos=Pos(column=0, line=1), end_pos=Pos(column=42, line=1))], env=0)
+<div class="language-text highlight"><pre><span></span><code>CommandResponse(env=0, messages=[Message(end_pos=Pos(column=42, line=1), severity=&#39;info&#39;, start_pos=Pos(column=0, line=1), data=&#39;Goals accomplished!&#39;)])
 </code></pre></div>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>
