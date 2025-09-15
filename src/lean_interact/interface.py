@@ -57,6 +57,9 @@ class CommandOptions(REPLBaseModel):
     infotree: str | None = None
     """Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored."""
 
+    incrementality: bool | None = None
+    """If true, enable incremental optimization for the command."""
+
     set_options: Annotated[Options | None, Field(alias="setOptions")] = None
     """Options to be set before executing the command (i.e. `set_option` commands in Lean)."""
 

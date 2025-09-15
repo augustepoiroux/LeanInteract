@@ -295,6 +295,16 @@ class LeanServer:
 
         return self._parse_repl_output(raw_output, verbose)
 
+    def _augment_request(self, request: BaseREPLQuery) -> BaseREPLQuery:
+        if isinstance(request, (Command, FileCommand)):
+            if self.config.enable_incremental_optimization:
+                request = request.model_copy(update={"incrementality": True})
+            if self.config.enable_parallel_elaboration:
+                set_options = list(request.set_options) if request.set_options is not None else []
+                set_options.append((["Elab", "async"], True))
+                request = request.model_copy(update={"set_options": set_options})
+        return request
+
     # Type hints for IDE and static analysis
     @overload
     def run(
@@ -334,10 +344,7 @@ class LeanServer:
             Depending on the request type, the response will be one of the following:
                 `CommandResponse`, `ProofStepResponse`, or `LeanError`
         """
-        if isinstance(request, (Command, FileCommand)) and self.config.enable_parallel_elaboration:
-            set_options = list(request.set_options) if request.set_options is not None else []
-            set_options.append((["Elab", "async"], True))
-            request = request.model_copy(update={"set_options": set_options})
+        request = self._augment_request(request)
         request_dict = request.model_dump(exclude_none=True, by_alias=True)
         result_dict = self.run_dict(request=request_dict, verbose=verbose, timeout=timeout, **kwargs)
 
@@ -577,10 +584,7 @@ class AutoLeanServer(LeanServer):
             Depending on the request type, the response will be one of the following:
                 `CommandResponse`, `ProofStepResponse`, or `LeanError`
         """
-        if isinstance(request, (Command, FileCommand)) and self.config.enable_parallel_elaboration:
-            set_options = list(request.set_options) if request.set_options is not None else []
-            set_options.append((["Elab", "async"], True))
-            request = request.model_copy(update={"set_options": set_options})
+        request = self._augment_request(request)
         request_dict = request.model_dump(exclude_none=True, by_alias=True)
         result_dict = self._run_dict_backoff(request=request_dict, verbose=verbose, timeout=timeout)
 

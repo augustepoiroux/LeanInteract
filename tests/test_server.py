@@ -412,7 +412,7 @@ lean_exe "dummy" where
         with unittest.mock.patch.object(server, "_get_repl_state_id", return_value=10):
             mock_super.return_value = {"env": 10}
             result = server.run(Command(cmd="test", env=-1))
-            mock_super.assert_called_with(request={"cmd": "test", "env": 10}, verbose=False, timeout=DEFAULT_TIMEOUT)
+            mock_super.assert_called_with(request={"cmd": "test", "env": 10, "incrementality": True}, verbose=False, timeout=DEFAULT_TIMEOUT)
             self.assertEqual(result, CommandResponse(env=10))
 
     @unittest.mock.patch("lean_interact.server.LeanServer.run_dict")
