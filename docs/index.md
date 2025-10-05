@@ -21,6 +21,8 @@ hide:
     - We backport the latest features of Lean REPL to older versions of Lean (see [fork](https://github.com/augustepoiroux/repl)).
 - **📦 Temporary Projects**: Easily instantiate temporary Lean environments
     - Useful for experimenting with benchmarks depending on [Mathlib](https://github.com/leanprover-community/mathlib4) like [ProofNet#](https://huggingface.co/datasets/PAug/ProofNetSharp) and [MiniF2F](https://github.com/yangky11/miniF2F-lean4)
+- **🧾 Data extraction**: Extract declarations and info trees for analysis and dataset building.
+- **⚡ Incremental + Parallel elaboration**: Automatically reuse partial computations from previous commands, and enable `Elab.async` for faster processing.
 
 ## Quick Start
 

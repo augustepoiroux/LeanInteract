@@ -4,6 +4,7 @@
       heading: "Interface"
       show_symbol_type_heading: false
       members:
+        - CommandOptions
         - Command
         - FileCommand
         - ProofStep

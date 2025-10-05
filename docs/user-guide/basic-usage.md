@@ -23,8 +23,8 @@ server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id"))
 
 The response contains:
 
-- An environment state (`env`) that can be used for subsequent commands
 - Messages returned by Lean if any (errors, information, etc.)
+- An environment state (`env`) that can be used for subsequent commands.
 
 ### Working with Environment States
 
@@ -36,6 +36,19 @@ response1 = server.run(Command(cmd="def x := 5"))
 
 # Use environment state 0 for the next command
 server.run(Command(cmd="#check x", env=response1.env))
+```
+
+To extract declarations:
+
+```python tags=["execute"]
+response = server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := by simp", declarations=True))
+for d in response.declarations:
+    print("Full name:", d.full_name)
+    print("Kind:", d.kind)
+    print("Range:", d.range)
+    print("Signature:", d.signature.pp)
+    print("Binders:", d.binders)
+    print(d)
 ```
 
 ## Processing Lean Files
@@ -57,8 +70,11 @@ response = server.run(FileCommand(path="myfile.lean", root_goals=True))
 Both `Command` and `FileCommand` support several options:
 
 - `all_tactics`: Get information about tactics used
+- `declarations`: Extract fine-grained information about declarations in the code
 - `root_goals`: Get information about goals in theorems and definitions
-- `infotree`: Get Lean infotree containing various informations about declarations and tactics
+- `infotree`: Get Lean infotree containing various informations from the Lean syntax tree
+- `incrementality`: Enable or disable incremental elaboration for this specific command.
+- `set_options`: Set Lean options for this command (see [Set Options](set-options.md))
 - `env`: The environment from a previous command to be used as context. If `env = None`, starts from scratch.
 
 Example with options:

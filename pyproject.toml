@@ -1,6 +1,6 @@
 [project]
 name = "lean-interact"
-version = "0.9.0-alpha-20250926"
+version = "0.9.0"
 description = "LeanInteract is a Python package that allows you to interact with the Lean theorem prover."
 keywords = ["Lean", "theorem proving", "autoformalization", "REPL"]
 license = { file = "LICENSE" }

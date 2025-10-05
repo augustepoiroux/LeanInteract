@@ -143,7 +143,9 @@ nav:
       - Getting Started: user-guide/getting-started.md
       - Basic Usage: user-guide/basic-usage.md
       - Tactic Mode: user-guide/tactic-mode.md
-      - Multi-processing: user-guide/multi-processing.md
+      - Performance & Multi-processing: user-guide/performance.md
+      - Data Extraction: user-guide/data-extraction.md
+      - Set Options: user-guide/set-options.md
       - Examples: user-guide/examples.md
       - Custom Lean Configuration: user-guide/custom-lean-configuration.md
       - Troubleshooting: user-guide/troubleshooting.md
