@@ -83,6 +83,7 @@ plugins:
       version_selector: true
       css_dir: css
       javascript_dir: js
+  - markdown-exec
   - mkdocstrings:
       handlers:
         python:
@@ -104,16 +105,6 @@ plugins:
             show_overloads: false
             unwrap_annotated: true
             signature_crossrefs: true
-  - execute:
-      execute_without_tag: [] # Don't execute any files by default
-      include:
-        - "*.md"
-      exclude: []
-      tags:
-        execute: "execute"
-        hide_cell: "hide-cell"
-        hide_input: "hide-input"
-        hide_output: "hide-output"
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -145,7 +136,7 @@ nav:
       - Tactic Mode: user-guide/tactic-mode.md
       - Performance & Multi-processing: user-guide/performance.md
       - Data Extraction: user-guide/data-extraction.md
-      - Set Options: user-guide/set-options.md
+      - Set Lean Options: user-guide/set-options.md
       - Examples: user-guide/examples.md
       - Custom Lean Configuration: user-guide/custom-lean-configuration.md
       - Troubleshooting: user-guide/troubleshooting.md

@@ -1,7 +1,3 @@
----
-execute: true
----
-
 # Basic Usage
 
 This guide covers the fundamental operations and command types in LeanInteract.
@@ -10,7 +6,7 @@ This guide covers the fundamental operations and command types in LeanInteract.
 
 The most common operation in LeanInteract is executing Lean code directly using the `Command` class:
 
-```python tags=["execute"]
+```python exec="on" source="above" session="base" result="python"
 from lean_interact import LeanREPLConfig, LeanServer, Command
 
 # Setup
@@ -18,7 +14,7 @@ config = LeanREPLConfig()
 server = LeanServer(config)
 
 # Run a simple theorem
-server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id"))
+print(server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id")))
 ```
 
 The response contains:
@@ -30,25 +26,12 @@ The response contains:
 
 Each command execution creates a new environment state. You can use this state in subsequent commands:
 
-```python tags=["execute"]
+```python exec="on" source="above" session="base" result="python"
 # First command creates environment state
 response1 = server.run(Command(cmd="def x := 5"))
 
 # Use environment state 0 for the next command
-server.run(Command(cmd="#check x", env=response1.env))
-```
-
-To extract declarations:
-
-```python tags=["execute"]
-response = server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := by simp", declarations=True))
-for d in response.declarations:
-    print("Full name:", d.full_name)
-    print("Kind:", d.kind)
-    print("Range:", d.range)
-    print("Signature:", d.signature.pp)
-    print("Binders:", d.binders)
-    print(d)
+print(server.run(Command(cmd="#check x", env=response1.env)))
 ```
 
 ## Processing Lean Files
@@ -79,7 +62,7 @@ Both `Command` and `FileCommand` support several options:
 
 Example with options:
 
-```python tags=["execute"]
+```python exec="on" source="above" session="base" result="python"
 response = server.run(Command(
     cmd="theorem ex (n : Nat) : n = 5 → n = 5 := by simp",
     all_tactics=True
@@ -91,7 +74,7 @@ print(response.tactics)  # Shows tactics used
 
 When Lean code contains `sorry` (incomplete proofs), LeanInteract returns information about these `sorry`:
 
-```python tags=["execute"]
+```python exec="on" source="above" session="base" result="python"
 response = server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := sorry"))
 print(response.sorries[0])
 ```
@@ -104,7 +87,7 @@ This response will include a list of `Sorry` objects, each containing:
 
 ## Error Handling
 
-```python tags=["execute"]
+```python exec="on" source="above" session="base" result="python"
 from lean_interact.interface import LeanError
 
 try:

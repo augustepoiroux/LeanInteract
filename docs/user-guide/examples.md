@@ -1,7 +1,3 @@
----
-execute: true
----
-
 # Examples
 
 This page provides practical examples of using LeanInteract in different scenarios. You can find a few full example scripts in the [`examples`](https://github.com/augustepoiroux/LeanInteract/tree/main/examples) directory of the repository.
@@ -10,7 +6,7 @@ This page provides practical examples of using LeanInteract in different scenari
 
 This example demonstrates how to define a simple theorem with a partial proof in Lean using LeanInteract:
 
-```python tags=["execute"]
+```python exec="on" source="above" result="python"
 from lean_interact import LeanREPLConfig, LeanServer, Command
 
 # Initialize configuration and server
@@ -18,19 +14,19 @@ config = LeanREPLConfig()
 server = LeanServer(config)
 
 # Define a simple theorem
-server.run(Command(cmd="""
+print(server.run(Command(cmd="""
 theorem add_comm (a b : Nat) : a + b = b + a := by
   induction a with
   | zero => simp
   | succ a ih => sorry
-"""))
+""")))
 ```
 
 ## Working with Mathlib
 
 This example shows how to use Mathlib to work with more advanced mathematical concepts:
 
-```python
+```python exec="on" source="above" result="python"
 from lean_interact import LeanREPLConfig, LeanServer, Command, TempRequireProject
 
 # Create configuration with Mathlib
@@ -38,7 +34,7 @@ config = LeanREPLConfig(project=TempRequireProject(lean_version="v4.19.0", requi
 server = LeanServer(config)
 
 # Define a theorem using Mathlib's real numbers
-server.run(Command(cmd="""
+print(server.run(Command(cmd="""
 import Mathlib
 
 theorem irrational_plus_rational 
@@ -46,14 +42,14 @@ theorem irrational_plus_rational
   intro h
   simp
   assumption
-"""))
+""")))
 ```
 
 ## Using Custom REPL Versions
 
 This example demonstrates how to use a specific REPL version from a custom repository:
 
-```python
+```python exec="on" source="above" result="python"
 from lean_interact import LeanREPLConfig, LeanServer, Command
 
 # Use a specific REPL version from the official Lean repository

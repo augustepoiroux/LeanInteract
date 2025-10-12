@@ -1,7 +1,3 @@
----
-execute: true
----
-
 # Installation
 
 ## Prerequisites
@@ -20,7 +16,7 @@ We recommend using Linux or macOS for the best experience, but LeanInteract also
 
 You can install LeanInteract directly from PyPI:
 
-```
+```bash
 pip install lean-interact
 ```
 
@@ -28,7 +24,7 @@ pip install lean-interact
 
 LeanInteract provides a convenient command to install Lean 4 along with its official [Elan](https://github.com/leanprover/elan) version manager:
 
-```
+```bash
 install-lean
 ```
 
@@ -41,7 +37,7 @@ This command will install Elan, which manages Lean versions.
 
 You can verify that LeanInteract is properly installed by running a simple Python script:
 
-```python tags=["execute"]
+```python exec="on" source="above" session="install" result="python"
 from lean_interact import LeanREPLConfig, LeanServer, Command
 
 # Create a configuration
@@ -66,7 +62,7 @@ If everything is set up correctly, the script should output a successful respons
 
 On Windows, you might encounter path length limitations. If you get an error related to path length, you can enable long paths in Windows 10 and later versions by running the following command in an administrator PowerShell:
 
-```
+```powershell
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -Value 1 -PropertyType DWord -Force
 git config --system core.longpaths true
 ```
@@ -81,12 +77,12 @@ If you're using LeanInteract in a Docker container, make sure to include Git in 
 
 If you need to clear the LeanInteract cache (for troubleshooting or disk space reasons), you can use:
 
-```
+```bash
 clear-lean-cache
 ```
 
 To completely uninstall:
 
-```
+```bash
 pip uninstall lean-interact
 ```

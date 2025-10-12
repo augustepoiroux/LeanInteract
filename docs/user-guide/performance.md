@@ -1,55 +1,62 @@
----
-execute: false
----
-
 # Performance & Multi-processing
 
-LeanInteract provides faster feedback by default using two complementary mechanisms:
+LeanInteract implements two complementary mechanisms for faster feedback by default:
 
 - Incremental elaboration: reuse partial computations across commands/files
 - Parallel elaboration: enable `Elab.async` to elaborate independent parts in parallel
 
 ## Incremental elaboration
 
-Incremental elaboration reduces latency and memory by reusing prior commands executed on the same `LeanServer`. It's enabled by default for `Command` and `FileCommand`.
+Incremental elaboration reduces latency and memory by automatically reusing elaboration results from prior commands executed on the same `LeanServer`.
 You can disable it if needed by setting `enable_incremental_optimization=False` in `LeanREPLConfig`.
-
-!!! note Lean >= v4.8.0-rc1
-    Available for Lean >= v4.8.0-rc1
-
-!!! warning Imports are cached
-    Imports are cached in incremental mode, meaning that if the content of one of your imported file has changed, it will not be taken into account unless you restart the server.
 
 ### Example
 
 Below is a small script that measures the elapsed time of a first "heavier" command and a second dependent command that benefits from incremental reuse:
 
-```python tags=["execute"]
+```python exec="on" source="above" session="perf" result="python"
 import time
 from lean_interact import LeanREPLConfig, LeanServer, Command
 
-config = LeanREPLConfig()
-server = LeanServer(config)
-
-code = "\n".join([f"def x{i} : Nat := {i}" for i in range(400)]) + "\n#check x399"
+server = LeanServer(LeanREPLConfig())
 
 t1 = time.perf_counter()
-res1 = server.run(Command(cmd=code))
+print(server.run(Command(cmd="""
+def fib : Nat → Nat
+  | 0 => 0
+  | 1 => 1
+  | n + 2 => fib (n + 1) + fib n
+#eval fib 35
+
+theorem foo : n = n := by rfl
+#check foo
+""")))
 print(f"First run:  {time.perf_counter() - t1:.3f}s")
 
 t2 = time.perf_counter()
-res2 = server.run(Command(cmd=code, env=res1.env))
+print(server.run(Command(cmd="""
+def fib : Nat → Nat
+  | 0 => 0
+  | 1 => 1
+  | n + 2 => fib (n + 1) + fib n
+#eval fib 35
+
+theorem foo2 : n = n+0 := by rfl
+#check foo2
+""")))
 print(f"Second run: {time.perf_counter() - t2:.3f}s")
 ```
+
+!!! warning Imports are cached
+    Imports are cached in incremental mode, meaning that if the content of one of your imported file has changed, it will not be taken into account unless you restart the server.
 
 ## Parallel elaboration (Elab.async)
 
 When supported (Lean >= v4.19.0), Lean can elaborate different parts of a command/file in parallel. LeanInteract auto-enables this by adding `set_option Elab.async true` to each request.
 You can disable it if needed by setting `enable_parallel_elaboration=False` in `LeanREPLConfig`.
 
-Notes:
-!!! note Lean >= v4.19.0
-    Available for Lean >= v4.19.0
+!!! note
+    Only available for Lean >= v4.19.0
 
 ---
 
@@ -74,26 +81,20 @@ We recommend using `AutoLeanServer`. It is specifically designed for multi-proce
 ### Quick Start
 
 ```python
-import multiprocessing as mp
-from lean_interact import LeanREPLConfig, AutoLeanServer, Command
+from multiprocessing import Pool
+from lean_interact import AutoLeanServer, Command, LeanREPLConfig
+from lean_interact.interface import LeanError
 
-def worker(config: LeanREPLConfig, task_id):
+def worker(config: LeanREPLConfig, task_id: int):
     """Worker function that runs in each process"""
     server = AutoLeanServer(config)
     result = server.run(Command(cmd=f"#eval {task_id} * {task_id}"))
-    return f"Task {task_id}: {result.messages[0].data if hasattr(result, 'messages') else 'Error'}"
+    return f"Task {task_id}: {result.messages[0].data if not isinstance(result, LeanError) else 'Error'}"
 
-if __name__ == "__main__":
-    # Pre-instantiate config before multiprocessing (downloads/initializes resources)
-    config = LeanREPLConfig(verbose=True)
-
-    ctx = mp.get_context("spawn")
-    with ctx.Pool(processes=4) as pool:
-        tasks = range(5)
-        results = pool.starmap(worker, [(config, task_id) for task_id in tasks])
-
-    for result in results:
-        print(result)
+# Pre-instantiate config before multiprocessing (downloads/initializes resources)
+config = LeanREPLConfig(verbose=True)
+with Pool() as p:
+    print(p.starmap(worker, [(config, i) for i in range(5)]))
 ```
 
 For more examples, check the [examples directory](https://github.com/augustepoiroux/LeanInteract/tree/main/examples).
@@ -109,29 +110,27 @@ from lean_interact import LeanREPLConfig, AutoLeanServer
 import multiprocessing as mp
 
 # ✅ CORRECT: Config created in main process
-def correct_approach():
-    config = LeanREPLConfig()  # Pre-setup in main process
+config = LeanREPLConfig()  # Pre-setup in main process
 
-    def worker(cfg):
-        server = AutoLeanServer(cfg)  # Use pre-configured config
-        # ... your work here
-        pass
+def worker(cfg):
+    server = AutoLeanServer(cfg)  # Use pre-configured config
+    # ... your work here
+    pass
 
-    ctx = mp.get_context("spawn")
-    with ctx.Pool() as pool:
-        pool.map(worker, [config] * 4)
+ctx = mp.get_context("spawn")
+with ctx.Pool() as pool:
+    pool.map(worker, [config] * 4)
 
 # ❌ INCORRECT: Config created in each process
-def incorrect_approach():
-    def worker():
-        config = LeanREPLConfig()
-        server = AutoLeanServer(config)
-        # ... your work here
-        pass
+def worker():
+    config = LeanREPLConfig()
+    server = AutoLeanServer(config)
+    # ... your work here
+    pass
 
-    ctx = mp.get_context("spawn")
-    with ctx.Pool() as pool:
-        pool.map(worker, range(4))
+ctx = mp.get_context("spawn")
+with ctx.Pool() as pool:
+    pool.map(worker, range(4))
 ```
 
 #### 2. One Server Per Process
@@ -187,7 +186,7 @@ config = LeanREPLConfig(memory_hard_limit_mb=8192)  # 8GB per server, works on L
 server = AutoLeanServer(
     config,
     max_total_memory=0.8,      # Restart when system uses >80% memory
-    max_process_memory=0.8,    # Restart when process uses >80% of limit
+    max_process_memory=0.8,    # Restart when process uses >80% of memory limit
     max_restart_attempts=5     # Allow up to 5 restart attempts per command
 )
 ```
