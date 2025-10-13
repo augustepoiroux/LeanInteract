@@ -144,10 +144,10 @@ class TestLeanServer(unittest.TestCase):
 
     def test_init_with_official_repl(self):
         config = LeanREPLConfig(
-            repl_rev="v4.21.0-rc3", repl_git="https://github.com/leanprover-community/repl", verbose=True
+            repl_rev="v4.24.0-rc1", repl_git="https://github.com/leanprover-community/repl", verbose=True
         )
         server = AutoLeanServer(config=config)
-        self.assertEqual(server.lean_version, "v4.21.0-rc3")
+        self.assertEqual(server.lean_version, "v4.24.0-rc1")
         response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
         self.assertIsInstance(response, CommandResponse)
         self.assertEqual(
@@ -158,7 +158,7 @@ class TestLeanServer(unittest.TestCase):
                         start_pos=Pos(line=1, column=0),
                         end_pos=Pos(line=1, column=5),
                         severity="info",
-                        data='"4.21.0-rc3"',
+                        data='"4.24.0-rc1"',
                     )
                 ],
                 env=0,
@@ -412,7 +412,9 @@ lean_exe "dummy" where
         with unittest.mock.patch.object(server, "_get_repl_state_id", return_value=10):
             mock_super.return_value = {"env": 10}
             result = server.run(Command(cmd="test", env=-1))
-            mock_super.assert_called_with(request={"cmd": "test", "env": 10, "incrementality": True}, verbose=False, timeout=DEFAULT_TIMEOUT)
+            mock_super.assert_called_with(
+                request={"cmd": "test", "env": 10, "incrementality": True}, verbose=False, timeout=DEFAULT_TIMEOUT
+            )
             self.assertEqual(result, CommandResponse(env=10))
 
     @unittest.mock.patch("lean_interact.server.LeanServer.run_dict")
