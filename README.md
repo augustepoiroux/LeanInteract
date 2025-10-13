@@ -15,10 +15,12 @@ Check the [documentation](https://augustepoiroux.github.io/LeanInteract/) for de
 - **🔗 Interactivity**: Execute Lean code and files directly from Python.
 - **🚀 Ease of Use**: LeanInteract abstracts the complexities of Lean setup and interaction.
 - **💻 Cross-platform**: Works on Windows, macOS, and Linux operating systems.
-- **🔧 Compatibility**: Supports all Lean versions between `v4.7.0-rc1` and `v4.24.0-rc1`.
+- **🔧 Compatibility**: Supports all Lean versions between `v4.8.0-rc1` and `v4.24.0-rc1`.
   - We backport the latest features of Lean REPL to older versions of Lean (see [fork](https://github.com/augustepoiroux/repl)).
 - **📦 Temporary Projects**: Easily instantiate temporary Lean environments.
   - Useful for experimenting with benchmarks depending on [Mathlib](https://github.com/leanprover-community/mathlib4) like [ProofNet#](https://huggingface.co/datasets/PAug/ProofNetSharp) and [MiniF2F](https://github.com/yangky11/miniF2F-lean4).
+- **🧾 Data extraction (new in v0.9.0)**: Extract declarations and info trees for analysis and dataset building.
+- **⚡ Incremental + Parallel elaboration (new in v0.9.0)**: Automatically reuse partial computations from previous commands, and enable `Elab.async` for faster processing.
 
 ## Table of Contents
 
@@ -221,7 +223,7 @@ ProofStepResponse(proof_state=3, goals=[], proof_status='Completed')
 #### Specific Lean version
 
 ```python
-config = LeanREPLConfig(lean_version="v4.7.0")
+config = LeanREPLConfig(lean_version="v4.8.0")
 ```
 
 #### Existing Lean projects
@@ -372,6 +374,14 @@ response = server.run(FileCommand(path="myfile.lean"))
 
 # With options for more information
 response = server.run(FileCommand(path="myfile.lean", root_goals=True))
+```
+
+Extract Lean declarations while processing a file:
+
+```python
+response = server.run(FileCommand(path="myfile.lean", declarations=True))
+for d in response.declarations:
+  print(d.full_name, d.signature.pp)
 ```
 
 ### ProofStep

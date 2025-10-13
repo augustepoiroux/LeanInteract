@@ -35,17 +35,33 @@ class BaseREPLQuery(REPLBaseModel):
     """Base class for all Lean requests."""
 
 
+Name = list[str]
+
+DataValue = bool | int | str | Name
+
+Options = list[tuple[Name, DataValue]]
+
+
 class CommandOptions(REPLBaseModel):
     """Common options for `Command` and `FileCommand`."""
 
     all_tactics: Annotated[bool | None, Field(alias="allTactics")] = None
     """If true, return all tactics used in the command with their associated information."""
 
+    declarations: bool | None = None
+    """If true, return detailed information about declarations in the command."""
+
     root_goals: Annotated[bool | None, Field(alias="rootGoals")] = None
     """If true, return root goals, i.e. initial goals of all declarations in the command, even if they already have a proof."""
 
     infotree: str | None = None
     """Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored."""
+
+    incrementality: bool | None = None
+    """If true, enable incremental optimization for the command."""
+
+    set_options: Annotated[Options | None, Field(alias="setOptions")] = None
+    """Options to be set before executing the command (i.e. `set_option` commands in Lean)."""
 
 
 class Command(BaseREPLQuery, CommandOptions):
@@ -442,6 +458,80 @@ class InfoTree(REPLBaseModel):
         return found
 
 
+class DocString(REPLBaseModel):
+    content: str
+    range: Range
+
+
+class DeclModifiers(REPLBaseModel):
+    doc_string: Annotated[DocString | None, Field(default=None, alias="docString")]
+    visibility: Literal["regular", "private", "protected", "public"] = "regular"
+    compute_kind: Annotated[Literal["regular", "meta", "noncomputable"], Field(default="regular", alias="computeKind")]
+    rec_kind: Annotated[Literal["default", "partial", "nonrec"], Field(default="default", alias="recKind")]
+    is_protected: Annotated[bool, Field(default=False, alias="isProtected")]
+    is_unsafe: Annotated[bool, Field(default=False, alias="isUnsafe")]
+    attributes: list[str] = Field(default_factory=list)
+
+
+class DeclSignature(REPLBaseModel):
+    pp: str
+    constants: list[str]
+    range: Range
+
+
+class BinderView(REPLBaseModel):
+    id: str
+    type: str
+    binderInfo: str
+
+
+class DeclBinders(REPLBaseModel):
+    pp: str
+    groups: list[str]
+    map: list[BinderView]
+    range: Range
+
+
+class DeclType(REPLBaseModel):
+    pp: str
+    constants: list[str]
+    range: Range
+
+
+class DeclValue(REPLBaseModel):
+    pp: str
+    constants: list[str]
+    range: Range
+
+
+class OpenDecl(REPLBaseModel):
+    simple: dict[str, str | list[str]] | None = None
+    rename: dict[str, str] | None = None
+
+
+class ScopeInfo(REPLBaseModel):
+    var_decls: Annotated[list[str], Field(default_factory=list, alias="varDecls")]
+    include_vars: Annotated[list[str], Field(default_factory=list, alias="includeVars")]
+    omit_vars: Annotated[list[str], Field(default_factory=list, alias="omitVars")]
+    level_names: Annotated[list[str], Field(default_factory=list, alias="levelNames")]
+    curr_namespace: Annotated[str, Field(alias="currNamespace")]
+    open_decl: Annotated[list[OpenDecl], Field(default_factory=list, alias="openDecl")]
+
+
+class DeclarationInfo(REPLBaseModel):
+    pp: str
+    range: Range
+    scope: ScopeInfo
+    name: str
+    full_name: Annotated[str, Field(alias="fullName")]
+    kind: str
+    modifiers: DeclModifiers
+    signature: DeclSignature
+    binders: DeclBinders | None = None
+    type: DeclType | None = None
+    value: DeclValue | None = None
+
+
 # Response
 
 
@@ -500,6 +590,9 @@ class CommandResponse(BaseREPLResponse):
 
     tactics: list[Tactic] = Field(default_factory=list)
     """List of tactics in the code. Returned only if `all_tactics` is true."""
+
+    declarations: list[DeclarationInfo] = Field(default_factory=list)
+    """List of declarations in the code. Returned only if `declarations` is true."""
 
     infotree: list[InfoTree] | None = None
     """The infotree of the code. Returned only if `infotree` is true."""

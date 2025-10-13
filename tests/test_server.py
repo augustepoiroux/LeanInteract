@@ -15,8 +15,15 @@ import psutil
 
 from lean_interact.config import LeanREPLConfig
 from lean_interact.interface import (
+    BinderView,
     Command,
     CommandResponse,
+    DeclarationInfo,
+    DeclBinders,
+    DeclModifiers,
+    DeclSignature,
+    DeclType,
+    DeclValue,
     FileCommand,
     LeanError,
     Message,
@@ -25,6 +32,8 @@ from lean_interact.interface import (
     Pos,
     ProofStep,
     ProofStepResponse,
+    Range,
+    ScopeInfo,
     Sorry,
     UnpickleEnvironment,
     UnpickleProofState,
@@ -43,7 +52,7 @@ from lean_interact.utils import get_total_memory_usage
 
 class TestLeanServer(unittest.TestCase):
     maxDiff = None
-    oldestVersion = "v4.8.0-rc1" if platform.system() == "Windows" else "v4.7.0"
+    oldestVersion = "v4.8.0-rc1"
 
     @classmethod
     def setUpClass(cls):
@@ -135,10 +144,10 @@ class TestLeanServer(unittest.TestCase):
 
     def test_init_with_official_repl(self):
         config = LeanREPLConfig(
-            repl_rev="v4.21.0-rc3", repl_git="https://github.com/leanprover-community/repl", verbose=True
+            repl_rev="v4.24.0-rc1", repl_git="https://github.com/leanprover-community/repl", verbose=True
         )
         server = AutoLeanServer(config=config)
-        self.assertEqual(server.lean_version, "v4.21.0-rc3")
+        self.assertEqual(server.lean_version, "v4.24.0-rc1")
         response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
         self.assertIsInstance(response, CommandResponse)
         self.assertEqual(
@@ -149,7 +158,7 @@ class TestLeanServer(unittest.TestCase):
                         start_pos=Pos(line=1, column=0),
                         end_pos=Pos(line=1, column=5),
                         severity="info",
-                        data='"4.21.0-rc3"',
+                        data='"4.24.0-rc1"',
                     )
                 ],
                 env=0,
@@ -396,14 +405,16 @@ lean_exe "dummy" where
 
     @unittest.mock.patch("lean_interact.server.LeanServer.run_dict")
     def test_process_request_with_negative_env_id(self, mock_super):
-        server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
+        server = AutoLeanServer(config=LeanREPLConfig(verbose=True, enable_parallel_elaboration=False))
         # Prepare restart_persistent_session_cache
         assert isinstance(server._session_cache, PickleSessionCache)
         server._session_cache._cache[-1] = PickleSessionState(-1, 10, False, "")
         with unittest.mock.patch.object(server, "_get_repl_state_id", return_value=10):
             mock_super.return_value = {"env": 10}
             result = server.run(Command(cmd="test", env=-1))
-            mock_super.assert_called_with(request={"cmd": "test", "env": 10}, verbose=False, timeout=DEFAULT_TIMEOUT)
+            mock_super.assert_called_with(
+                request={"cmd": "test", "env": 10, "incrementality": True}, verbose=False, timeout=DEFAULT_TIMEOUT
+            )
             self.assertEqual(result, CommandResponse(env=10))
 
     @unittest.mock.patch("lean_interact.server.LeanServer.run_dict")
@@ -544,6 +555,120 @@ lean_exe "dummy" where
         step2 = server.run(ProofStep(tactic="rfl", proof_state=step1.proof_state), verbose=True)
         self.assertEqual(step2, ProofStepResponse(proof_state=2, goals=[], proof_status="Completed"))
 
+    def test_declaration_info(self):
+        server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
+        result = server.run(Command(cmd="def x := 42", declarations=True), verbose=True)
+        self.assertEqual(
+            result,
+            CommandResponse(
+                declarations=[
+                    DeclarationInfo(
+                        pp="def x := 42",
+                        range=Range(synthetic=False, start=Pos(line=1, column=0), finish=Pos(line=1, column=11)),
+                        scope=ScopeInfo(
+                            var_decls=[],
+                            include_vars=[],
+                            omit_vars=[],
+                            level_names=[],
+                            curr_namespace="[anonymous]",
+                            open_decl=[],
+                        ),
+                        name="x",
+                        full_name="x",
+                        kind="definition",
+                        modifiers=DeclModifiers(
+                            doc_string=None,
+                            visibility="regular",
+                            compute_kind="regular",
+                            rec_kind="default",
+                            is_protected=False,
+                            is_unsafe=False,
+                            attributes=[],
+                        ),
+                        signature=DeclSignature(
+                            pp="",
+                            constants=[],
+                            range=Range(synthetic=True, start=Pos(line=1, column=0), finish=Pos(line=1, column=0)),
+                        ),
+                        binders=None,
+                        type=None,
+                        value=DeclValue(
+                            pp=":= 42",
+                            constants=[],
+                            range=Range(synthetic=False, start=Pos(line=1, column=6), finish=Pos(line=1, column=11)),
+                        ),
+                    )
+                ],
+                env=0,
+            ),
+        )
+
+        result = server.run(
+            Command(cmd="variable (p : Prop)\ntheorem test (h : p) : 0 = 0 := by rfl", declarations=True), verbose=True
+        )
+        print(result)
+        self.assertEqual(
+            result,
+            CommandResponse(
+                messages=[
+                    Message(
+                        end_pos=Pos(column=15, line=2),
+                        severity="warning",
+                        data="unused variable `h`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+                        start_pos=Pos(column=14, line=2),
+                    )
+                ],
+                env=1,
+                declarations=[
+                    DeclarationInfo(
+                        pp="theorem test (h : p) : 0 = 0 := by rfl",
+                        type=DeclType(
+                            pp="0 = 0",
+                            range=Range(synthetic=False, finish=Pos(column=28, line=2), start=Pos(column=23, line=2)),
+                            constants=[],
+                        ),
+                        full_name="test",
+                        binders=DeclBinders(
+                            pp="(h : p)",
+                            groups=["(h : p)"],
+                            map=[BinderView(id="h", type="p", binderInfo="default")],
+                            range=Range(synthetic=False, finish=Pos(column=20, line=2), start=Pos(column=13, line=2)),
+                        ),
+                        kind="theorem",
+                        range=Range(synthetic=False, finish=Pos(column=38, line=2), start=Pos(column=0, line=2)),
+                        modifiers=DeclModifiers(
+                            doc_string=None,
+                            is_unsafe=False,
+                            is_protected=False,
+                            rec_kind="default",
+                            attributes=[],
+                            visibility="regular",
+                            compute_kind="regular",
+                        ),
+                        signature=DeclSignature(
+                            pp="(h : p) : 0 = 0",
+                            range=Range(synthetic=False, finish=Pos(column=28, line=2), start=Pos(column=13, line=2)),
+                            constants=["h", "p"],
+                        ),
+                        scope=ScopeInfo(
+                            level_names=[],
+                            open_decl=[],
+                            curr_namespace="[anonymous]",
+                            omit_vars=[],
+                            var_decls=["variable (p : Prop)"],
+                            include_vars=[],
+                        ),
+                        name="test",
+                        value=DeclValue(
+                            pp=":= by rfl",
+                            range=Range(synthetic=False, finish=Pos(column=38, line=2), start=Pos(column=29, line=2)),
+                            constants=[],
+                        ),
+                    )
+                ],
+            ),
+        )
+
     def test_infotree(self):
         """Test infotree with all possible values"""
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
@@ -605,13 +730,12 @@ lean_exe "dummy" where
         if platform.system() != "Linux":
             self.skipTest("This test is only relevant on Linux")
 
-        # Test this issue: https://github.com/leanprover-community/repl/issues/77
+        # Check that the following issue is now solved: https://github.com/leanprover-community/repl/issues/77
         server = AutoLeanServer(config=LeanREPLConfig(memory_hard_limit_mb=4096, verbose=True))
 
-        with self.assertRaises(ConnectionAbortedError):
-            for i in range(1000):
-                cmd = Command(cmd=f"theorem womp{i} (a{i} b c : Nat) : (a{i} + b) + c = c + a{i} + b := by sorry")
-                server.run(cmd)
+        for i in range(1000):
+            cmd = Command(cmd=f"theorem womp{i} (a{i} b c : Nat) : (a{i} + b) + c = c + a{i} + b := by sorry")
+            server.run(cmd)
 
     def test_run_lots_of_commands(self):
         # Test this issue: https://github.com/leanprover-community/repl/issues/77

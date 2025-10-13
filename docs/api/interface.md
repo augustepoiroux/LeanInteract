@@ -4,6 +4,7 @@
       heading: "Interface"
       show_symbol_type_heading: false
       members:
+        - CommandOptions
         - Command
         - FileCommand
         - ProofStep
@@ -24,3 +25,13 @@
         - CommandNode
         - TermNode
         - Syntax
+        - DocString
+        - DeclModifiers
+        - DeclSignature
+        - BinderView
+        - DeclBinders
+        - DeclType
+        - DeclValue
+        - OpenDecl
+        - ScopeInfo
+        - DeclarationInfo

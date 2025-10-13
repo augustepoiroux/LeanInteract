@@ -1,7 +1,3 @@
----
-execute: true
----
-
 # Getting Started with LeanInteract
 
 ## Overview
@@ -14,7 +10,7 @@ LeanInteract provides a Python interface to the Lean 4 theorem prover via the Le
 
 ## Quick Example
 
-```python tags=["execute"]
+```python exec="on" source="above" session="getting-started" result="python"
 from lean_interact import LeanREPLConfig, LeanServer, Command
 
 # Create a Lean REPL configuration

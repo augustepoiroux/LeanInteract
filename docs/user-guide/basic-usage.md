@@ -1,7 +1,3 @@
----
-execute: true
----
-
 # Basic Usage
 
 This guide covers the fundamental operations and command types in LeanInteract.
@@ -10,7 +6,7 @@ This guide covers the fundamental operations and command types in LeanInteract.
 
 The most common operation in LeanInteract is executing Lean code directly using the `Command` class:
 
-```python tags=["execute"]
+```python exec="on" source="above" session="base" result="python"
 from lean_interact import LeanREPLConfig, LeanServer, Command
 
 # Setup
@@ -18,24 +14,24 @@ config = LeanREPLConfig()
 server = LeanServer(config)
 
 # Run a simple theorem
-server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id"))
+print(server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id")))
 ```
 
 The response contains:
 
-- An environment state (`env`) that can be used for subsequent commands
 - Messages returned by Lean if any (errors, information, etc.)
+- An environment state (`env`) that can be used for subsequent commands.
 
 ### Working with Environment States
 
 Each command execution creates a new environment state. You can use this state in subsequent commands:
 
-```python tags=["execute"]
+```python exec="on" source="above" session="base" result="python"
 # First command creates environment state
 response1 = server.run(Command(cmd="def x := 5"))
 
 # Use environment state 0 for the next command
-server.run(Command(cmd="#check x", env=response1.env))
+print(server.run(Command(cmd="#check x", env=response1.env)))
 ```
 
 ## Processing Lean Files
@@ -57,13 +53,16 @@ response = server.run(FileCommand(path="myfile.lean", root_goals=True))
 Both `Command` and `FileCommand` support several options:
 
 - `all_tactics`: Get information about tactics used
+- `declarations`: Extract fine-grained information about declarations in the code
 - `root_goals`: Get information about goals in theorems and definitions
-- `infotree`: Get Lean infotree containing various informations about declarations and tactics
+- `infotree`: Get Lean infotree containing various informations from the Lean syntax tree
+- `incrementality`: Enable or disable incremental elaboration for this specific command.
+- `set_options`: Set Lean options for this command (see [Set Options](set-options.md))
 - `env`: The environment from a previous command to be used as context. If `env = None`, starts from scratch.
 
 Example with options:
 
-```python tags=["execute"]
+```python exec="on" source="above" session="base" result="python"
 response = server.run(Command(
     cmd="theorem ex (n : Nat) : n = 5 → n = 5 := by simp",
     all_tactics=True
@@ -75,7 +74,7 @@ print(response.tactics)  # Shows tactics used
 
 When Lean code contains `sorry` (incomplete proofs), LeanInteract returns information about these `sorry`:
 
-```python tags=["execute"]
+```python exec="on" source="above" session="base" result="python"
 response = server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := sorry"))
 print(response.sorries[0])
 ```
@@ -88,7 +87,7 @@ This response will include a list of `Sorry` objects, each containing:
 
 ## Error Handling
 
-```python tags=["execute"]
+```python exec="on" source="above" session="base" result="python"
 from lean_interact.interface import LeanError
 
 try:
