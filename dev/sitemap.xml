@@ -2,70 +2,78 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/changelog/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/contributing/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/api/config/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/api/interface/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/api/project/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/api/server/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/api/sessioncache/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/api/utils/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/basic-usage/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/custom-lean-configuration/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
+    </url>
+    <url>
+         <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/data-extraction/</loc>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/examples/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/getting-started/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/installation/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
-         <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/multi-processing/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/performance/</loc>
+         <lastmod>2025-10-13</lastmod>
+    </url>
+    <url>
+         <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/set-options/</loc>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/tactic-mode/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
     <url>
          <loc>https://augustepoiroux.github.io/LeanInteract/dev/user-guide/troubleshooting/</loc>
-         <lastmod>2025-09-15</lastmod>
+         <lastmod>2025-10-13</lastmod>
     </url>
 </urlset>

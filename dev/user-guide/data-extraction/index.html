@@ -12,13 +12,13 @@
         <meta name="author" content="Auguste Poiroux">
       
       
-        <link rel="canonical" href="https://augustepoiroux.github.io/LeanInteract/dev/user-guide/multi-processing/">
+        <link rel="canonical" href="https://augustepoiroux.github.io/LeanInteract/dev/user-guide/data-extraction/">
       
       
-        <link rel="prev" href="../tactic-mode/">
+        <link rel="prev" href="../performance/">
       
       
-        <link rel="next" href="../examples/">
+        <link rel="next" href="../set-options/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Multi-processing - LeanInteract</title>
+        <title>Data Extraction - LeanInteract</title>
       
     
     
@@ -93,6 +93,10 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_markdown_exec_pyodide.css">
+    
+      <link rel="stylesheet" href="../../assets/_markdown_exec_ansi.css">
+    
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
@@ -121,7 +125,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#multi-processing-guide" class="md-skip">
+        <a href="#data-extraction-declarations-tactics-and-infotrees" class="md-skip">
           Skip to content
         </a>
       
@@ -173,7 +177,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Multi-processing
+              Data Extraction
             
           </span>
         </div>
@@ -590,6 +594,29 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance & Multi-processing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -607,7 +634,7 @@
   
   
   <span class="md-ellipsis">
-    Multi-processing
+    Data Extraction
     
   </span>
   
@@ -620,7 +647,7 @@
   
   
   <span class="md-ellipsis">
-    Multi-processing
+    Data Extraction
     
   </span>
   
@@ -643,110 +670,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#best-practices-summary" class="md-nav__link">
+  <a href="#declarations" class="md-nav__link">
     <span class="md-ellipsis">
-      Best Practices Summary
+      Declarations
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#tactics" class="md-nav__link">
     <span class="md-ellipsis">
-      Quick Start
+      Tactics
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#core-principles" class="md-nav__link">
+  <a href="#infotrees" class="md-nav__link">
     <span class="md-ellipsis">
-      Core Principles
+      InfoTrees
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Core Principles">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-pre-instantiate-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      1. Pre-instantiate Configuration
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-one-server-per-process" class="md-nav__link">
-    <span class="md-ellipsis">
-      2. One Server Per Process
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#thread-safety" class="md-nav__link">
+  <a href="#root-goals-and-messages" class="md-nav__link">
     <span class="md-ellipsis">
-      Thread Safety
+      Root goals and messages
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Thread Safety">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#within-a-single-process" class="md-nav__link">
-    <span class="md-ellipsis">
-      Within a Single Process
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#across-processes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Across Processes
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#memory-management" class="md-nav__link">
-    <span class="md-ellipsis">
-      Memory Management
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Memory Management">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#memory-configuration-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Memory Configuration Options
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -754,6 +709,29 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../set-options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Set Lean Options
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -1096,110 +1074,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#best-practices-summary" class="md-nav__link">
+  <a href="#declarations" class="md-nav__link">
     <span class="md-ellipsis">
-      Best Practices Summary
+      Declarations
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#tactics" class="md-nav__link">
     <span class="md-ellipsis">
-      Quick Start
+      Tactics
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#core-principles" class="md-nav__link">
+  <a href="#infotrees" class="md-nav__link">
     <span class="md-ellipsis">
-      Core Principles
+      InfoTrees
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Core Principles">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-pre-instantiate-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      1. Pre-instantiate Configuration
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-one-server-per-process" class="md-nav__link">
-    <span class="md-ellipsis">
-      2. One Server Per Process
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#thread-safety" class="md-nav__link">
+  <a href="#root-goals-and-messages" class="md-nav__link">
     <span class="md-ellipsis">
-      Thread Safety
+      Root goals and messages
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Thread Safety">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#within-a-single-process" class="md-nav__link">
-    <span class="md-ellipsis">
-      Within a Single Process
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#across-processes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Across Processes
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#memory-management" class="md-nav__link">
-    <span class="md-ellipsis">
-      Memory Management
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Memory Management">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#memory-configuration-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Memory Configuration Options
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1222,148 +1128,76 @@
   
 
 
-<h1 id="multi-processing-guide">Multi-processing Guide<a class="headerlink" href="#multi-processing-guide" title="Permanent link">&para;</a></h1>
-<p>LeanInteract is designed with multi-processing in mind, allowing you to leverage multiple CPU cores for parallel theorem proving and verification tasks. This guide covers the best practices, patterns, and potential pitfalls when using LeanInteract in multi-process environments.</p>
-<p>We recommend using <code>AutoLeanServer</code>.
-It is specifically designed for multi-process environments with
-automated restart on fatal Lean errors, timeouts, and when memory limits are reached.
-On automated restarts, only commands run with <code>add_to_session_cache=True</code> (attribute of the <code>AutoLeanServer.run</code> method) will be preserved.</p>
-<p><code>AutoLeanServer</code> is still experimental, any feedback or issues encountered while using it are welcome.</p>
-<h2 id="best-practices-summary">Best Practices Summary<a class="headerlink" href="#best-practices-summary" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Always pre-instantiate</strong> <code>LeanREPLConfig</code> before multiprocessing</li>
-<li><strong>One lean server per process</strong></li>
-<li><strong>Use <code>AutoLeanServer</code></strong></li>
-<li><strong>Configure memory limits</strong> to prevent system overload</li>
-<li><strong>Set appropriate timeouts</strong> for long-running operations</li>
-<li><strong>Use session caching</strong> to keep context between requests</li>
-<li><strong>Consider using <code>maxtasksperchild</code></strong> to limit memory accumulation</li>
-</ol>
-<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<p>Here is a minimal example of using LeanInteract with multiple processes:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">AutoLeanServer</span><span class="p">,</span> <span class="n">Command</span>
+<h1 id="data-extraction-declarations-tactics-and-infotrees">Data Extraction: Declarations, Tactics, and InfoTrees<a class="headerlink" href="#data-extraction-declarations-tactics-and-infotrees" title="Permanent link">&para;</a></h1>
+<p>LeanInteract makes it easy to extract rich data from elaboration, including declarations, tactics, and detailed InfoTrees.</p>
+<h2 id="declarations">Declarations<a class="headerlink" href="#declarations" title="Permanent link">&para;</a></h2>
+<p>Set <code>declarations=True</code> to retrieve a list of <code>DeclarationInfo</code> for each declaration introduced in your Lean code.
+Full details about the fields in <code>DeclarationInfo</code> can be found in the <a href="../../api/interface/#lean_interact.interface.DeclarationInfo">API reference</a>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanServer</span><span class="p">,</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">Command</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">CommandResponse</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Worker function that runs in each process&quot;&quot;&quot;</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;#eval </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> * </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;messages&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Error&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="c1"># Pre-instantiate config before multiprocessing</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="c1"># LeanREPLConfig downloads and initializes resources</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="c1"># Create processes</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">ctx</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;spawn&quot;</span><span class="p">)</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        <span class="n">tasks</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="p">[(</span><span class="n">config</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">])</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="s2">theorem ex (n : Nat) : n = 5 → n = 5 := by</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="s2">  intro h; exact h</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="s2">&quot;&quot;&quot;</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">LeanREPLConfig</span><span class="p">())</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">res</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">declarations</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">CommandResponse</span><span class="p">)</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">declarations</span><span class="p">:</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Full name: `</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Kind: `</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Signature: `</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">signature</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value: `</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Binders: `</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">binders</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
 </span></code></pre></div>
-<p>For more examples, check the <a href="https://github.com/augustepoiroux/LeanInteract/tree/main/examples">examples directory</a>.</p>
-<h2 id="core-principles">Core Principles<a class="headerlink" href="#core-principles" title="Permanent link">&para;</a></h2>
-<h3 id="1-pre-instantiate-configuration">1. Pre-instantiate Configuration<a class="headerlink" href="#1-pre-instantiate-configuration" title="Permanent link">&para;</a></h3>
-<p>Always create your <code>LeanREPLConfig</code> instance <strong>before</strong> starting multiprocessing:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">AutoLeanServer</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># ✅ CORRECT: Config created in main process</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">correct_approach</span><span class="p">():</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">()</span>  <span class="c1"># Pre-setup in main process</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>  <span class="c1"># Use pre-configured config</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        <span class="c1"># ... your work here</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        <span class="k">pass</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">ctx</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;spawn&quot;</span><span class="p">)</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="p">[</span><span class="n">config</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="c1"># ❌ INCORRECT: Config created in each process</span>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="k">def</span><span class="w"> </span><span class="nf">incorrect_approach</span><span class="p">():</span>
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">():</span>
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">()</span>
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>        <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>        <span class="c1"># ... your work here</span>
-</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>        <span class="k">pass</span>
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>
-</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>    <span class="n">ctx</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;spawn&quot;</span><span class="p">)</span> 
-</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>        <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Full</span> <span class="n">name</span><span class="p">:</span> <span class="err">`</span><span class="n">ex</span><span class="err">`</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">Kind</span><span class="p">:</span> <span class="err">`</span><span class="n">theorem</span><span class="err">`</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">Signature</span><span class="p">:</span> <span class="err">`</span><span class="n">DeclSignature</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;Nat&#39;</span><span class="p">],</span> <span class="n">pp</span><span class="o">=</span><span class="s1">&#39;(n : Nat) : n = 5 → n = 5&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">finish</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">36</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">synthetic</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span><span class="err">`</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">Value</span><span class="p">:</span> <span class="err">`</span><span class="n">DeclValue</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">],</span> <span class="n">pp</span><span class="o">=</span><span class="s1">&#39;:= by</span><span class="se">\n</span><span class="s1">  intro h; exact h&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">finish</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="n">synthetic</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span><span class="err">`</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">Binders</span><span class="p">:</span> <span class="err">`</span><span class="n">DeclBinders</span><span class="p">(</span><span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;(n : Nat)&#39;</span><span class="p">],</span> <span class="nb">map</span><span class="o">=</span><span class="p">[</span><span class="n">BinderView</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Nat&#39;</span><span class="p">,</span> <span class="n">binderInfo</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">)],</span> <span class="n">pp</span><span class="o">=</span><span class="s1">&#39;(n : Nat)&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">finish</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">synthetic</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span><span class="err">`</span>
 </span></code></pre></div>
-<h3 id="2-one-server-per-process">2. One Server Per Process<a class="headerlink" href="#2-one-server-per-process" title="Permanent link">&para;</a></h3>
-<p>Each process should have its own <code>LeanServer</code> or <code>AutoLeanServer</code> instance.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">task_data</span><span class="p">):</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="c1"># Each process gets its own server</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="c1"># Process your tasks</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">task_data</span><span class="p">:</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="c1"># Handle result</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="k">return</span> <span class="n">results</span>
+<p>For files:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileCommand</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">res</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">FileCommand</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;myfile.lean&quot;</span><span class="p">,</span> <span class="n">declarations</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </span></code></pre></div>
-<h2 id="thread-safety">Thread Safety<a class="headerlink" href="#thread-safety" title="Permanent link">&para;</a></h2>
-<h3 id="within-a-single-process">Within a Single Process<a class="headerlink" href="#within-a-single-process" title="Permanent link">&para;</a></h3>
-<p><code>LeanServer</code> and <code>AutoLeanServer</code> are thread-safe within a single process thanks to internal locking mechanisms.
-All concurrent requests will be processed sequentially.</p>
-<h3 id="across-processes">Across Processes<a class="headerlink" href="#across-processes" title="Permanent link">&para;</a></h3>
-<p>Servers are <strong>NOT</strong> safe to share across processes. Each process must have its own server instance:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoLeanServer</span><span class="p">,</span> <span class="n">LeanREPLConfig</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># ✅ CORRECT: Each process creates its own server</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">correct_multiprocess_worker</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">worker_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>  <span class="c1"># New server per process</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="c1"># ... work with server</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c1"># ❌ INCORRECT: Don&#39;t share servers across processes</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="k">def</span><span class="w"> </span><span class="nf">incorrect_multiprocess_pattern</span><span class="p">():</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">()</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">(</span><span class="n">worker_id</span><span class="p">):</span>
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        <span class="c1"># This will cause issues - server can&#39;t be pickled/shared</span>
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">))</span>
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>        <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>  <span class="c1"># Will fail!</span>
+<p>Tip: See <a href="https://github.com/augustepoiroux/LeanInteract/blob/main/examples/extract_mathlib_decls.py"><code>examples/extract_mathlib_decls.py</code></a> for a scalable, per-file parallel extractor over Mathlib.</p>
+<h2 id="tactics">Tactics<a class="headerlink" href="#tactics" title="Permanent link">&para;</a></h2>
+<p>Use <code>all_tactics=True</code> to collect tactic applications with their goals and used constants.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">resp</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">all_tactics</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">tactics</span><span class="p">:</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">tactic</span><span class="p">,</span> <span class="s2">&quot;::: used:&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">used_constants</span><span class="p">)</span>
 </span></code></pre></div>
-<h2 id="memory-management">Memory Management<a class="headerlink" href="#memory-management" title="Permanent link">&para;</a></h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoLeanServer</span><span class="p">,</span> <span class="n">LeanREPLConfig</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># Configure memory limits for multi-process safety</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">memory_hard_limit_mb</span><span class="o">=</span><span class="mi">8192</span><span class="p">)</span>  <span class="c1"># 8GB per server, works on Linux only</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">config</span><span class="p">,</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="n">max_total_memory</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>      <span class="c1"># Restart when system uses &gt;80% memory</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">max_process_memory</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>    <span class="c1"># Restart when process uses &gt;80% of limit</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="n">max_restart_attempts</span><span class="o">=</span><span class="mi">5</span>     <span class="c1"># Allow up to 5 restart attempts per command</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">intro</span> <span class="n">h</span> <span class="p">:::</span> <span class="n">used</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;instOfNatNat&#39;</span><span class="p">,</span> <span class="s1">&#39;Nat&#39;</span><span class="p">,</span> <span class="s1">&#39;OfNat.ofNat&#39;</span><span class="p">,</span> <span class="s1">&#39;Eq&#39;</span><span class="p">]</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">exact</span> <span class="n">h</span> <span class="p">:::</span> <span class="n">used</span><span class="p">:</span> <span class="p">[]</span>
 </span></code></pre></div>
-<h3 id="memory-configuration-options">Memory Configuration Options<a class="headerlink" href="#memory-configuration-options" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>max_total_memory</code>: System-wide memory threshold (0.0-1.0)</li>
-<li><code>max_process_memory</code>: Per-process memory threshold (0.0-1.0)</li>
-<li><code>memory_hard_limit_mb</code>: Hard memory limit in MB (Linux only)</li>
-<li><code>max_restart_attempts</code>: Maximum consecutive restart attempts</li>
-</ul>
+<h2 id="infotrees">InfoTrees<a class="headerlink" href="#infotrees" title="Permanent link">&para;</a></h2>
+<p>Request <code>infotree</code> to obtain structured elaboration information. Accepted values include <code>"full"</code>, <code>"tactics"</code>, <code>"original"</code>, and <code>"substantive"</code>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">InfoTree</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">res</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">infotree</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">))</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">trees</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">InfoTree</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">infotree</span> <span class="ow">or</span> <span class="p">[]</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Example: iterate over all command-level nodes and print their kind</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="k">for</span> <span class="n">tree</span> <span class="ow">in</span> <span class="n">trees</span><span class="p">:</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="k">for</span> <span class="n">cmd_node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">commands</span><span class="p">():</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">cmd_node</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span> <span class="n">cmd_node</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">stx</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandInfo</span> <span class="n">Syntax</span><span class="p">(</span><span class="n">arg_kinds</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Lean.Parser.Command.declModifiers&#39;</span><span class="p">,</span> <span class="s1">&#39;Lean.Parser.Command.theorem&#39;</span><span class="p">],</span> <span class="n">pp</span><span class="o">=</span><span class="s1">&#39;theorem ex (n : Nat) : n = 5 → n = 5 := by intro h; exact h&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">finish</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="n">synthetic</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;Lean.Parser.Command.declaration&#39;</span><span class="p">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">CommandInfo</span> <span class="n">Syntax</span><span class="p">(</span><span class="n">arg_kinds</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;«»&#39;</span><span class="p">],</span> <span class="n">pp</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">finish</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">synthetic</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;Lean.Parser.Command.eoi&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="root-goals-and-messages">Root goals and messages<a class="headerlink" href="#root-goals-and-messages" title="Permanent link">&para;</a></h2>
+<p>You can also ask for <code>root_goals=True</code> to retrieve initial goals for declarations (even if already proved).</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">root_goals</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">sorries</span><span class="o">=</span><span class="p">[</span><span class="n">Sorry</span><span class="p">(</span><span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">proof_state</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="s1">&#39;n : Nat</span><span class="se">\n</span><span class="s1">⊢ n = 5 → n = 5&#39;</span><span class="p">)],</span> <span class="n">env</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span></code></pre></div>
 
 
 
 
 
 
-
-  
-  
 
 
 
@@ -1450,6 +1284,8 @@ All concurrent requests will be processed sequentially.</p>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+        <script src="../../assets/_markdown_exec_pyodide.js"></script>
       
     
   </body>
