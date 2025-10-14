@@ -15,7 +15,7 @@ Check the [documentation](https://augustepoiroux.github.io/LeanInteract/) for de
 - **🔗 Interactivity**: Execute Lean code and files directly from Python.
 - **🚀 Ease of Use**: LeanInteract abstracts the complexities of Lean setup and interaction.
 - **💻 Cross-platform**: Works on Windows, macOS, and Linux operating systems.
-- **🔧 Compatibility**: Supports all Lean versions between `v4.8.0-rc1` and `v4.24.0-rc1`.
+- **🔧 Compatibility**: Supports all Lean versions between `v4.8.0-rc1` and `v4.24.0`.
   - We backport the latest features of Lean REPL to older versions of Lean (see [fork](https://github.com/augustepoiroux/repl)).
 - **📦 Temporary Projects**: Easily instantiate temporary Lean environments.
   - Useful for experimenting with benchmarks depending on [Mathlib](https://github.com/leanprover-community/mathlib4) like [ProofNet#](https://huggingface.co/datasets/PAug/ProofNetSharp) and [MiniF2F](https://github.com/yangky11/miniF2F-lean4).
