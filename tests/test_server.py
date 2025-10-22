@@ -145,10 +145,10 @@ class TestLeanServer(unittest.TestCase):
 
     def test_init_with_official_repl(self):
         config = LeanREPLConfig(
-            repl_rev="v4.24.0-rc1", repl_git="https://github.com/leanprover-community/repl", verbose=True
+            repl_rev="v4.25.0-rc2", repl_git="https://github.com/leanprover-community/repl", verbose=True
         )
         server = AutoLeanServer(config=config)
-        self.assertEqual(server.lean_version, "v4.24.0-rc1")
+        self.assertEqual(server.lean_version, "v4.25.0-rc2")
         response = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
         self.assertIsInstance(response, CommandResponse)
         self.assertEqual(
@@ -159,7 +159,7 @@ class TestLeanServer(unittest.TestCase):
                         start_pos=Pos(line=1, column=0),
                         end_pos=Pos(line=1, column=5),
                         severity="info",
-                        data='"4.24.0-rc1"',
+                        data='"4.25.0-rc2"',
                     )
                 ],
                 env=0,
