@@ -48,12 +48,12 @@ for t in resp.tactics:
 
 ## InfoTrees
 
-Request `infotree` to obtain structured elaboration information. Accepted values include `"full"`, `"tactics"`, `"original"`, and `"substantive"`.
+Request `infotree` to obtain structured elaboration information. Accepted values include `"full"`, `"tactics"`, `"original"`, and `"substantive"`. See [InfoTreeOptions](../api/interface.md#lean_interact.interface.InfoTreeOptions) for details.
 
 ```python exec="on" source="above" session="extraction" result="python"
-from lean_interact.interface import InfoTree
+from lean_interact.interface import InfoTree, InfoTreeOptions
 
-res = server.run(Command(cmd=code, infotree="full"))
+res = server.run(Command(cmd=code, infotree=InfoTreeOptions.full))
 trees: list[InfoTree] = res.infotree or []
 
 # Example: iterate over all command-level nodes and print their kind

@@ -7,6 +7,7 @@ These are aligned with the [Lean REPL's API](https://github.com/leanprover-commu
 """
 
 from collections import deque
+from enum import Enum
 from typing import Annotated, Generator, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -42,6 +43,22 @@ DataValue = bool | int | str | Name
 Options = list[tuple[Name, DataValue]]
 
 
+class InfoTreeOptions(str, Enum):
+    """Options for InfoTree detail levels."""
+
+    full = "full"
+    """No filtering: include the entire InfoTree (tactic information, term / elaboration information, messages, goal states, traces, etc.)."""
+
+    tactics = "tactics"
+    """Keep only the nodes produced by tactics. Drops unrelated term / elaboration / non-tactic bookkeeping nodes."""
+
+    original = "original"
+    """First keep the tactic-related nodes, then further restrict to the "original" sub‑parts of those tactic nodes (i.e. non-synthetic nodes)."""
+
+    substantive = "substantive"
+    """Keep only the substantive content coming from tactic nodes, removing nodes that are merely a tactic combinator (e.g. `by`, `;`, multiline, parentheses)."""
+
+
 class CommandOptions(REPLBaseModel):
     """Common options for `Command` and `FileCommand`."""
 
@@ -54,7 +71,7 @@ class CommandOptions(REPLBaseModel):
     root_goals: Annotated[bool | None, Field(alias="rootGoals")] = None
     """If true, return root goals, i.e. initial goals of all declarations in the command, even if they already have a proof."""
 
-    infotree: str | None = None
+    infotree: InfoTreeOptions | str | None = None
     """Return syntax information. Should be "full", "tactics", "original", or "substantive". Anything else is ignored."""
 
     incrementality: bool | None = None

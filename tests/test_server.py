@@ -25,6 +25,7 @@ from lean_interact.interface import (
     DeclType,
     DeclValue,
     FileCommand,
+    InfoTreeOptions,
     LeanError,
     Message,
     PickleEnvironment,
@@ -674,7 +675,7 @@ lean_exe "dummy" where
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
 
         # Test infotree with all possible values
-        for infotree_value in ["full", "tactics", "original", "substantive"]:
+        for infotree_value in InfoTreeOptions:
             result = server.run(Command(cmd="theorem infotree_test : 0 = 0 := by rfl", infotree=infotree_value))
             self.assertIsInstance(result, CommandResponse)
             assert isinstance(result, CommandResponse)
@@ -703,7 +704,10 @@ lean_exe "dummy" where
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
 
         result = server.run(
-            Command(cmd="variable (p : Prop)\ntheorem infotree_test (h : p) : 0 = 0 := by rfl", infotree="full")
+            Command(
+                cmd="variable (p : Prop)\ntheorem infotree_test (h : p) : 0 = 0 := by rfl",
+                infotree=InfoTreeOptions.full,
+            )
         )
         self.assertIsInstance(result, CommandResponse)
         assert isinstance(result, CommandResponse)
