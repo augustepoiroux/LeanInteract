@@ -60,7 +60,7 @@ class TestLeanServer(unittest.TestCase):
         # Pre-run configs for all available versions to get the cache
         lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
         cls.mostRecentVersion = lean_versions[-1]
-        for version in [cls.oldestVersion, "v4.14.0", lean_versions[-1]]:
+        for version in [cls.oldestVersion, "v4.14.0", cls.mostRecentVersion]:
             LeanREPLConfig(lean_version=version, verbose=True)
 
         # (Temporary) Skip mathlib setup on Windows to avoid long path issues in CI
@@ -68,12 +68,10 @@ class TestLeanServer(unittest.TestCase):
             return
 
         # prepare Mathlib for the last version
-        LeanREPLConfig(project=TempRequireProject(lean_version=cls.oldestVersion, require="mathlib"), verbose=True)
-        LeanREPLConfig(project=TempRequireProject(lean_version=lean_versions[-1], require="mathlib"), verbose=True)
+        LeanREPLConfig(project=TempRequireProject(lean_version=cls.mostRecentVersion, require="mathlib"), verbose=True)
 
     def test_init_with_lean_version(self):
-        lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
-        for version in [self.oldestVersion, "v4.14.0", lean_versions[-1]]:
+        for version in [self.oldestVersion, "v4.14.0", self.mostRecentVersion]:
             server = AutoLeanServer(config=LeanREPLConfig(lean_version=version, verbose=True))
             self.assertEqual(server.lean_version, version)
             self.assertEqual(
@@ -96,16 +94,18 @@ class TestLeanServer(unittest.TestCase):
         if platform.system() == "Windows":
             self.skipTest("(Temporary) Skipping test on Windows due to long path issues in the CI")
 
-        lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
-        latest_version = lean_versions[-1]
         require = [
-            LeanRequire(name="mathlib", git="https://github.com/leanprover-community/mathlib4.git", rev=latest_version)
+            LeanRequire(
+                name="mathlib", git="https://github.com/leanprover-community/mathlib4.git", rev=self.mostRecentVersion
+            )
         ]
         server = AutoLeanServer(
-            LeanREPLConfig(project=TempRequireProject(lean_version=latest_version, require="mathlib"), verbose=True)
+            LeanREPLConfig(
+                project=TempRequireProject(lean_version=self.mostRecentVersion, require="mathlib"), verbose=True
+            )
         )
         project = cast(TempRequireProject, server.config.project)
-        self.assertEqual(server.lean_version, latest_version)
+        self.assertEqual(server.lean_version, self.mostRecentVersion)
         self.assertEqual(project._normalize_require(), require)
 
     def test_init_with_project_dir_fail(self):
