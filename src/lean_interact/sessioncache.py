@@ -4,8 +4,9 @@
 This module implements the session cache classes responsible for storing and retrieving Lean proof states and environments.
 Session cache is used internally by the `AutoLeanServer` class.
 It enables efficient resumption of proofs and environments after server restarts, timeouts, and automated recover from crashes.
+Additionally, `ReplaySessionCache` and `PickleSessionCache` are thread-safe and can be used to share session states between multiple `AutoLeanServer` instances within the same process.
 While by default `AutoLeanServer` instantiates a fresh `ReplaySessionCache` instance, you can also use a custom one.
-It can be useful to share a session cache between multiple `AutoLeanServer` instances, or to use a custom session cache implementation.
+It can be useful to implement more advanced caching strategies, shareable cache across processes / compute nodes, ...
 
 Examples:
     ```python
@@ -28,6 +29,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from os import PathLike
 from pathlib import Path
+from threading import RLock
 from typing import TYPE_CHECKING, Iterator, cast
 from uuid import uuid4
 from weakref import WeakKeyDictionary
@@ -64,6 +66,7 @@ class SessionState:
 
 class BaseSessionCache(ABC):
     def __init__(self):
+        self._lock = RLock()
         self._server_keys: WeakKeyDictionary["LeanServer", str] = WeakKeyDictionary()
 
     @abstractmethod
@@ -136,11 +139,12 @@ class BaseSessionCache(ABC):
     def get_repl_id(self, session_state_id: int, lean_server: "LeanServer") -> int | None: ...
 
     def _get_server_key(self, lean_server: "LeanServer") -> str:
-        key = self._server_keys.get(lean_server)
-        if key is None:
-            key = uuid4().hex
-            self._server_keys[lean_server] = key
-        return key
+        with self._lock:
+            key = self._server_keys.get(lean_server)
+            if key is None:
+                key = uuid4().hex
+                self._server_keys[lean_server] = key
+            return key
 
 
 @dataclass(kw_only=True)
@@ -166,10 +170,12 @@ class ReplaySessionCache(BaseSessionCache):
         self._lazy = lazy
 
     def _get_state_repl_id(self, state: SessionState, lean_server: "LeanServer") -> int | None:
-        return state.repl_ids.get(self._get_server_key(lean_server))
+        with self._lock:
+            return state.repl_ids.get(self._get_server_key(lean_server))
 
     def _set_state_repl_id(self, state: SessionState, lean_server: "LeanServer", repl_id: int | None) -> None:
-        state.repl_ids[self._get_server_key(lean_server)] = repl_id
+        with self._lock:
+            state.repl_ids[self._get_server_key(lean_server)] = repl_id
 
     def _materialize_state(
         self,
@@ -179,17 +185,19 @@ class ReplaySessionCache(BaseSessionCache):
         timeout: int | float | None = None,
         verbose: bool = False,
     ) -> None:
-        if self._get_state_repl_id(state, lean_server) is not None:
-            return
-        server_key = self._get_server_key(lean_server)
-        if server_key in state._materializing_servers:
-            raise RuntimeError(f"Session state {state.session_id} is already being materialized.")
-        request_for_server = cast(ReplayableRequest, state.request)
-        state._materializing_servers.add(server_key)
+        with self._lock:
+            if self._get_state_repl_id(state, lean_server) is not None:
+                return
+            server_key = self._get_server_key(lean_server)
+            if server_key in state._materializing_servers:
+                raise RuntimeError(f"Session state {state.session_id} is already being materialized.")
+            request_for_server = cast(ReplayableRequest, state.request)
+            state._materializing_servers.add(server_key)
         try:
             response = lean_server.run(request_for_server, verbose=verbose, timeout=timeout)
         finally:
-            state._materializing_servers.discard(server_key)
+            with self._lock:
+                state._materializing_servers.discard(server_key)
 
         if isinstance(response, LeanError):
             raise ValueError(
@@ -215,7 +223,6 @@ class ReplaySessionCache(BaseSessionCache):
         response: BaseREPLResponse,
         verbose: bool = False,
     ) -> int:
-        self._state_counter -= 1
         if isinstance(response, ProofStepResponse):
             repl_id = response.proof_state
             is_proof_state = True
@@ -228,16 +235,20 @@ class ReplaySessionCache(BaseSessionCache):
             )
 
         request_copy = request.model_copy(deep=True)
-        self._cache[self._state_counter] = ReplaySessionState(
-            session_id=self._state_counter,
-            is_proof_state=is_proof_state,
-            request=request_copy,
-        )
-        self._set_state_repl_id(self._cache[self._state_counter], lean_server, repl_id)
-        return self._state_counter
+        with self._lock:
+            self._state_counter -= 1
+            session_id = self._state_counter
+            self._cache[session_id] = ReplaySessionState(
+                session_id=session_id,
+                is_proof_state=is_proof_state,
+                request=request_copy,
+            )
+        self._set_state_repl_id(self._cache[session_id], lean_server, repl_id)
+        return session_id
 
     def remove(self, session_state_id: int, verbose: bool = False) -> None:
-        self._cache.pop(session_state_id, None)
+        with self._lock:
+            self._cache.pop(session_state_id, None)
 
     def reload(
         self,
@@ -245,7 +256,9 @@ class ReplaySessionCache(BaseSessionCache):
         timeout_per_state: int | float | None,
         verbose: bool = False,
     ) -> None:
-        for state in self._cache.values():
+        with self._lock:
+            states = list(self._cache.values())
+        for state in states:
             self._set_state_repl_id(state, lean_server, None)
             if not self._lazy:
                 self._materialize_state(
@@ -256,25 +269,31 @@ class ReplaySessionCache(BaseSessionCache):
                 )
 
     def is_empty(self) -> bool:
-        return len(self._cache) == 0
+        with self._lock:
+            return len(self._cache) == 0
 
     def clear(self, verbose: bool = False) -> None:
-        self._cache.clear()
+        with self._lock:
+            self._cache.clear()
 
     def __iter__(self) -> Iterator[ReplaySessionState]:
-        return iter(self._cache.values())
+        with self._lock:
+            return iter(list(self._cache.values()))
 
     def __contains__(self, session_id: int) -> bool:
-        return session_id in self._cache
+        with self._lock:
+            return session_id in self._cache
 
     def __getitem__(self, session_id: int) -> ReplaySessionState:
-        return self._cache[session_id]
+        with self._lock:
+            return self._cache[session_id]
 
     def keys(self) -> list[int]:
-        return list(self._cache.keys())
+        with self._lock:
+            return list(self._cache.keys())
 
     def get_repl_id(self, session_state_id: int, lean_server: "LeanServer") -> int | None:
-        state = self._cache[session_state_id]
+        state = self.__getitem__(session_state_id)
         repl_id = self._get_state_repl_id(state, lean_server)
         if repl_id is None:
             self._materialize_state(lean_server, state)
@@ -302,15 +321,19 @@ class PickleSessionCache(BaseSessionCache):
         self._working_dir = Path(working_dir)
 
     def _set_state_repl_id(self, state: SessionState, lean_server: "LeanServer", repl_id: int | None) -> None:
-        state.repl_ids[self._get_server_key(lean_server)] = repl_id
+        with self._lock:
+            state.repl_ids[self._get_server_key(lean_server)] = repl_id
 
     def _get_state_repl_id(self, state: SessionState, lean_server: "LeanServer") -> int | None:
-        return state.repl_ids.get(self._get_server_key(lean_server))
+        with self._lock:
+            return state.repl_ids.get(self._get_server_key(lean_server))
 
     def add(
         self, lean_server: "LeanServer", request: BaseREPLQuery, response: BaseREPLResponse, verbose: bool = False
     ) -> int:
-        self._state_counter -= 1
+        with self._lock:
+            self._state_counter -= 1
+            session_id = self._state_counter
         process_id = os.getpid()  # use process id to avoid conflicts in multiprocessing
         hash_key = f"request_{type(request).__name__}_{id(request)}"
         pickle_file = (
@@ -339,23 +362,28 @@ class PickleSessionCache(BaseSessionCache):
                     f"Could not store the result in the session cache. The Lean server returned an error: {response_pickle.message}"
                 )
 
-            self._cache[self._state_counter] = PickleSessionState(
-                session_id=self._state_counter,
-                pickle_file=str(pickle_file),
-                is_proof_state=is_proof_state,
-            )
-            self._set_state_repl_id(self._cache[self._state_counter], lean_server, repl_id)
-        return self._state_counter
+            with self._lock:
+                self._cache[session_id] = PickleSessionState(
+                    session_id=session_id,
+                    pickle_file=str(pickle_file),
+                    is_proof_state=is_proof_state,
+                )
+            self._set_state_repl_id(self._cache[session_id], lean_server, repl_id)
+        return session_id
 
     def remove(self, session_state_id: int, verbose: bool = False) -> None:
-        if (state_cache := self._cache.pop(session_state_id, None)) is not None:
+        with self._lock:
+            state_cache = self._cache.pop(session_state_id, None)
+        if state_cache is not None:
             pickle_file = state_cache.pickle_file
             with FileLock(f"{pickle_file}.lock", timeout=60):
                 if os.path.exists(pickle_file):
                     os.remove(pickle_file)
 
     def reload(self, lean_server: "LeanServer", timeout_per_state: int | float | None, verbose: bool = False) -> None:
-        for state_data in self:
+        with self._lock:
+            state_snapshot = list(self._cache.values())
+        for state_data in state_snapshot:
             # Use file lock when accessing the pickle file to prevent cache invalidation
             # from multiple concurrent processes
             with FileLock(
@@ -387,25 +415,33 @@ class PickleSessionCache(BaseSessionCache):
                     )
 
     def is_empty(self) -> bool:
-        return len(self._cache) == 0
+        with self._lock:
+            return len(self._cache) == 0
 
     def clear(self, verbose: bool = False) -> None:
-        for state_data in list(self):
+        with self._lock:
+            state_snapshot = list(self._cache.values())
+        for state_data in state_snapshot:
             self.remove(session_state_id=state_data.session_id, verbose=verbose)
-        assert not self._cache, f"Cache is not empty after clearing: {self._cache}"
+        with self._lock:
+            assert not self._cache, f"Cache is not empty after clearing: {self._cache}"
 
     def __iter__(self) -> Iterator[PickleSessionState]:
-        return iter(self._cache.values())
+        with self._lock:
+            return iter(list(self._cache.values()))
 
     def __contains__(self, session_id: int) -> bool:
-        return session_id in self._cache
+        with self._lock:
+            return session_id in self._cache
 
     def __getitem__(self, session_id: int) -> PickleSessionState:
-        return self._cache[session_id]
+        with self._lock:
+            return self._cache[session_id]
 
     def keys(self) -> list[int]:
-        return list(self._cache.keys())
+        with self._lock:
+            return list(self._cache.keys())
 
     def get_repl_id(self, session_state_id: int, lean_server: "LeanServer") -> int | None:
-        state = self._cache[session_state_id]
+        state = self.__getitem__(session_state_id)
         return self._get_state_repl_id(state, lean_server)

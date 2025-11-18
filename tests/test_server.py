@@ -8,7 +8,7 @@ import unittest
 import unittest.mock
 from pathlib import Path
 from queue import Queue
-from threading import Thread
+from threading import Barrier, Thread
 from typing import cast
 
 import psutil
@@ -440,6 +440,90 @@ lean_exe "dummy" where
         server.restart()
         cache_key = replay_cache._get_server_key(server)
         self.assertIsNotNone(replay_cache._cache[env_id].repl_ids.get(cache_key))
+
+    def test_replay_session_cache_thread_safe_shared_state(self):
+        replay_cache = ReplaySessionCache()
+        config = LeanREPLConfig(verbose=True)
+        seed_server = AutoLeanServer(config=config, session_cache=replay_cache)
+        try:
+            create_result = seed_server.run(Command(cmd="def x := 1"), add_to_session_cache=True, verbose=True)
+            self.assertIsInstance(create_result, CommandResponse)
+            assert isinstance(create_result, CommandResponse)
+            env_id = create_result.env
+            self.assertLess(env_id, 0)
+        finally:
+            seed_server.kill()
+
+        servers = [AutoLeanServer(config=config, session_cache=replay_cache) for _ in range(3)]
+        try:
+            use_barrier = Barrier(len(servers))
+            use_exceptions: list[Exception] = []
+
+            def use_worker(idx: int) -> None:
+                server = servers[idx]
+                try:
+                    use_barrier.wait()
+                    response = server.run(
+                        Command(cmd=f"def y_{idx} := x + {idx}", env=env_id),
+                        verbose=True,
+                    )
+                    if isinstance(response, LeanError):
+                        raise AssertionError("Expected CommandResponse while replaying state")
+                    assert isinstance(response, CommandResponse)
+                    assert response.env == 1
+                except Exception as exc:  # pragma: no cover - re-raised below
+                    use_exceptions.append(exc)
+
+            threads = [Thread(target=use_worker, args=(idx,)) for idx in range(len(servers))]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
+
+            if use_exceptions:
+                raise use_exceptions[0]
+
+            cached_state = replay_cache._cache[env_id]
+            for server in servers:
+                server_key = replay_cache._get_server_key(server)
+                self.assertIsNotNone(cached_state.repl_ids.get(server_key))
+
+            add_barrier = Barrier(len(servers))
+            add_exceptions: list[Exception] = []
+            added_states: list[int] = []
+
+            def add_worker(idx: int) -> None:
+                server = servers[idx]
+                try:
+                    add_barrier.wait()
+                    response = server.run(
+                        Command(cmd=f"def shared_state_{idx} := {idx}"),
+                        add_to_session_cache=True,
+                        verbose=True,
+                    )
+                    if isinstance(response, LeanError):
+                        raise AssertionError("Expected CommandResponse when adding state")
+                    added_states.append(response.env)
+                except Exception as exc:  # pragma: no cover - re-raised below
+                    add_exceptions.append(exc)
+
+            add_threads = [Thread(target=add_worker, args=(idx,)) for idx in range(len(servers))]
+            for thread in add_threads:
+                thread.start()
+            for thread in add_threads:
+                thread.join()
+
+            if add_exceptions:
+                raise add_exceptions[0]
+
+            self.assertEqual(len(added_states), len(servers))
+            self.assertTrue(all(state < 0 for state in added_states))
+            cache_keys = replay_cache.keys()
+            for state in added_states:
+                self.assertIn(state, cache_keys)
+        finally:
+            for server in servers:
+                server.kill()
 
     def test_process_request_memory_restart(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True), max_total_memory=0.01, max_restart_attempts=2)
