@@ -73,8 +73,8 @@ print(result)  # Example raw output from the REPL
 
 For more comprehensive examples, check out the following scripts in the examples directory:
 
-1. [**multi_processing.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/multi_processing.py)  
-   Shows how to use multiprocessing with LeanInteract for parallel proof checking.
+1. [**parallelization.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/parallelization.py)  
+   Shows how to parallelize calls to LeanInteract for faster processing.
 
 2. [**proof_generation_and_autoformalization.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/proof_generation_and_autoformalization.py)  
    Shows how to use models like DeepSeek-Prover-V1.5 and Goedel-Prover on MiniF2F and ProofNet# benchmarks.
