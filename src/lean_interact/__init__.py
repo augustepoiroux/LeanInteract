@@ -16,11 +16,14 @@ from lean_interact.project import (
     TempRequireProject,
 )
 from lean_interact.server import AutoLeanServer, LeanServer
+from lean_interact.sessioncache import PickleSessionCache, ReplaySessionCache
 
 __all__ = [
     "LeanREPLConfig",
     "LeanServer",
     "AutoLeanServer",
+    "PickleSessionCache",
+    "ReplaySessionCache",
     "LeanRequire",
     "GitProject",
     "LocalProject",

@@ -47,7 +47,7 @@ from lean_interact.project import (
     TempRequireProject,
 )
 from lean_interact.server import DEFAULT_TIMEOUT, AutoLeanServer, LeanServer
-from lean_interact.sessioncache import PickleSessionCache, PickleSessionState
+from lean_interact.sessioncache import PickleSessionCache, PickleSessionState, ReplaySessionCache, ReplaySessionState
 from lean_interact.utils import get_total_memory_usage
 
 
@@ -383,8 +383,9 @@ lean_exe "dummy" where
         result = server.run(ProofStep(tactic="apply irrational_add_ratCast_iff.mpr", proof_state=0), verbose=True)
         self.assertEqual(result, ProofStepResponse(proof_state=1, goals=[], proof_status="Completed"))
 
-    def test_restart_with_env(self):
-        server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
+    def test_pickle_cache_restart_with_env(self):
+        config = LeanREPLConfig(verbose=True)
+        server = AutoLeanServer(config=config, session_cache=PickleSessionCache(working_dir=config.working_dir))
         result = server.run(Command(cmd="def x := 1"), add_to_session_cache=True, verbose=True)
         assert not isinstance(result, LeanError)
         env_id = result.env
@@ -393,6 +394,52 @@ lean_exe "dummy" where
         result = server.run(Command(cmd="noncomputable def y := x + 1", env=env_id), verbose=True)
         self.assertEqual(result, CommandResponse(env=1))
         self.assertEqual(list(server._session_cache.keys()), [env_id])
+
+    def test_replay_session_cache_rehydration(self):
+        replay_cache = ReplaySessionCache()
+        server = AutoLeanServer(config=LeanREPLConfig(verbose=True), session_cache=replay_cache)
+        result = server.run(Command(cmd="def x := 1"), add_to_session_cache=True, verbose=True)
+        self.assertIsInstance(result, CommandResponse)
+        assert not isinstance(result, LeanError)
+        env_id = result.env
+        self.assertEqual(env_id, -1)
+        server.restart()
+        server_key = replay_cache._get_server_key(server)
+        self.assertIsNone(replay_cache._cache[env_id].repl_ids.get(server_key))
+        result = server.run(Command(cmd="def y := x + 1", env=env_id), verbose=True)
+        self.assertIsInstance(result, CommandResponse)
+        self.assertIsNotNone(replay_cache._cache[env_id].repl_ids.get(server_key))
+
+    def test_replay_session_cache_shared_across_servers(self):
+        replay_cache = ReplaySessionCache()
+        config = LeanREPLConfig(verbose=True)
+        server1 = AutoLeanServer(config=config, session_cache=replay_cache)
+        server2 = AutoLeanServer(config=config, session_cache=replay_cache)
+        try:
+            result = server1.run(Command(cmd="def x := 1"), add_to_session_cache=True, verbose=True)
+            self.assertIsInstance(result, CommandResponse)
+            assert isinstance(result, CommandResponse)
+            env_id = result.env
+            server1.kill()
+            shared_key = replay_cache._get_server_key(server2)
+            follow_up = server2.run(Command(cmd="def y := x + 1", env=env_id), verbose=True)
+            self.assertIsInstance(follow_up, CommandResponse)
+            assert isinstance(follow_up, CommandResponse)
+            self.assertIsNotNone(replay_cache._cache[env_id].repl_ids.get(shared_key))
+        finally:
+            server1.kill()
+            server2.kill()
+
+    def test_replay_session_cache_eager_reload(self):
+        replay_cache = ReplaySessionCache(lazy=False)
+        server = AutoLeanServer(config=LeanREPLConfig(verbose=True), session_cache=replay_cache)
+        result = server.run(Command(cmd="def x := 1"), add_to_session_cache=True, verbose=True)
+        self.assertIsInstance(result, CommandResponse)
+        assert isinstance(result, CommandResponse)
+        env_id = result.env
+        server.restart()
+        cache_key = replay_cache._get_server_key(server)
+        self.assertIsNotNone(replay_cache._cache[env_id].repl_ids.get(cache_key))
 
     def test_process_request_memory_restart(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True), max_total_memory=0.01, max_restart_attempts=2)
@@ -408,8 +455,29 @@ lean_exe "dummy" where
     def test_process_request_with_negative_env_id(self, mock_super):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True, enable_parallel_elaboration=False))
         # Prepare restart_persistent_session_cache
+        assert isinstance(server._session_cache, ReplaySessionCache)
+        server_key = server._session_cache._get_server_key(server)
+        server._session_cache._cache[-1] = ReplaySessionState(
+            session_id=-1, repl_ids={server_key: 10}, is_proof_state=False, request=Command(cmd="test")
+        )
+        with unittest.mock.patch.object(server, "_get_repl_state_id", return_value=10):
+            mock_super.return_value = {"env": 10}
+            result = server.run(Command(cmd="test", env=-1))
+            mock_super.assert_called_with(
+                request={"cmd": "test", "env": 10, "incrementality": True}, verbose=False, timeout=DEFAULT_TIMEOUT
+            )
+            self.assertEqual(result, CommandResponse(env=10))
+
+    @unittest.mock.patch("lean_interact.server.LeanServer.run_dict")
+    def test_process_request_with_negative_env_id_pickle(self, mock_super):
+        config = LeanREPLConfig(verbose=True, enable_parallel_elaboration=False)
+        server = AutoLeanServer(config=config, session_cache=PickleSessionCache(working_dir=config.working_dir))
+        # Prepare restart_persistent_session_cache
         assert isinstance(server._session_cache, PickleSessionCache)
-        server._session_cache._cache[-1] = PickleSessionState(-1, 10, False, "")
+        server_key = server._session_cache._get_server_key(server)
+        server._session_cache._cache[-1] = PickleSessionState(
+            session_id=-1, repl_ids={server_key: 10}, is_proof_state=False, pickle_file=""
+        )
         with unittest.mock.patch.object(server, "_get_repl_state_id", return_value=10):
             mock_super.return_value = {"env": 10}
             result = server.run(Command(cmd="test", env=-1))
@@ -422,8 +490,32 @@ lean_exe "dummy" where
     def test_process_request_with_negative_proof_state_id(self, mock_super):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
         # Prepare restart_persistent_session_cache
+        assert isinstance(server._session_cache, ReplaySessionCache)
+        server_key = server._session_cache._get_server_key(server)
+        server._session_cache._cache[-2] = ReplaySessionState(
+            session_id=-2,
+            repl_ids={server_key: 20},
+            is_proof_state=True,
+            request=ProofStep(proof_state=-2, tactic="test"),
+        )
+        with unittest.mock.patch.object(server, "_get_repl_state_id", return_value=20):
+            mock_super.return_value = {"proofState": 20, "goals": [], "proofStatus": "Completed"}
+            result = server.run(ProofStep(proof_state=-2, tactic="test"))
+            mock_super.assert_called_with(
+                request={"proofState": 20, "tactic": "test"}, verbose=False, timeout=DEFAULT_TIMEOUT
+            )
+            self.assertEqual(result, ProofStepResponse(proof_state=20, goals=[], proof_status="Completed"))
+
+    @unittest.mock.patch("lean_interact.server.LeanServer.run_dict")
+    def test_process_request_with_negative_proof_state_id_pickle(self, mock_super):
+        config = LeanREPLConfig(verbose=True)
+        server = AutoLeanServer(config=config, session_cache=PickleSessionCache(working_dir=config.working_dir))
+        # Prepare restart_persistent_session_cache
         assert isinstance(server._session_cache, PickleSessionCache)
-        server._session_cache._cache[-2] = PickleSessionState(-2, 20, True, "")
+        server_key = server._session_cache._get_server_key(server)
+        server._session_cache._cache[-2] = PickleSessionState(
+            session_id=-2, repl_ids={server_key: 20}, is_proof_state=True, pickle_file=""
+        )
         with unittest.mock.patch.object(server, "_get_repl_state_id", return_value=20):
             mock_super.return_value = {"proofState": 20, "goals": [], "proofStatus": "Completed"}
             result = server.run(ProofStep(proof_state=-2, tactic="test"))
@@ -835,6 +927,7 @@ lean_exe "dummy" where
         unpickle_result = new_server.run(UnpickleEnvironment(unpickle_env_from=temp_pickle.name), verbose=True)
         assert isinstance(unpickle_result, CommandResponse)
         unpickled_env_id = unpickle_result.env
+        self.assertIsInstance(unpickled_env_id, int)
 
         # TODO: there is a bug with the REPL pickling process which transforms `def` into `noncomputable def`
 
@@ -976,7 +1069,7 @@ lean_exe "dummy" where
         new_server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
         unpickle_result = new_server.run(UnpickleEnvironment(unpickle_env_from=temp_pickle.name), verbose=True)
         assert isinstance(unpickle_result, CommandResponse)
-        unpickled_env_id = unpickle_result.env
+        _unpickled_env_id = unpickle_result.env
 
         # TODO: there is a bug with the REPL pickling process which transforms `def` into `noncomputable def`
 

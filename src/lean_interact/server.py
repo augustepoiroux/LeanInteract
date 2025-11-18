@@ -33,7 +33,7 @@ from lean_interact.interface import (
     UnpickleEnvironment,
     UnpickleProofState,
 )
-from lean_interact.sessioncache import BaseSessionCache, PickleSessionCache
+from lean_interact.sessioncache import BaseSessionCache, ReplaySessionCache
 from lean_interact.utils import _limit_memory, get_total_memory_usage, logger
 
 DEFAULT_TIMEOUT: int | None = None
@@ -287,7 +287,7 @@ class LeanServer:
             raise ConnectionAbortedError(
                 f"The Lean server closed unexpectedly."
                 f"\n{'-' * 50}\nstdout:\n{stdout}\n{'-' * 50}\nstderr:\n{stderr}\n{'-' * 50}"
-                f"If stdout and stderr are empty or obscure, here is a list of possible reasons (not exhaustive):\n"
+                f"\nIf stdout and stderr are empty or obscure, here is a list of possible reasons (not exhaustive):\n"
                 "- Not enough memory and/or compute available\n"
                 "- The cached Lean REPL is corrupted. In this case, clear the cache using the `clear-lean-cache` command.\n"
                 "- An uncaught exception in the Lean REPL"
@@ -438,11 +438,11 @@ class AutoLeanServer(LeanServer):
             max_total_memory: The maximum proportion of system-wide memory usage (across all processes) before triggering a Lean server restart. This is a soft limit ranging from 0.0 to 1.0, with default 0.8 (80%). When system memory exceeds this threshold, the server restarts to free memory. Particularly useful in multiprocessing environments to prevent simultaneous crashes.
             max_process_memory: The maximum proportion of the memory hard limit (set in `LeanREPLConfig.memory_hard_limit_mb`) that the Lean server process can use before restarting. This soft limit ranges from 0.0 to 1.0, with default 0.8 (80%). Only applied if a hard limit is configured in `LeanREPLConfig`.
             max_restart_attempts: The maximum number of consecutive restart attempts allowed before raising a `MemoryError` exception. Default is 5. The server uses exponential backoff between restart attempts.
-            session_cache: The session cache to use, if specified.
+            session_cache: Optional session cache implementation. Defaults to `ReplaySessionCache()`.
+                Use `PickleSessionCache` if you explicitly need on-disk artifacts.
         """
-        session_cache = (
-            session_cache if session_cache is not None else PickleSessionCache(working_dir=config.working_dir)
-        )
+        if session_cache is None:
+            session_cache = ReplaySessionCache()
         self._session_cache: BaseSessionCache = session_cache
         self._max_total_memory = max_total_memory
         self._max_process_memory = max_process_memory
@@ -453,7 +453,7 @@ class AutoLeanServer(LeanServer):
         if state_id is None:
             return None
         if state_id in self._session_cache:
-            return self._session_cache[state_id].repl_id
+            return self._session_cache.get_repl_id(state_id, self)
         return state_id
 
     def restart(self, verbose: bool = False) -> None:
