@@ -1,3 +1,10 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "lean-interact",
+#     "tqdm",
+# ]
+# ///
 """Clone mathlib4 and extract all Lean declarations in parallel (per-file tasks).
 
 Output: mathlib_declarations.jsonl (JSONL, one declaration per line).

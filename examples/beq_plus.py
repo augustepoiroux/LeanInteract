@@ -72,7 +72,6 @@ def extract_exact_proof(lean_output: CommandResponse, proof_start_line: int | No
 def check_proof_sub(
     server: AutoLeanServer,
     formal_code: str,
-    context_env: int,
     formal_2_start_line: int,
     proof: str,
     timeout: int,
@@ -98,7 +97,6 @@ def check_proof_sub(
         lean_output = server.run(
             Command(
                 cmd=formal_code + indent_code(prepended + proof, indent_level),
-                env=context_env,
             ),
             timeout=timeout,
         )
@@ -124,7 +122,7 @@ def beql(
     formalization_1: str,
     formalization_2: str,
     src_header: str,
-    repl_config: LeanREPLConfig,
+    server: AutoLeanServer,
     timeout_per_proof: int,
     verbose: bool = False,
 ) -> bool:
@@ -141,11 +139,6 @@ def beql(
     Returns:
         True if both directions of the equivalence hold; False otherwise.
     """
-    server = AutoLeanServer(config=repl_config)
-    context_run = server.run(Command(cmd=src_header), add_to_session_cache=True)
-    assert isinstance(context_run, CommandResponse)
-    context_env = context_run.env
-
     base_thm_name = "base_theorem"
     reformulated_thm_name = "reformulated_theorem"
 
@@ -156,7 +149,9 @@ def beql(
         if verbose:
             console.print(f"=====\nChecking {'1 -> 2' if i == 0 else '2 -> 1'}")
         try:
-            formal_1_code = clean_last_theorem_string(base_thm, base_thm_name, add_sorry=True) + "\n\n"
+            formal_1_code = (
+                src_header + "\n\n" + clean_last_theorem_string(base_thm, base_thm_name, add_sorry=True) + "\n\n"
+            )
             formal_2_start_line = formal_1_code.count("\n") + 1
             formal_2_code = f"{clean_last_theorem_string(reform_thm, reformulated_thm_name, add_sorry=False)} := by"
         except ValueError:
@@ -166,14 +161,12 @@ def beql(
 
         formal_code = formal_1_code + formal_2_code
         # Preliminary check to ensure the formalization is well-typed.
-        if check_proof_sub(server, formal_code, context_env, formal_2_start_line, "sorry", timeout_per_proof) is None:
+        if check_proof_sub(server, formal_code, formal_2_start_line, "sorry", timeout_per_proof) is None:
             if verbose:
                 console.print("Ill-typed formalization encountered, skipping this pair.")
             break
 
-        proof_exact = check_proof_sub(
-            server, formal_code, context_env, formal_2_start_line, "exact?", timeout_per_proof
-        )
+        proof_exact = check_proof_sub(server, formal_code, formal_2_start_line, "exact?", timeout_per_proof)
         if proof_exact and base_thm_name in proof_exact:
             res[i] = True
             if verbose:
@@ -189,7 +182,7 @@ def beq_plus(
     formalization_1: str,
     formalization_2: str,
     src_header: str,
-    repl_config: LeanREPLConfig,
+    server: AutoLeanServer,
     timeout_per_proof: int,
     verbose: bool = False,
 ) -> bool:
@@ -206,11 +199,6 @@ def beq_plus(
     Returns:
         True if both directions of the equivalence hold; False otherwise.
     """
-    server = AutoLeanServer(config=repl_config)
-    context_run = server.run(Command(cmd=src_header), add_to_session_cache=True)
-    assert isinstance(context_run, CommandResponse)
-    context_env = context_run.env
-
     base_thm_name = "base_theorem"
     reformulated_thm_name = "reformulated_theorem"
 
@@ -231,7 +219,9 @@ def beq_plus(
         if verbose:
             console.print(f"=====\nChecking {'1 -> 2' if i == 0 else '2 -> 1'}")
         try:
-            formal_1_code = clean_last_theorem_string(base_thm, base_thm_name, add_sorry=True) + "\n\n"
+            formal_1_code = (
+                src_header + "\n\n" + clean_last_theorem_string(base_thm, base_thm_name, add_sorry=True) + "\n\n"
+            )
             formal_2_start_line = formal_1_code.count("\n") + 1
             formal_2_code = f"{clean_last_theorem_string(reform_thm, reformulated_thm_name, add_sorry=False)} := by"
         except ValueError:
@@ -240,15 +230,13 @@ def beq_plus(
             break
 
         formal_code = formal_1_code + formal_2_code
-        if check_proof_sub(server, formal_code, context_env, formal_2_start_line, "sorry", timeout_per_proof) is None:
+        if check_proof_sub(server, formal_code, formal_2_start_line, "sorry", timeout_per_proof) is None:
             if verbose:
                 console.print("Ill-typed formalization encountered, skipping this pair.")
             break
 
         # 1. Use BEqL
-        proof_exact = check_proof_sub(
-            server, formal_code, context_env, formal_2_start_line, "exact?", timeout_per_proof
-        )
+        proof_exact = check_proof_sub(server, formal_code, formal_2_start_line, "exact?", timeout_per_proof)
         if proof_exact and base_thm_name in proof_exact:
             res[i] = True
             if verbose:
@@ -257,7 +245,7 @@ def beq_plus(
             continue
 
         # If trivially provable by assumption, we skip
-        if check_proof_sub(server, formal_code, context_env, formal_2_start_line, "assumption", timeout_per_proof):
+        if check_proof_sub(server, formal_code, formal_2_start_line, "assumption", timeout_per_proof):
             if verbose:
                 console.print("Skipping as provable by assumption")
             continue
@@ -266,7 +254,6 @@ def beq_plus(
         proof_apply = check_proof_sub(
             server,
             formal_code,
-            context_env,
             formal_2_start_line,
             f"apply {base_thm_name}\n" + proof_all_apply,
             timeout_per_proof,
@@ -284,9 +271,7 @@ def beq_plus(
         # drawback of `have` strategy: variable names/types must match exactly
         provable_without_have = False
         try:
-            res_without_have = server.run(
-                Command(cmd=formal_code + proof_all_have, env=context_env), timeout=timeout_per_proof
-            )
+            res_without_have = server.run(Command(cmd=formal_2_code + proof_all_have), timeout=timeout_per_proof)
             if isinstance(res_without_have, CommandResponse):
                 provable_without_have = res_without_have.lean_code_is_valid(allow_sorry=False)
         except TimeoutError:
@@ -307,7 +292,6 @@ def beq_plus(
                 proof_have = check_proof_sub(
                     server,
                     formal_code,
-                    context_env,
                     formal_2_start_line,
                     have_stmt_proof + proof_all_have,
                     timeout_per_proof,
@@ -324,7 +308,6 @@ def beq_plus(
             proof_convert = check_proof_sub(
                 server,
                 formal_code,
-                context_env,
                 formal_2_start_line,
                 f"convert (config := .unfoldSameFun) {base_thm_name} using {max_step}\n" + proof_all_apply,
                 timeout_per_proof,
@@ -344,6 +327,7 @@ def beq_plus(
 
 def examples_limitations(metric):
     repl_config = LeanREPLConfig(project=TempRequireProject(lean_version="v4.8.0", require="mathlib"), verbose=True)
+    server = AutoLeanServer(config=repl_config)
 
     src_header = """import Mathlib
 
@@ -414,7 +398,7 @@ open scoped BigOperators"""
             formalization_1,
             formalization_2,
             src_header,
-            repl_config,
+            server,
             timeout_per_proof=DEFAULT_TIMEOUT,
             verbose=True,
         )
@@ -429,6 +413,7 @@ open scoped BigOperators"""
 
 def proofnetverif(metric, n_samples=100):
     repl_config = LeanREPLConfig(project=TempRequireProject(lean_version="v4.8.0", require="mathlib"), verbose=True)
+    server = AutoLeanServer(config=repl_config)
 
     dataset = load_dataset("PAug/ProofNetVerif", split="valid")
     dataset = dataset.shuffle(seed=42).select(range(n_samples))
@@ -440,7 +425,7 @@ def proofnetverif(metric, n_samples=100):
                 example["lean4_formalization"],
                 example["lean4_prediction"],
                 example["lean4_src_header"],
-                repl_config,
+                server,
                 timeout_per_proof=DEFAULT_TIMEOUT,
                 verbose=False,
             )
