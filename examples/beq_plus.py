@@ -12,14 +12,20 @@
 
 Citation:
 ```bibtex
-@misc{poiroux2024improvingautoformalizationusingtype,
-    title={Improving Autoformalization using Type Checking},
-    author={Auguste Poiroux and Gail Weiss and Viktor Kunčak and Antoine Bosselut},
-    year={2024},
-    eprint={2406.07222},
-    archivePrefix={arXiv},
-    primaryClass={cs.CL},
-    url={https://arxiv.org/abs/2406.07222},
+@inproceedings{poiroux-etal-2025-reliable,
+    title = "Reliable Evaluation and Benchmarks for Statement Autoformalization",
+    author = "Poiroux, Auguste  and
+      Weiss, Gail  and
+      Kun{\v{c}}ak, Viktor  and
+      Bosselut, Antoine",
+    booktitle = "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing",
+    month = nov,
+    year = "2025",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.emnlp-main.907/",
+    doi = "10.18653/v1/2025.emnlp-main.907",
+    pages = "17958--17980",
+    ISBN = "979-8-89176-332-6",
 }
 ```
 """
@@ -250,6 +256,12 @@ def beq_plus(
                 console.print(Syntax(proof_exact, "lean4"))
             continue
 
+        # If trivially provable by assumption, we skip
+        if check_proof_sub(server, formal_code, context_env, formal_2_start_line, "assumption", timeout_per_proof):
+            if verbose:
+                console.print("Skipping as provable by assumption")
+            continue
+
         # 2. try to apply the base theorem directly
         proof_apply = check_proof_sub(
             server,
@@ -340,6 +352,10 @@ open Set Real Ideal Polynomial
 open scoped BigOperators"""
 
     formalization_pairs = [
+        (  # negative example -- not semantically equivalent
+            "theorem prediction (a b : ℤ) (ha : a ∣ b) : a ∣ (b : ℤ) :=",
+            "theorem ground_truth (a b : ℤ) : (Zsqrtd.ofInt a : GaussianInt) ∣ Zsqrtd.ofInt b → a ∣ b :=",
+        ),
         (
             "theorem random_name_1 {G : Type*} [Group G] [Fintype G] (h : Fintype.card G % 2 = 0) :\n  ∃ a : G, a ≠ 1 ∧ a = a⁻¹ :=",
             "theorem random_name_2 {G : Type*} [Group G] [Fintype G] (hG2 : Even (card G)) :\n  ∃ (a : G), a ≠ 1 ∧ a = a⁻¹ :=",
