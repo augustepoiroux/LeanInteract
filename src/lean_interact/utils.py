@@ -85,7 +85,7 @@ def get_project_lean_version(project_dir: str | PathLike) -> str | None:
     return None
 
 
-def check_lake(lake_path: str | PathLike) -> None:
+def check_lake(lake_path: str | PathLike, verbose: bool = False) -> None:
     """
     Check if the lake executable is available and can be executed.
     """
@@ -94,8 +94,8 @@ def check_lake(lake_path: str | PathLike) -> None:
     try:
         result = subprocess.run(
             [str(lake_path), "--version"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stdout=None if verbose else subprocess.PIPE,
+            stderr=None if verbose else subprocess.PIPE,
             text=True,
         )
     except FileNotFoundError as e:

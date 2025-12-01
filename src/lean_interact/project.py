@@ -63,7 +63,7 @@ class BaseProject:
             _lock: (internal parameter) Whether to acquire a file lock (should be False if already locked by caller).
         """
         directory = Path(self.get_directory())
-        check_lake(self.lake_path)
+        check_lake(self.lake_path, verbose=verbose)
 
         def _do_build():
             stdout = None if verbose else subprocess.DEVNULL

@@ -77,7 +77,7 @@ class LeanREPLConfig:
                 When provided, the REPL will not be downloaded from the git repository.
                 This is particularly useful during REPL development.
             build_repl:
-                Whether to build the local REPL before running it. This option is ignored when `local_repl_path` is not provided.
+                Whether to build the REPL. Can be set to False if the REPL is already built (e.g., when using a local REPL path or using an already cached REPL).
             lake_path:
                 The path to the lake executable. Default is "lake", which assumes it is in the system PATH.
             memory_hard_limit_mb:
@@ -158,7 +158,8 @@ class LeanREPLConfig:
                 self._build_repl()
         else:
             self._prepare_git_repl()
-            self._build_repl()
+            if self.build_repl:
+                self._build_repl()
 
     def _prepare_local_repl(self) -> None:
         """Prepare a local REPL."""
@@ -391,7 +392,7 @@ class LeanREPLConfig:
 
     def _build_repl(self) -> None:
         """Build the REPL."""
-        check_lake(self.lake_path)
+        check_lake(self.lake_path, verbose=self.verbose)
 
         try:
             # Capture build output so failures can be diagnosed
