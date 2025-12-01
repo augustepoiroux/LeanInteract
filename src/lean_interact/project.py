@@ -182,7 +182,8 @@ class GitProject(BaseProject):
                     self._update_existing_repo()
                 else:
                     self._clone_new_repo()
-                self.build(_lock=False)
+                if self.auto_build:
+                    self.build(_lock=False)
             except Exception as e:
                 logger.error("Failed to instantiate git project at %s: %s", directory, e)
                 raise
@@ -328,9 +329,10 @@ class BaseTempProject(BaseProject):
 
                 logger.info("Preparing Lean environment with dependencies (may take a while the first time)...")
 
-                # Use the inherited _build_project method with update=True
+                # Use the inherited build method with update=True
                 try:
-                    self.build(verbose=self.verbose, update=True, _lock=False)
+                    if self.auto_build:
+                        self.build(verbose=self.verbose, update=True, _lock=False)
                 except subprocess.CalledProcessError as e:
                     logger.error("Failed during Lean project setup: %s", e)
                     # delete the project directory to avoid conflicts
