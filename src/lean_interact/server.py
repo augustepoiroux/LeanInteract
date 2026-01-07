@@ -158,7 +158,14 @@ class LeanServer:
     def __enter__(self):
         return self
 
+    async def __aenter__(self):
+        return self
+
     def __exit__(self, exc_type, exc, tb):
+        self.kill()
+        return False
+
+    async def __aexit__(self, exc_type, exc, tb):
         self.kill()
         return False
 
@@ -496,13 +503,7 @@ class AutoLeanServer(LeanServer):
             self.restart()
 
     def __del__(self):
-        # delete the session cache
-        self._session_cache.clear()
         super().__del__()
-
-    def __exit__(self, exc_type, exc, tb):
-        self._session_cache.clear()
-        return super().__exit__(exc_type, exc, tb)
 
     def _run_dict_backoff(self, request: dict, verbose: bool, timeout: float | None, restart_counter: int = 0) -> dict:
         if (psutil.virtual_memory().percent >= 100 * self._max_total_memory) or (
