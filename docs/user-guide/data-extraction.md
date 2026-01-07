@@ -4,8 +4,7 @@ LeanInteract makes it easy to extract rich data from elaboration, including decl
 
 ## Declarations
 
-Set `declarations=True` to retrieve a list of `DeclarationInfo` for each declaration introduced in your Lean code.
-Full details about the fields in `DeclarationInfo` can be found in the [API reference](../api/interface.md#lean_interact.interface.DeclarationInfo).
+Set [`declarations`](../api/interface.md#lean_interact.interface.Command.declarations) to `True` to retrieve a list of [`DeclarationInfo`](../api/interface.md#lean_interact.interface.DeclarationInfo) for each declaration introduced in the Lean code.
 
 ```python exec="on" source="above" session="extraction" result="python"
 from lean_interact import LeanServer, LeanREPLConfig, Command
@@ -38,7 +37,7 @@ Tip: See [`examples/extract_mathlib_decls.py`](https://github.com/augustepoiroux
 
 ## Tactics
 
-Use `all_tactics=True` to collect tactic applications with their goals and used constants.
+Use [`all_tactics`](../api/interface.md#lean_interact.interface.Command.all_tactics) to collect tactic applications with their goals and used constants.
 
 ```python exec="on" source="above" session="extraction" result="python"
 resp = server.run(Command(cmd=code, all_tactics=True))
@@ -48,7 +47,7 @@ for t in resp.tactics:
 
 ## InfoTrees
 
-Request `infotree` to obtain structured elaboration information. Accepted values include `"full"`, `"tactics"`, `"original"`, and `"substantive"`. See [InfoTreeOptions](../api/interface.md#lean_interact.interface.InfoTreeOptions) for details.
+Request [`infotree`](../api/interface.md#lean_interact.interface.Command.infotree) to obtain structured elaboration information. Accepted values include `"full"`, `"tactics"`, `"original"`, and `"substantive"`. See [`InfoTreeOptions`](../api/interface.md#lean_interact.interface.InfoTreeOptions) for details.
 
 ```python exec="on" source="above" session="extraction" result="python"
 from lean_interact.interface import InfoTree, InfoTreeOptions
@@ -64,7 +63,7 @@ for tree in trees:
 
 ## Root goals and messages
 
-You can also ask for `root_goals=True` to retrieve initial goals for declarations (even if already proved).
+Set `root_goals=True` to retrieve initial goals for declarations (even if already proved).
 
 ```python exec="on" source="above" session="extraction" result="python"
 print(server.run(Command(cmd=code, root_goals=True)))

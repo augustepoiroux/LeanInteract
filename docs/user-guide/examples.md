@@ -1,6 +1,6 @@
 # Examples
 
-This page provides practical examples of using LeanInteract in different scenarios. You can find a few full example scripts in the [`examples`](https://github.com/augustepoiroux/LeanInteract/tree/main/examples) directory of the repository.
+This page provides practical examples of using LeanInteract in different scenarios. Full example scripts are available in the [`examples`](https://github.com/augustepoiroux/LeanInteract/tree/main/examples) directory of the repository.
 
 ## Basic Theorem Proving
 
@@ -63,8 +63,8 @@ server = LeanServer(config)
 response = server.run(Command(cmd="#eval Lean.versionString"))
 print(response.messages[0].data)  # Output: "4.21.0-rc3"
 
-# If you encounter interface compatibility issues with custom REPLs,
-# you can use run_dict to communicate directly with the REPL:
+# For interface compatibility issues with custom REPLs,
+# use run_dict to communicate directly with the REPL:
 result = server.run_dict({"cmd": "#eval Lean.versionString"})
 print(result)  # Example raw output from the REPL
 ```
@@ -84,3 +84,6 @@ For more comprehensive examples, check out the following scripts in the examples
 
 4. [**type_check.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/type_check.py)  
    Shows how to optimize type checking using environment states.
+
+5. [**extract_mathlib_decls.py**](https://github.com/augustepoiroux/LeanInteract/blob/main/examples/extract_mathlib_decls.py)  
+   Demonstrates how to extract declarations from Mathlib in parallel using [`LeanServerPool`](../api/pool.md#lean_interact.pool.LeanServerPool).

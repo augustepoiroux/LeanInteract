@@ -1,6 +1,6 @@
 # Troubleshooting
 
-This guide covers common issues you might encounter when using LeanInteract.
+This guide covers common issues that may be encountered when using LeanInteract.
 
 ## Common Issues
 
@@ -15,14 +15,14 @@ This guide covers common issues you might encounter when using LeanInteract.
 **Solutions**:
 
 - Reduce parallel processing or increase system memory
-- Limit the maximum amount of memory usage allocated to the REPL with `LeanREPLConfig`:
+- Limit the maximum amount of memory usage allocated to the REPL with [`LeanREPLConfig`](../api/config.md#lean_interact.config.LeanREPLConfig):
 
   ```python
   from lean_interact import AutoLeanServer, LeanREPLConfig
   server = AutoLeanServer(LeanREPLConfig(memory_hard_limit_mb=8192)) # Limit to 8GB
   ```
 
-- If you are working with large files or complex proofs in a single session, consider breaking them into smaller, more manageable pieces.
+- When working with large files or complex proofs in a single session, consider breaking them into smaller, more manageable pieces.
 
 ### Timeout Errors
 
@@ -40,7 +40,7 @@ This guide covers common issues you might encounter when using LeanInteract.
   result = server.run(Command(cmd="..."), timeout=60)
   ```
 
-- Use `AutoLeanServer` for automatic recovery from timeouts:
+- Use [`AutoLeanServer`](../api/server.md#lean_interact.server.AutoLeanServer) for automatic recovery from timeouts:
 
   ```python
   server = AutoLeanServer(config)
@@ -72,13 +72,13 @@ Subsequent runs will be much faster due to caching.
 
 **Solutions**:
 
-- Update your `elan` version (should be at least 4.0.0):
+- Update the `elan` version (should be at least 4.0.0):
 
   ```bash
   elan self update
   ```
 
-- Check your project's lake file for errors
+- Check the project's lake file for errors
 - Ensure Git is properly installed and can access required repositories
 
 ### Path Too Long Error (Windows)
@@ -118,8 +118,8 @@ LeanInteract returns error messages while the Lean code runs fine in VSCode.
 
 **Solutions**:
 
-- Check you are using the same Lean version in both environments
-- If you are creating a temporary project using LeanInteract, make sure your dependencies are correctly set and compatible with the Lean version you are using
+- Check that the same Lean version is being used in both environments
+- When creating a temporary project using LeanInteract, ensure dependencies are correctly set and compatible with the Lean version being used
   - A frequent issue is forgetting to include `mathlib` in the dependencies:
 
     ```python
@@ -144,11 +144,11 @@ install-lean
 
 ## Getting Additional Help
 
-If you encounter issues not covered in this guide:
+For issues not covered in this guide:
 
 1. Check the [GitHub repository](https://github.com/augustepoiroux/LeanInteract) for open issues
 2. Open a new issue with:
     - A minimal reproducible example
-    - Your operating system and Python version
+    - Operating system and Python version
     - LeanInteract version (`pip show lean-interact`)
     - Complete error message/stack trace

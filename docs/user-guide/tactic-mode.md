@@ -1,6 +1,6 @@
 # Tactic Mode
 
-Tactic mode in LeanInteract allows you to work with Lean's proof tactics step-by-step, providing an interactive way to develop and explore proofs.
+Tactic mode in LeanInteract allows working with Lean's proof tactics step-by-step, providing an interactive way to develop and explore proofs.
 
 !!! warning "Experimental Feature"
     The tactic mode feature is experimental may not work as expected in all situations. Some valid proofs might be incorrectly rejected.
@@ -10,7 +10,7 @@ Tactic mode in LeanInteract allows you to work with Lean's proof tactics step-by
 Using tactics in LeanInteract involves two main steps:
 
 1. Creating a proof state using `sorry` in a theorem
-2. Applying tactics to this proof state using `ProofStep`
+2. Applying tactics to this proof state using [`ProofStep`](../api/interface.md#lean_interact.interface.ProofStep)
 
 ### Creating a Proof State
 
@@ -26,14 +26,14 @@ response = server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := by 
 print(response.sorries[0])
 ```
 
-This response contains a `Sorry` object that includes:
+This response contains a [`Sorry`](../api/interface.md#lean_interact.interface.Sorry) object that includes:
 
-- A `proof_state` ID that you can use for tactic commands
+- A [`proof_state`](../api/interface.md#lean_interact.interface.Sorry.proof_state) ID for use with tactic commands
 - The current goal that needs to be proven
 
 ### Applying Tactics
 
-Once you have a proof state, you can apply tactics using the `ProofStep` class:
+Once a proof state is available, apply tactics using the [`ProofStep`](../api/interface.md#lean_interact.interface.ProofStep) class:
 
 ```python exec="on" source="above" session="tactic" result="python"
 from lean_interact import ProofStep
@@ -48,13 +48,13 @@ print(server.run(ProofStep(tactic="intro h", proof_state=proof_state_id)))
 
 The response contains:
 
-- A new proof state ID for chaining additional tactics
+- A new proof state ID ([`proof_state`](../api/interface.md#lean_interact.interface.ProofStepResponse.proof_state)) for chaining additional tactics
 - The current goal(s)
-- The proof status (complete or incomplete)
+- The proof status ([`proof_status`](../api/interface.md#lean_interact.interface.ProofStepResponse.proof_status)) (complete or incomplete)
 
 ### Chaining Tactics
 
-You can chain multiple tactics by using the proof state from each response:
+Chain multiple tactics by using the proof state from each response:
 
 ```python exec="on" source="above" session="tactic" result="python"
 from lean_interact import ProofStep
@@ -72,7 +72,7 @@ print(server.run(ProofStep(tactic="exact h", proof_state=intro_response.proof_st
 
 ### Applying Multiple Tactics at Once
 
-You can also apply multiple tactics at once by wrapping them in parentheses:
+Apply multiple tactics at once by wrapping them in parentheses:
 
 ```python exec="on" source="above" session="tactic" result="python"
 # Apply multiple tactics at once
@@ -85,7 +85,7 @@ print(multi_response)
 
 ## Complete Proof Session
 
-The `ProofStepResponse` contains a `proof_status` field that indicates whether the proof is complete.
+The [`ProofStepResponse`](../api/interface.md#lean_interact.interface.ProofStepResponse) contains a [`proof_status`](../api/interface.md#lean_interact.interface.ProofStepResponse.proof_status) field that indicates whether the proof is complete.
 Here's a complete example of working with tactics:
 
 ```python exec="on" source="above" session="tactic" result="python"
