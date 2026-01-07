@@ -8,6 +8,7 @@ from lean_interact.interface import (
     UnpickleEnvironment,
     UnpickleProofState,
 )
+from lean_interact.pool import LeanServerPool
 from lean_interact.project import (
     GitProject,
     LeanRequire,
@@ -22,6 +23,7 @@ __all__ = [
     "LeanREPLConfig",
     "LeanServer",
     "AutoLeanServer",
+    "LeanServerPool",
     "PickleSessionCache",
     "ReplaySessionCache",
     "LeanRequire",

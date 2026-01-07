@@ -136,13 +136,14 @@ nav:
       - Tactic Mode: user-guide/tactic-mode.md
       - Performance & Parallelization: user-guide/performance.md
       - Data Extraction: user-guide/data-extraction.md
-      - Set Lean Options: user-guide/set-options.md
+      - Setting Lean Options: user-guide/set-options.md
       - Examples: user-guide/examples.md
       - Custom Lean Configuration: user-guide/custom-lean-configuration.md
       - Troubleshooting: user-guide/troubleshooting.md
   - API Reference:
       - REPL Configuration: api/config.md
       - Lean Server: api/server.md
+      - Server Pool: api/pool.md
       - Interface: api/interface.md
       - Projects: api/project.md
       - Session Cache: api/sessioncache.md
