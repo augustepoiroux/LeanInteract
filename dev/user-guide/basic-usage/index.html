@@ -759,7 +759,7 @@
   
   
   <span class="md-ellipsis">
-    Set Lean Options
+    Setting Lean Options
     
   </span>
   
@@ -927,6 +927,29 @@
   
   <span class="md-ellipsis">
     Lean Server
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Server Pool
     
   </span>
   
@@ -1197,7 +1220,7 @@
 <h1 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h1>
 <p>This guide covers the fundamental operations and command types in LeanInteract.</p>
 <h2 id="basic-command-execution">Basic Command Execution<a class="headerlink" href="#basic-command-execution" title="Permanent link">&para;</a></h2>
-<p>The most common operation in LeanInteract is executing Lean code directly using the <code>Command</code> class:</p>
+<p>The most common operation in LeanInteract is executing Lean code directly using the <a href="../../api/interface/#lean_interact.interface.Command"><code>Command</code></a> class:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span><span class="p">,</span> <span class="n">Command</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Setup</span>
@@ -1212,20 +1235,20 @@
 <p>The response contains:</p>
 <ul>
 <li>Messages returned by Lean if any (errors, information, etc.)</li>
-<li>An environment state (<code>env</code>) that can be used for subsequent commands.</li>
+<li>An environment state (<a href="../../api/interface/#lean_interact.interface.CommandResponse.env"><code>env</code></a>) that can be used for subsequent commands.</li>
 </ul>
 <h3 id="working-with-environment-states">Working with Environment States<a class="headerlink" href="#working-with-environment-states" title="Permanent link">&para;</a></h3>
-<p>Each command execution creates a new environment state. You can use this state in subsequent commands:</p>
+<p>Each command execution creates a new environment state. Use this state in subsequent commands:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># First command creates environment state</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">response1</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;def x := 5&quot;</span><span class="p">))</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Use environment state 0 for the next command</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;#check x&quot;</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">response1</span><span class="o">.</span><span class="n">env</span><span class="p">)))</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">severity</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;x : Nat&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">))],</span> <span class="n">env</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">severity</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;x : Nat&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">6</span><span class="p">))])</span>
 </span></code></pre></div>
 <h2 id="processing-lean-files">Processing Lean Files<a class="headerlink" href="#processing-lean-files" title="Permanent link">&para;</a></h2>
-<p>You can process entire Lean files using the <code>FileCommand</code> class:</p>
+<p>Process entire Lean files using the <a href="../../api/interface/#lean_interact.interface.FileCommand"><code>FileCommand</code></a> class:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileCommand</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Process a Lean file</span>
@@ -1235,15 +1258,15 @@
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">FileCommand</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;myfile.lean&quot;</span><span class="p">,</span> <span class="n">root_goals</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </span></code></pre></div>
 <h2 id="available-options">Available Options<a class="headerlink" href="#available-options" title="Permanent link">&para;</a></h2>
-<p>Both <code>Command</code> and <code>FileCommand</code> support several options:</p>
+<p>Both <a href="../../api/interface/#lean_interact.interface.Command"><code>Command</code></a> and <a href="../../api/interface/#lean_interact.interface.FileCommand"><code>FileCommand</code></a> support several options:</p>
 <ul>
-<li><code>all_tactics</code>: Get information about tactics used</li>
-<li><code>declarations</code>: Extract fine-grained information about declarations in the code</li>
-<li><code>root_goals</code>: Get information about goals in theorems and definitions</li>
-<li><code>infotree</code>: Get Lean infotree containing various informations from the Lean syntax tree</li>
-<li><code>incrementality</code>: Enable or disable incremental elaboration for this specific command.</li>
-<li><code>set_options</code>: Set Lean options for this command (see <a href="../set-options/">Set Options</a>)</li>
-<li><code>env</code>: The environment from a previous command to be used as context. If <code>env = None</code>, starts from scratch.</li>
+<li><a href="../../api/interface/#lean_interact.interface.Command.all_tactics"><code>all_tactics</code></a>: Get information about tactics used</li>
+<li><a href="../../api/interface/#lean_interact.interface.Command.declarations"><code>declarations</code></a>: Extract fine-grained information about declarations in the code</li>
+<li><a href="../../api/interface/#lean_interact.interface.Command.root_goals"><code>root_goals</code></a>: Get information about goals in theorems and definitions</li>
+<li><a href="../../api/interface/#lean_interact.interface.Command.infotree"><code>infotree</code></a>: Get Lean infotree containing various informations from the Lean syntax tree</li>
+<li><a href="../../api/interface/#lean_interact.interface.Command.incrementality"><code>incrementality</code></a>: Enable or disable incremental elaboration for this specific command.</li>
+<li><a href="../../api/interface/#lean_interact.interface.Command.set_options"><code>set_options</code></a>: Set Lean options for this command (see <a href="../set-options/">Set Options</a>)</li>
+<li><a href="../../api/interface/#lean_interact.interface.Command.env"><code>env</code></a>: The environment from a previous command to be used as context. If <code>env = None</code>, starts from scratch.</li>
 </ul>
 <p>Example with options:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span>
@@ -1252,20 +1275,20 @@
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">))</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">tactics</span><span class="p">)</span>  <span class="c1"># Shows tactics used</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">[</span><span class="n">Tactic</span><span class="p">(</span><span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">43</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">goals</span><span class="o">=</span><span class="s1">&#39;n : Nat</span><span class="se">\n</span><span class="s1">⊢ n = 5 → n = 5&#39;</span><span class="p">,</span> <span class="n">proof_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">used_constants</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;instOfNatNat&#39;</span><span class="p">,</span> <span class="s1">&#39;imp_self._simp_1&#39;</span><span class="p">,</span> <span class="s1">&#39;Nat&#39;</span><span class="p">,</span> <span class="s1">&#39;of_eq_true&#39;</span><span class="p">,</span> <span class="s1">&#39;OfNat.ofNat&#39;</span><span class="p">,</span> <span class="s1">&#39;Eq&#39;</span><span class="p">],</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">47</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">tactic</span><span class="o">=</span><span class="s1">&#39;simp&#39;</span><span class="p">)]</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">[</span><span class="n">Tactic</span><span class="p">(</span><span class="n">goals</span><span class="o">=</span><span class="s1">&#39;n : Nat</span><span class="se">\n</span><span class="s1">⊢ n = 5 → n = 5&#39;</span><span class="p">,</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">47</span><span class="p">),</span> <span class="n">proof_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tactic</span><span class="o">=</span><span class="s1">&#39;simp&#39;</span><span class="p">,</span> <span class="n">used_constants</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;instOfNatNat&#39;</span><span class="p">,</span> <span class="s1">&#39;imp_self._simp_1&#39;</span><span class="p">,</span> <span class="s1">&#39;Nat&#39;</span><span class="p">,</span> <span class="s1">&#39;of_eq_true&#39;</span><span class="p">,</span> <span class="s1">&#39;OfNat.ofNat&#39;</span><span class="p">,</span> <span class="s1">&#39;Eq&#39;</span><span class="p">],</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">43</span><span class="p">))]</span>
 </span></code></pre></div>
 <h2 id="working-with-sorries">Working with Sorries<a class="headerlink" href="#working-with-sorries" title="Permanent link">&para;</a></h2>
 <p>When Lean code contains <code>sorry</code> (incomplete proofs), LeanInteract returns information about these <code>sorry</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := sorry&quot;</span><span class="p">))</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">sorries</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Sorry</span><span class="p">(</span><span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">proof_state</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">goal</span><span class="o">=</span><span class="s1">&#39;n : Nat</span><span class="se">\n</span><span class="s1">⊢ n = 5 → n = 5&#39;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Sorry</span><span class="p">(</span><span class="n">proof_state</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="s1">&#39;n : Nat</span><span class="se">\n</span><span class="s1">⊢ n = 5 → n = 5&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">40</span><span class="p">),</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">45</span><span class="p">))</span>
 </span></code></pre></div>
-<p>This response will include a list of <code>Sorry</code> objects, each containing:</p>
+<p>This response will include a list of <a href="../../api/interface/#lean_interact.interface.Sorry"><code>Sorry</code></a> objects, each containing:</p>
 <ul>
 <li>Position in the code</li>
 <li>Goal to be proven</li>
-<li>Proof state ID (can be used with <code>ProofStep</code> commands)</li>
+<li>Proof state ID (<a href="../../api/interface/#lean_interact.interface.Sorry.proof_state"><code>proof_state</code></a>) (can be used with <a href="../../api/interface/#lean_interact.interface.ProofStep"><code>ProofStep</code></a> commands)</li>
 </ul>
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanError</span>
@@ -1279,7 +1302,7 @@
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Command</span> <span class="n">succeeded</span><span class="p">:</span> <span class="n">CommandResponse</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">severity</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;unexpected identifier; expected command&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">))],</span> <span class="n">env</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Command</span> <span class="n">succeeded</span><span class="p">:</span> <span class="n">CommandResponse</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">severity</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;unexpected identifier; expected command&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">7</span><span class="p">))])</span>
 </span></code></pre></div>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>

@@ -648,7 +648,7 @@
   
   
   <span class="md-ellipsis">
-    Set Lean Options
+    Setting Lean Options
     
   </span>
   
@@ -971,6 +971,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Server Pool
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/interface/" class="md-nav__link">
         
   
@@ -1249,7 +1272,7 @@
 
 
 <h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h1>
-<p>This guide covers common issues you might encounter when using LeanInteract.</p>
+<p>This guide covers common issues that may be encountered when using LeanInteract.</p>
 <h2 id="common-issues">Common Issues<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h2>
 <h3 id="out-of-memory-errors">Out of Memory Errors<a class="headerlink" href="#out-of-memory-errors" title="Permanent link">&para;</a></h3>
 <p><strong>Symptoms</strong>:</p>
@@ -1261,13 +1284,13 @@
 <p><strong>Solutions</strong>:</p>
 <ul>
 <li>Reduce parallel processing or increase system memory</li>
-<li>Limit the maximum amount of memory usage allocated to the REPL with <code>LeanREPLConfig</code>:</li>
+<li>Limit the maximum amount of memory usage allocated to the REPL with <a href="../../api/config/#lean_interact.config.LeanREPLConfig"><code>LeanREPLConfig</code></a>:</li>
 </ul>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoLeanServer</span><span class="p">,</span> <span class="n">LeanREPLConfig</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">memory_hard_limit_mb</span><span class="o">=</span><span class="mi">8192</span><span class="p">))</span> <span class="c1"># Limit to 8GB</span>
 </span></code></pre></div>
 <ul>
-<li>If you are working with large files or complex proofs in a single session, consider breaking them into smaller, more manageable pieces.</li>
+<li>When working with large files or complex proofs in a single session, consider breaking them into smaller, more manageable pieces.</li>
 </ul>
 <h3 id="timeout-errors">Timeout Errors<a class="headerlink" href="#timeout-errors" title="Permanent link">&para;</a></h3>
 <p><strong>Symptoms</strong>:</p>
@@ -1283,7 +1306,7 @@
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
 </span></code></pre></div>
 <ul>
-<li>Use <code>AutoLeanServer</code> for automatic recovery from timeouts:</li>
+<li>Use <a href="../../api/server/#lean_interact.server.AutoLeanServer"><code>AutoLeanServer</code></a> for automatic recovery from timeouts:</li>
 </ul>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
@@ -1311,12 +1334,12 @@ This is expected behavior as LeanInteract:</p>
 </ul>
 <p><strong>Solutions</strong>:</p>
 <ul>
-<li>Update your <code>elan</code> version (should be at least 4.0.0):</li>
+<li>Update the <code>elan</code> version (should be at least 4.0.0):</li>
 </ul>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>elan<span class="w"> </span>self<span class="w"> </span>update
 </span></code></pre></div>
 <ul>
-<li>Check your project's lake file for errors</li>
+<li>Check the project's lake file for errors</li>
 <li>Ensure Git is properly installed and can access required repositories</li>
 </ul>
 <h3 id="path-too-long-error-windows">Path Too Long Error (Windows)<a class="headerlink" href="#path-too-long-error-windows" title="Permanent link">&para;</a></h3>
@@ -1346,8 +1369,8 @@ Clear the LeanInteract cache:</p>
 LeanInteract returns error messages while the Lean code runs fine in VSCode.</p>
 <p><strong>Solutions</strong>:</p>
 <ul>
-<li>Check you are using the same Lean version in both environments</li>
-<li>If you are creating a temporary project using LeanInteract, make sure your dependencies are correctly set and compatible with the Lean version you are using</li>
+<li>Check that the same Lean version is being used in both environments</li>
+<li>When creating a temporary project using LeanInteract, ensure dependencies are correctly set and compatible with the Lean version being used</li>
 <li>
 <p>A frequent issue is forgetting to include <code>mathlib</code> in the dependencies:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span>
@@ -1367,12 +1390,12 @@ Install Lean's version manager:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>install-lean
 </span></code></pre></div>
 <h2 id="getting-additional-help">Getting Additional Help<a class="headerlink" href="#getting-additional-help" title="Permanent link">&para;</a></h2>
-<p>If you encounter issues not covered in this guide:</p>
+<p>For issues not covered in this guide:</p>
 <ol>
 <li>Check the <a href="https://github.com/augustepoiroux/LeanInteract">GitHub repository</a> for open issues</li>
 <li>Open a new issue with:<ul>
 <li>A minimal reproducible example</li>
-<li>Your operating system and Python version</li>
+<li>Operating system and Python version</li>
 <li>LeanInteract version (<code>pip show lean-interact</code>)</li>
 <li>Complete error message/stack trace</li>
 </ul>

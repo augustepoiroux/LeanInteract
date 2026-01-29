@@ -759,7 +759,7 @@
   
   
   <span class="md-ellipsis">
-    Set Lean Options
+    Setting Lean Options
     
   </span>
   
@@ -927,6 +927,29 @@
   
   <span class="md-ellipsis">
     Lean Server
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Server Pool
     
   </span>
   
@@ -1196,7 +1219,7 @@
 
 <h1 id="getting-started-with-leaninteract">Getting Started with LeanInteract<a class="headerlink" href="#getting-started-with-leaninteract" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>LeanInteract provides a Python interface to the Lean 4 theorem prover via the Lean REPL (Read-Evaluate-Print Loop). It enables you to:</p>
+<p>LeanInteract provides a Python interface to the Lean 4 theorem prover via the Lean REPL (Read-Evaluate-Print Loop). It enables:</p>
 <ul>
 <li>Execute Lean code from Python</li>
 <li>Process Lean files</li>
@@ -1228,26 +1251,26 @@
 </ol>
 <h2 id="core-components">Core Components<a class="headerlink" href="#core-components" title="Permanent link">&para;</a></h2>
 <h3 id="leanreplconfig">LeanREPLConfig<a class="headerlink" href="#leanreplconfig" title="Permanent link">&para;</a></h3>
-<p><code>LeanREPLConfig</code> sets up the Lean environment:</p>
+<p><a href="../../api/config/#lean_interact.config.LeanREPLConfig"><code>LeanREPLConfig</code></a> sets up the Lean environment:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">lean_version</span><span class="o">=</span><span class="s2">&quot;v4.19.0&quot;</span><span class="p">,</span>  <span class="c1"># Specify Lean version (optional, default is latest)</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>            <span class="c1"># Print detailed logs</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="leanserver">LeanServer<a class="headerlink" href="#leanserver" title="Permanent link">&para;</a></h3>
-<p><code>LeanServer</code> manages communication with the Lean REPL:</p>
+<p><a href="../../api/server/#lean_interact.server.LeanServer"><code>LeanServer</code></a> manages communication with the Lean REPL:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
-<p>A more robust alternative is <code>AutoLeanServer</code>, which automatically recovers from (some) crashes:</p>
+<p>A more robust alternative is <a href="../../api/server/#lean_interact.server.AutoLeanServer"><code>AutoLeanServer</code></a>, which automatically recovers from (some) crashes:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoLeanServer</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">auto_server</span> <span class="o">=</span> <span class="n">AutoLeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h3>
 <p>LeanInteract provides several types of commands:</p>
 <ul>
-<li><code>Command</code>: Execute Lean code directly</li>
-<li><code>FileCommand</code>: Process Lean files</li>
-<li><code>ProofStep</code>: Work with proofs step by step using tactics</li>
+<li><a href="../../api/interface/#lean_interact.interface.Command"><code>Command</code></a>: Execute Lean code directly</li>
+<li><a href="../../api/interface/#lean_interact.interface.FileCommand"><code>FileCommand</code></a>: Process Lean files</li>
+<li><a href="../../api/interface/#lean_interact.interface.ProofStep"><code>ProofStep</code></a>: Work with proofs step by step using tactics</li>
 </ul>
 <p>Basic command execution:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := id&quot;</span><span class="p">))</span>
@@ -1255,7 +1278,7 @@
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Learn about <a href="../basic-usage/">basic usage patterns</a></li>
-<li>Explore <a href="../tactic-mode/">tactic mode</a> for step-by-step proof interaction</li>
+<li>Explore <a href="../performance/">performance optimizations</a></li>
 <li>Configure <a href="../custom-lean-configuration/">custom Lean environments</a></li>
 </ul>
 <p>Or check out the <a href="../../api/config/">API Reference</a> for detailed information on all available classes and methods.</p>

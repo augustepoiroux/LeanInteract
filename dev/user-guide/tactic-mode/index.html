@@ -750,7 +750,7 @@
   
   
   <span class="md-ellipsis">
-    Set Lean Options
+    Setting Lean Options
     
   </span>
   
@@ -918,6 +918,29 @@
   
   <span class="md-ellipsis">
     Lean Server
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Server Pool
     
   </span>
   
@@ -1177,7 +1200,7 @@
 
 
 <h1 id="tactic-mode">Tactic Mode<a class="headerlink" href="#tactic-mode" title="Permanent link">&para;</a></h1>
-<p>Tactic mode in LeanInteract allows you to work with Lean's proof tactics step-by-step, providing an interactive way to develop and explore proofs.</p>
+<p>Tactic mode in LeanInteract allows working with Lean's proof tactics step-by-step, providing an interactive way to develop and explore proofs.</p>
 <div class="admonition warning">
 <p class="admonition-title">Experimental Feature</p>
 <p>The tactic mode feature is experimental may not work as expected in all situations. Some valid proofs might be incorrectly rejected.</p>
@@ -1186,7 +1209,7 @@
 <p>Using tactics in LeanInteract involves two main steps:</p>
 <ol>
 <li>Creating a proof state using <code>sorry</code> in a theorem</li>
-<li>Applying tactics to this proof state using <code>ProofStep</code></li>
+<li>Applying tactics to this proof state using <a href="../../api/interface/#lean_interact.interface.ProofStep"><code>ProofStep</code></a></li>
 </ol>
 <h3 id="creating-a-proof-state">Creating a Proof State<a class="headerlink" href="#creating-a-proof-state" title="Permanent link">&para;</a></h3>
 <p>First, let's create a proof state by defining a theorem with <code>sorry</code>:</p>
@@ -1198,15 +1221,15 @@
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem ex (n : Nat) : n = 5 → n = 5 := by sorry&quot;</span><span class="p">))</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">sorries</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Sorry</span><span class="p">(</span><span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">proof_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">43</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">goal</span><span class="o">=</span><span class="s1">&#39;n : Nat</span><span class="se">\n</span><span class="s1">⊢ n = 5 → n = 5&#39;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Sorry</span><span class="p">(</span><span class="n">proof_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="s1">&#39;n : Nat</span><span class="se">\n</span><span class="s1">⊢ n = 5 → n = 5&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">43</span><span class="p">),</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">48</span><span class="p">))</span>
 </span></code></pre></div>
-<p>This response contains a <code>Sorry</code> object that includes:</p>
+<p>This response contains a <a href="../../api/interface/#lean_interact.interface.Sorry"><code>Sorry</code></a> object that includes:</p>
 <ul>
-<li>A <code>proof_state</code> ID that you can use for tactic commands</li>
+<li>A <a href="../../api/interface/#lean_interact.interface.Sorry.proof_state"><code>proof_state</code></a> ID for use with tactic commands</li>
 <li>The current goal that needs to be proven</li>
 </ul>
 <h3 id="applying-tactics">Applying Tactics<a class="headerlink" href="#applying-tactics" title="Permanent link">&para;</a></h3>
-<p>Once you have a proof state, you can apply tactics using the <code>ProofStep</code> class:</p>
+<p>Once a proof state is available, apply tactics using the <a href="../../api/interface/#lean_interact.interface.ProofStep"><code>ProofStep</code></a> class:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProofStep</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Define a theorem with sorry</span>
@@ -1220,12 +1243,12 @@
 </span></code></pre></div>
 <p>The response contains:</p>
 <ul>
-<li>A new proof state ID for chaining additional tactics</li>
+<li>A new proof state ID (<a href="../../api/interface/#lean_interact.interface.ProofStepResponse.proof_state"><code>proof_state</code></a>) for chaining additional tactics</li>
 <li>The current goal(s)</li>
-<li>The proof status (complete or incomplete)</li>
+<li>The proof status (<a href="../../api/interface/#lean_interact.interface.ProofStepResponse.proof_status"><code>proof_status</code></a>) (complete or incomplete)</li>
 </ul>
 <h3 id="chaining-tactics">Chaining Tactics<a class="headerlink" href="#chaining-tactics" title="Permanent link">&para;</a></h3>
-<p>You can chain multiple tactics by using the proof state from each response:</p>
+<p>Chain multiple tactics by using the proof state from each response:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProofStep</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Define a theorem with sorry</span>
@@ -1241,7 +1264,7 @@
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">ProofStepResponse</span><span class="p">(</span><span class="n">proof_status</span><span class="o">=</span><span class="s1">&#39;Completed&#39;</span><span class="p">,</span> <span class="n">proof_state</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">goals</span><span class="o">=</span><span class="p">[])</span>
 </span></code></pre></div>
 <h3 id="applying-multiple-tactics-at-once">Applying Multiple Tactics at Once<a class="headerlink" href="#applying-multiple-tactics-at-once" title="Permanent link">&para;</a></h3>
-<p>You can also apply multiple tactics at once by wrapping them in parentheses:</p>
+<p>Apply multiple tactics at once by wrapping them in parentheses:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Apply multiple tactics at once</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">multi_response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">ProofStep</span><span class="p">(</span><span class="n">tactic</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;(</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="s2">intro h</span>
@@ -1252,7 +1275,7 @@
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">ProofStepResponse</span><span class="p">(</span><span class="n">proof_status</span><span class="o">=</span><span class="s1">&#39;Completed&#39;</span><span class="p">,</span> <span class="n">proof_state</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">goals</span><span class="o">=</span><span class="p">[])</span>
 </span></code></pre></div>
 <h2 id="complete-proof-session">Complete Proof Session<a class="headerlink" href="#complete-proof-session" title="Permanent link">&para;</a></h2>
-<p>The <code>ProofStepResponse</code> contains a <code>proof_status</code> field that indicates whether the proof is complete.
+<p>The <a href="../../api/interface/#lean_interact.interface.ProofStepResponse"><code>ProofStepResponse</code></a> contains a <a href="../../api/interface/#lean_interact.interface.ProofStepResponse.proof_status"><code>proof_status</code></a> field that indicates whether the proof is complete.
 Here's a complete example of working with tactics:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Create a theorem with sorry</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">theorem_response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;theorem my_theorem (x : Nat) : x = x := sorry&quot;</span><span class="p">))</span>

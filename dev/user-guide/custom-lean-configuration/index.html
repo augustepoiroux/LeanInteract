@@ -648,7 +648,7 @@
   
   
   <span class="md-ellipsis">
-    Set Lean Options
+    Setting Lean Options
     
   </span>
   
@@ -974,6 +974,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Server Pool
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/interface/" class="md-nav__link">
         
   
@@ -1257,7 +1280,7 @@
 <h1 id="custom-lean-configuration">Custom Lean Configuration<a class="headerlink" href="#custom-lean-configuration" title="Permanent link">&para;</a></h1>
 <p>LeanInteract provides flexible ways to configure the Lean environment to suit different use cases. This guide covers the various configuration options available.</p>
 <h2 id="specifying-lean-versions">Specifying Lean Versions<a class="headerlink" href="#specifying-lean-versions" title="Permanent link">&para;</a></h2>
-<p>You can specify which version of Lean 4 you want to use when no project is specified:</p>
+<p>Specify which version of Lean 4 to use when no project is specified:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Use a specific Lean version</span>
@@ -1267,15 +1290,15 @@
 <h2 id="working-with-existing-projects">Working with Existing Projects<a class="headerlink" href="#working-with-existing-projects" title="Permanent link">&para;</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>When using a project through the <code>project</code> attribute, the Lean version is automatically inferred from the project. You cannot specify both <code>lean_version</code> and <code>project</code> parameters.</p>
+<p>When using a project through the <a href="../../api/config/#lean_interact.config.LeanREPLConfig.project"><code>project</code></a> attribute, the Lean version is automatically inferred from the project. Both <a href="../../api/config/#lean_interact.config.LeanREPLConfig.lean_version"><code>lean_version</code></a> and <a href="../../api/config/#lean_interact.config.LeanREPLConfig.project"><code>project</code></a> parameters cannot be specified simultaneously.</p>
 </div>
 <h3 id="local-lean-projects">Local Lean Projects<a class="headerlink" href="#local-lean-projects" title="Permanent link">&para;</a></h3>
-<p>To work with a local Lean project, create a <code>LocalProject</code> instance:</p>
+<p>To work with a local Lean project, create a <a href="../../api/project/#lean_interact.project.LocalProject"><code>LocalProject</code></a> instance:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LocalProject</span><span class="p">,</span> <span class="n">LeanServer</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Configure with a local project</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">project</span> <span class="o">=</span> <span class="n">LocalProject</span><span class="p">(</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;path/to/your/project&quot;</span><span class="p">,</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;path/to/project&quot;</span><span class="p">,</span>
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">auto_build</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Automatically build the project (default is True)</span>
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span>
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
@@ -1287,10 +1310,10 @@
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Setting <code>auto_build=False</code> will skip building the project, which can be useful if you've already built it.</p>
+<p>Setting <a href="../../api/project/#lean_interact.project.LocalProject.auto_build"><code>auto_build</code></a> to <code>False</code> will skip building the project, which can be useful if the project has already been built.</p>
 </div>
 <h3 id="git-based-projects">Git-Based Projects<a class="headerlink" href="#git-based-projects" title="Permanent link">&para;</a></h3>
-<p>You can work with projects hosted on Git repositories:</p>
+<p>Work with projects hosted on Git repositories:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">GitProject</span><span class="p">,</span> <span class="n">LeanServer</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Configure with a Git-hosted project</span>
@@ -1298,12 +1321,12 @@
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://github.com/yangky11/lean4-example&quot;</span><span class="p">,</span>
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">rev</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">,</span>  <span class="c1"># Optional: specific branch, tag, or commit</span>
 </span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;/custom/cache/path&quot;</span><span class="p">,</span>  <span class="c1"># Optional: custom directory where the project will be cloned</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">force_pull</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># Optional: force update from remote. Useful in case you already have the project cloned and the branch has been updated.</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">force_pull</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># Optional: force update from remote. Useful when the project is already cloned and the branch has been updated.</span>
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">)</span>
 </span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
 </span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
-<p>The <code>GitProject</code> will automatically:</p>
+<p>The <a href="../../api/project/#lean_interact.project.GitProject"><code>GitProject</code></a> will automatically:</p>
 <ul>
 <li>Clone the repository if it doesn't exist (including submodules if present)</li>
 <li>Update to the specified revision</li>
@@ -1311,10 +1334,10 @@
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Use the <code>directory</code> parameter to control where projects are cached</p>
+<p>Use the <a href="../../api/project/#lean_interact.project.GitProject.directory"><code>directory</code></a> parameter to control where projects are cached</p>
 </div>
 <h2 id="working-with-temporary-projects">Working with Temporary Projects<a class="headerlink" href="#working-with-temporary-projects" title="Permanent link">&para;</a></h2>
-<p>LeanInteract allows you to create temporary projects with dependencies for quick experimentation and automated reproducible setups.</p>
+<p>LeanInteract allows creating temporary projects with dependencies for quick experimentation and automated reproducible setups.</p>
 <h3 id="simple-temporary-projects-with-dependencies">Simple Temporary Projects with Dependencies<a class="headerlink" href="#simple-temporary-projects-with-dependencies" title="Permanent link">&para;</a></h3>
 <p>To create a temporary project with dependencies:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">TempRequireProject</span><span class="p">,</span> <span class="n">LeanRequire</span>
@@ -1337,7 +1360,7 @@
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="fine-grained-temporary-projects">Fine-Grained Temporary Projects<a class="headerlink" href="#fine-grained-temporary-projects" title="Permanent link">&para;</a></h3>
-<p>For more control over the temporary project, you can specify the complete lakefile content:</p>
+<p>For more control over the temporary project, specify the complete lakefile content:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">TemporaryProject</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">project</span> <span class="o">=</span> <span class="n">TemporaryProject</span><span class="p">(</span>
@@ -1360,10 +1383,10 @@
 </span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="p">)</span>
 </span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
 </span></code></pre></div>
-<p>This approach gives you full control over the Lake configuration.
-Alternatively, you can define the lakefile content using the TOML format by setting <code>lakefile_type="toml"</code>.</p>
+<p>This approach gives full control over the Lake configuration.
+Alternatively, define the lakefile content using the TOML format by setting <code>lakefile_type="toml"</code>.</p>
 <h2 id="using-custom-repl-revisions">Using Custom REPL Revisions<a class="headerlink" href="#using-custom-repl-revisions" title="Permanent link">&para;</a></h2>
-<p>LeanInteract uses the Lean REPL from a git repository to interact with Lean. By default, it uses a specific version of the REPL from the default forked repository (<code>https://github.com/augustepoiroux/repl</code>) which manages compatibility with Lean versions. However, you can customize this by specifying a different REPL revision or repository:</p>
+<p>LeanInteract uses the Lean REPL from a git repository to interact with Lean. By default, it uses a specific version of the REPL from the default forked repository (<code>https://github.com/augustepoiroux/repl</code>) which manages compatibility with Lean versions. However, this can be customized by specifying a different REPL revision or repository:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Use a specific REPL revision</span>
@@ -1373,37 +1396,37 @@ Alternatively, you can define the lakefile content using the TOML format by sett
 </span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">)</span>
 </span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
-<p>When you specify a <code>repl_rev</code>, LeanInteract will try to:</p>
+<p>When specifying a <a href="../../api/config/#lean_interact.config.LeanREPLConfig.repl_rev"><code>repl_rev</code></a>, LeanInteract will try to:</p>
 <ol>
 <li>Find a tagged revision with the format <code>{repl_rev}_lean-toolchain-{lean_version}</code></li>
-<li>If such tag doesn't exist, fall back to using the specified <code>repl_rev</code> directly</li>
-<li>If <code>lean_version</code> is not specified, it will use the latest available Lean version compatible with the REPL</li>
+<li>If such tag doesn't exist, fall back to using the specified <a href="../../api/config/#lean_interact.config.LeanREPLConfig.repl_rev"><code>repl_rev</code></a> directly</li>
+<li>If <a href="../../api/config/#lean_interact.config.LeanREPLConfig.lean_version"><code>lean_version</code></a> is not specified, it will use the latest available Lean version compatible with the REPL</li>
 </ol>
 <p>This approach allows for better matching between REPL versions and Lean versions, ensuring compatibility.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Custom/older REPL implementations may have interfaces that are incompatible with LeanInteract's current commands. If you encounter issues, consider using the <code>run_dict</code> method from <code>LeanServer</code> to communicate directly with the REPL:</p>
+<p>Custom/older REPL implementations may have interfaces that are incompatible with LeanInteract's current commands. For compatibility issues, consider using the <a href="../../api/server/#lean_interact.server.LeanServer.run_dict"><code>run_dict</code></a> method from <a href="../../api/server/#lean_interact.server.LeanServer"><code>LeanServer</code></a> to communicate directly with the REPL:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run_dict</span><span class="p">({</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;your_command_here&quot;</span><span class="p">})</span>
 </span></code></pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code>repl_rev</code> and <code>repl_git</code> parameters are ignored if you specify <code>local_repl_path</code>.</p>
+<p>The <a href="../../api/config/#lean_interact.config.LeanREPLConfig.repl_rev"><code>repl_rev</code></a> and <a href="../../api/config/#lean_interact.config.LeanREPLConfig.repl_git"><code>repl_git</code></a> parameters are ignored if <a href="../../api/config/#lean_interact.config.LeanREPLConfig.local_repl_path"><code>local_repl_path</code></a> is specified.</p>
 </div>
 <h3 id="using-a-local-repl-installation">Using a Local REPL Installation<a class="headerlink" href="#using-a-local-repl-installation" title="Permanent link">&para;</a></h3>
-<p>If you are developing the Lean REPL or have a custom version, you can use your local copy instead of downloading from a git repository:</p>
+<p>When developing the Lean REPL or using a custom version, a local copy can be used instead of downloading from a git repository:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">local_repl_path</span><span class="o">=</span><span class="s2">&quot;path/to/your/local/repl&quot;</span><span class="p">,</span> <span class="n">build_repl</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LeanREPLConfig</span><span class="p">(</span><span class="n">local_repl_path</span><span class="o">=</span><span class="s2">&quot;path/to/local/repl&quot;</span><span class="p">,</span> <span class="n">build_repl</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>When using <code>local_repl_path</code>, any specified <code>repl_rev</code>, and <code>repl_git</code> parameters are ignored as the local REPL is used directly.</p>
+<p>When using <a href="../../api/config/#lean_interact.config.LeanREPLConfig.local_repl_path"><code>local_repl_path</code></a>, any specified <a href="../../api/config/#lean_interact.config.LeanREPLConfig.repl_rev"><code>repl_rev</code></a>, and <a href="../../api/config/#lean_interact.config.LeanREPLConfig.repl_git"><code>repl_git</code></a> parameters are ignored as the local REPL is used directly.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Make sure you are using a compatible Lean version between your local REPL and the project you will interact with.</p>
+<p>Ensure a compatible Lean version is used between the local REPL and the project.</p>
 </div>
 
 

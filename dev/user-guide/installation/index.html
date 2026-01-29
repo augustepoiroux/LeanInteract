@@ -783,7 +783,7 @@
   
   
   <span class="md-ellipsis">
-    Set Lean Options
+    Setting Lean Options
     
   </span>
   
@@ -951,6 +951,29 @@
   
   <span class="md-ellipsis">
     Lean Server
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Server Pool
     
   </span>
   
@@ -1244,16 +1267,16 @@
 
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<p>Before installing LeanInteract, ensure you have the following prerequisites:</p>
+<p>Before installing LeanInteract, ensure the following prerequisites are met:</p>
 <ul>
 <li>Python 3.10 or newer</li>
 <li>Git (for Lean installation)</li>
-<li><a href="https://leanprover-community.github.io/get_started.html">Lean 4</a> (optional - LeanInteract can install it for you)</li>
+<li><a href="https://leanprover-community.github.io/get_started.html">Lean 4</a> (optional - LeanInteract can install it)</li>
 </ul>
 <p>We recommend using Linux or macOS for the best experience, but LeanInteract also supports Windows.</p>
 <h2 id="installation-steps">Installation Steps<a class="headerlink" href="#installation-steps" title="Permanent link">&para;</a></h2>
 <h3 id="1-install-the-package">1. Install the Package<a class="headerlink" href="#1-install-the-package" title="Permanent link">&para;</a></h3>
-<p>You can install LeanInteract directly from PyPI:</p>
+<p>Install LeanInteract directly from PyPI:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>lean-interact
 </span></code></pre></div>
 <h3 id="2-install-lean-4-if-not-already-installed">2. Install Lean 4 (if not already installed)<a class="headerlink" href="#2-install-lean-4-if-not-already-installed" title="Permanent link">&para;</a></h3>
@@ -1263,10 +1286,10 @@
 <p>This command will install Elan, which manages Lean versions.</p>
 <div class="admonition warning">
 <p class="admonition-title">Elan Version</p>
-<p>Your Elan version should be at least 4.0.0.</p>
+<p>The Elan version should be at least 4.0.0.</p>
 </div>
 <h2 id="verifying-installation">Verifying Installation<a class="headerlink" href="#verifying-installation" title="Permanent link">&para;</a></h2>
-<p>You can verify that LeanInteract is properly installed by running a simple Python script:</p>
+<p>Verify that LeanInteract is properly installed by running a simple Python script:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span><span class="p">,</span> <span class="n">Command</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Create a configuration</span>
@@ -1279,24 +1302,24 @@
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;#eval 2 + 2&quot;</span><span class="p">))</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">severity</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">))],</span> <span class="n">env</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">severity</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">5</span><span class="p">))])</span>
 </span></code></pre></div>
 <p>If everything is set up correctly, the script should output a successful response.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The first time you run LeanInteract, it might take some time as it downloads the requested Lean version and builds Lean REPL. Subsequent runs will be significantly faster due to caching.</p>
+<p>The first time LeanInteract is run, it might take some time as it downloads the requested Lean version and builds Lean REPL. Subsequent runs will be significantly faster due to caching.</p>
 </div>
 <h2 id="system-specific-notes">System-Specific Notes<a class="headerlink" href="#system-specific-notes" title="Permanent link">&para;</a></h2>
 <h3 id="windows">Windows<a class="headerlink" href="#windows" title="Permanent link">&para;</a></h3>
-<p>On Windows, you might encounter path length limitations. If you get an error related to path length, you can enable long paths in Windows 10 and later versions by running the following command in an administrator PowerShell:</p>
+<p>On Windows, path length limitations may be encountered. For errors related to path length, enable long paths in Windows 10 and later versions by running the following command in an administrator PowerShell:</p>
 <div class="language-powershell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">New-ItemProperty</span> <span class="n">-Path</span> <span class="s2">&quot;HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem&quot;</span> <span class="n">-Name</span> <span class="n">LongPathsEnabled</span> <span class="n">-Value</span> <span class="n">1</span> <span class="n">-PropertyType</span> <span class="n">DWord</span> <span class="n">-Force</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">git</span> <span class="n">config</span> <span class="p">-</span><span class="n">-system</span> <span class="n">core</span><span class="p">.</span><span class="n">longpaths</span> <span class="n">true</span>
 </span></code></pre></div>
 <p>For more information, refer to the <a href="https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation">Microsoft documentation</a>.</p>
 <h3 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h3>
-<p>If you're using LeanInteract in a Docker container, make sure to include Git in your container and have sufficient memory allocated, especially if you're working with Mathlib.</p>
+<p>When using LeanInteract in a Docker container, ensure Git is included in the container with sufficient memory allocated, especially when working with Mathlib.</p>
 <h2 id="uninstallation">Uninstallation<a class="headerlink" href="#uninstallation" title="Permanent link">&para;</a></h2>
-<p>If you need to clear the LeanInteract cache (for troubleshooting or disk space reasons), you can use:</p>
+<p>To clear the LeanInteract cache (for troubleshooting or disk space reasons), use:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>clear-lean-cache
 </span></code></pre></div>
 <p>To completely uninstall:</p>

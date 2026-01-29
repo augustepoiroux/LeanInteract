@@ -648,7 +648,7 @@
   
   
   <span class="md-ellipsis">
-    Set Lean Options
+    Setting Lean Options
     
   </span>
   
@@ -911,6 +911,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Server Pool
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/interface/" class="md-nav__link">
         
   
@@ -1129,7 +1152,7 @@
 
 
 <h1 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h1>
-<p>This page provides practical examples of using LeanInteract in different scenarios. You can find a few full example scripts in the <a href="https://github.com/augustepoiroux/LeanInteract/tree/main/examples"><code>examples</code></a> directory of the repository.</p>
+<p>This page provides practical examples of using LeanInteract in different scenarios. Full example scripts are available in the <a href="https://github.com/augustepoiroux/LeanInteract/tree/main/examples"><code>examples</code></a> directory of the repository.</p>
 <h2 id="basic-theorem-proving">Basic Theorem Proving<a class="headerlink" href="#basic-theorem-proving" title="Permanent link">&para;</a></h2>
 <p>This example demonstrates how to define a simple theorem with a partial proof in Lean using LeanInteract:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lean_interact</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeanREPLConfig</span><span class="p">,</span> <span class="n">LeanServer</span><span class="p">,</span> <span class="n">Command</span>
@@ -1146,7 +1169,7 @@
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="s2">  | succ a ih =&gt; sorry</span>
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="s2">&quot;&quot;&quot;</span><span class="p">)))</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">sorries</span><span class="o">=</span><span class="p">[</span><span class="n">Sorry</span><span class="p">(</span><span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span> <span class="n">proof_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">17</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span> <span class="n">goal</span><span class="o">=</span><span class="s1">&#39;case succ</span><span class="se">\n</span><span class="s1">b a : Nat</span><span class="se">\n</span><span class="s1">ih : a + b = b + a</span><span class="se">\n</span><span class="s1">⊢ a + 1 + b = b + (a + 1)&#39;</span><span class="p">)],</span> <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">severity</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s2">&quot;declaration uses &#39;sorry&#39;&quot;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">))],</span> <span class="n">env</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">sorries</span><span class="o">=</span><span class="p">[</span><span class="n">Sorry</span><span class="p">(</span><span class="n">proof_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="s1">&#39;case succ</span><span class="se">\n</span><span class="s1">b a : Nat</span><span class="se">\n</span><span class="s1">ih : a + b = b + a</span><span class="se">\n</span><span class="s1">⊢ a + 1 + b = b + (a + 1)&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">17</span><span class="p">),</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">22</span><span class="p">))],</span> <span class="n">env</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">severity</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;declaration uses `sorry`&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">16</span><span class="p">))])</span>
 </span></code></pre></div>
 <h2 id="working-with-mathlib">Working with Mathlib<a class="headerlink" href="#working-with-mathlib" title="Permanent link">&para;</a></h2>
 <p>This example shows how to use Mathlib to work with more advanced mathematical concepts:</p>
@@ -1167,7 +1190,7 @@
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="s2">  assumption</span>
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="s2">&quot;&quot;&quot;</span><span class="p">)))</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <span class="n">severity</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;Goals accomplished!&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">4</span><span class="p">))],</span> <span class="n">env</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">severity</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;Goals accomplished!&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">12</span><span class="p">))])</span>
 </span></code></pre></div>
 <h2 id="using-custom-repl-versions">Using Custom REPL Versions<a class="headerlink" href="#using-custom-repl-versions" title="Permanent link">&para;</a></h2>
 <p>This example demonstrates how to use a specific REPL version from a custom repository:</p>
@@ -1184,8 +1207,8 @@
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;#eval Lean.versionString&quot;</span><span class="p">))</span>
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># Output: &quot;4.21.0-rc3&quot;</span>
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># If you encounter interface compatibility issues with custom REPLs,</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># you can use run_dict to communicate directly with the REPL:</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># For interface compatibility issues with custom REPLs,</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># use run_dict to communicate directly with the REPL:</span>
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="n">result</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">run_dict</span><span class="p">({</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;#eval Lean.versionString&quot;</span><span class="p">})</span>
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># Example raw output from the REPL</span>
 </span></code></pre></div>
@@ -1210,6 +1233,10 @@
 <li>
 <p><a href="https://github.com/augustepoiroux/LeanInteract/blob/main/examples/type_check.py"><strong>type_check.py</strong></a><br />
    Shows how to optimize type checking using environment states.</p>
+</li>
+<li>
+<p><a href="https://github.com/augustepoiroux/LeanInteract/blob/main/examples/extract_mathlib_decls.py"><strong>extract_mathlib_decls.py</strong></a><br />
+   Demonstrates how to extract declarations from Mathlib in parallel using <a href="../../api/pool/#lean_interact.pool.LeanServerPool"><code>LeanServerPool</code></a>.</p>
 </li>
 </ol>
 

@@ -26,7 +26,7 @@
     
     
       
-        <title>Set Lean Options - LeanInteract</title>
+        <title>Setting Lean Options - LeanInteract</title>
       
     
     
@@ -177,7 +177,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Set Lean Options
+              Setting Lean Options
             
           </span>
         </div>
@@ -657,7 +657,7 @@
   
   
   <span class="md-ellipsis">
-    Set Lean Options
+    Setting Lean Options
     
   </span>
   
@@ -670,7 +670,7 @@
   
   
   <span class="md-ellipsis">
-    Set Lean Options
+    Setting Lean Options
     
   </span>
   
@@ -884,6 +884,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Server Pool
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/interface/" class="md-nav__link">
         
   
@@ -1075,10 +1098,10 @@
 
 
 <h1 id="set-lean-options-from-python-set_option">Set Lean Options from Python (<code>set_option</code>)<a class="headerlink" href="#set-lean-options-from-python-set_option" title="Permanent link">&para;</a></h1>
-<p>You can pass Lean options per request using the <code>setOptions</code> field on <code>Command</code> and <code>FileCommand</code>. This mirrors Lean’s <code>set_option</code> commands and lets you customize elaboration or pretty-printing on a per-request basis.</p>
+<p>Pass Lean options per request using the <a href="../../api/interface/#lean_interact.interface.Command.set_options"><code>set_options</code></a> field on <a href="../../api/interface/#lean_interact.interface.Command"><code>Command</code></a> and <a href="../../api/interface/#lean_interact.interface.FileCommand"><code>FileCommand</code></a>. This mirrors Lean's <a href="https://leanprover-community.github.io/lean4-metaprogramming-book/extra/01_options.html"><code>set_option</code></a> commands and allows customizing elaboration or pretty-printing on a per-request basis.</p>
 <h2 id="shape">Shape<a class="headerlink" href="#shape" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>setOptions</code> is a list of pairs <code>(Name, DataValue)</code></li>
+<li><code>set_options</code> is a list of pairs <code>(Name, DataValue)</code></li>
 <li><code>Name</code> is a list of components, e.g. <code>["pp", "unicode"]</code></li>
 <li><code>DataValue</code> can be <code>bool | int | str | Name</code></li>
 </ul>
@@ -1088,15 +1111,15 @@
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">server</span> <span class="o">=</span> <span class="n">LeanServer</span><span class="p">(</span><span class="n">LeanREPLConfig</span><span class="p">())</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Command</span><span class="p">(</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;variable (n : Nat)</span><span class="se">\n</span><span class="s2">#check n+0=n&quot;</span><span class="p">,</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">setOptions</span><span class="o">=</span><span class="p">[([</span><span class="s2">&quot;pp&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)],</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">set_options</span><span class="o">=</span><span class="p">[([</span><span class="s2">&quot;pp&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)],</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)))</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">severity</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;Eq.</span><span class="si">{1}</span><span class="s1"> Nat (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.</span><span class="si">{0}</span><span class="s1"> Nat instAddNat) _uniq.4 (OfNat.ofNat.</span><span class="si">{0}</span><span class="s1"> Nat 0 (instOfNatNat 0))) _uniq.4 : Prop&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">))],</span> <span class="n">env</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CommandResponse</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">severity</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;Eq.</span><span class="si">{1}</span><span class="s1"> Nat (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.</span><span class="si">{0}</span><span class="s1"> Nat instAddNat) _uniq.4 (OfNat.ofNat.</span><span class="si">{0}</span><span class="s1"> Nat 0 (instOfNatNat 0))) _uniq.4 : Prop&#39;</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">end_pos</span><span class="o">=</span><span class="n">Pos</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">6</span><span class="p">))])</span>
 </span></code></pre></div>
-<p>LeanInteract will also merge your <code>setOptions</code> with its own defaults when enabled (e.g., it may add <code>(["Elab","async"], True)</code> to enable parallel elaboration). Your explicitly provided options are appended and forwarded with the request.</p>
+<p>LeanInteract will also merge the provided <a href="../../api/interface/#lean_interact.interface.Command.set_options"><code>set_options</code></a> with its own defaults when enabled (e.g., it may add <code>(["Elab","async"], True)</code> to enable parallel elaboration). Explicitly provided options are appended and forwarded with the request.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Options apply only to the single request you send; pass them again for subsequent calls</p>
+<p>Options apply only to the single request; pass them again for subsequent calls</p>
 </div>
 
 

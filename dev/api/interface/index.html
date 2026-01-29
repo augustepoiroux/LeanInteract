@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://augustepoiroux.github.io/LeanInteract/dev/api/interface/">
       
       
-        <link rel="prev" href="../server/">
+        <link rel="prev" href="../pool/">
       
       
         <link rel="next" href="../project/">
@@ -645,7 +645,7 @@
   
   
   <span class="md-ellipsis">
-    Set Lean Options
+    Setting Lean Options
     
   </span>
   
@@ -816,6 +816,29 @@
   
   <span class="md-ellipsis">
     Lean Server
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Server Pool
     
   </span>
   
@@ -7060,7 +7083,8 @@ If <code>env</code> is set, the command is executed in the given environment.</p
 <span class="normal"><a href="#__codelineno-0-596">596</a></span>
 <span class="normal"><a href="#__codelineno-0-597">597</a></span>
 <span class="normal"><a href="#__codelineno-0-598">598</a></span>
-<span class="normal"><a href="#__codelineno-0-599">599</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-581"><a id="__codelineno-0-581" name="__codelineno-0-581"></a><span class="k">def</span><span class="w"> </span><span class="nf">lean_code_is_valid</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-599">599</a></span>
+<span class="normal"><a href="#__codelineno-0-600">600</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-581"><a id="__codelineno-0-581" name="__codelineno-0-581"></a><span class="k">def</span><span class="w"> </span><span class="nf">lean_code_is_valid</span><span class="p">(</span>
 </span><span id="__span-0-582"><a id="__codelineno-0-582" name="__codelineno-0-582"></a>    <span class="bp">self</span><span class="p">,</span>
 </span><span id="__span-0-583"><a id="__codelineno-0-583" name="__codelineno-0-583"></a>    <span class="n">start_pos</span><span class="p">:</span> <span class="n">Pos</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-584"><a id="__codelineno-0-584" name="__codelineno-0-584"></a>    <span class="n">end_pos</span><span class="p">:</span> <span class="n">Pos</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7076,9 +7100,10 @@ If <code>env</code> is set, the command is executed in the given environment.</p
 </span><span id="__span-0-594"><a id="__codelineno-0-594" name="__codelineno-0-594"></a>    <span class="n">sorries</span> <span class="o">=</span> <span class="p">[</span><span class="n">message</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorries</span> <span class="k">if</span> <span class="n">message_intersects_code</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span>
 </span><span id="__span-0-595"><a id="__codelineno-0-595" name="__codelineno-0-595"></a>        <span class="n">message</span>
 </span><span id="__span-0-596"><a id="__codelineno-0-596" name="__codelineno-0-596"></a>        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span>
-</span><span id="__span-0-597"><a id="__codelineno-0-597" name="__codelineno-0-597"></a>        <span class="k">if</span> <span class="n">message_intersects_code</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">)</span> <span class="ow">and</span> <span class="n">message</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;declaration uses &#39;sorry&#39;&quot;</span>
-</span><span id="__span-0-598"><a id="__codelineno-0-598" name="__codelineno-0-598"></a>    <span class="p">]</span>
-</span><span id="__span-0-599"><a id="__codelineno-0-599" name="__codelineno-0-599"></a>    <span class="k">return</span> <span class="ow">not</span> <span class="n">errors</span> <span class="ow">and</span> <span class="p">(</span><span class="n">allow_sorry</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">sorries</span><span class="p">)</span>
+</span><span id="__span-0-597"><a id="__codelineno-0-597" name="__codelineno-0-597"></a>        <span class="k">if</span> <span class="n">message_intersects_code</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">)</span>
+</span><span id="__span-0-598"><a id="__codelineno-0-598" name="__codelineno-0-598"></a>        <span class="ow">and</span> <span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;declaration uses &#39;sorry&#39;&quot;</span> <span class="ow">or</span> <span class="n">message</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;declaration uses `sorry`&quot;</span><span class="p">)</span>
+</span><span id="__span-0-599"><a id="__codelineno-0-599" name="__codelineno-0-599"></a>    <span class="p">]</span>
+</span><span id="__span-0-600"><a id="__codelineno-0-600" name="__codelineno-0-600"></a>    <span class="k">return</span> <span class="ow">not</span> <span class="n">errors</span> <span class="ow">and</span> <span class="p">(</span><span class="n">allow_sorry</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">sorries</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7443,7 +7468,8 @@ It may contain additional information, e.g. <code>Incomplete: contains sorry</co
 <span class="normal"><a href="#__codelineno-0-596">596</a></span>
 <span class="normal"><a href="#__codelineno-0-597">597</a></span>
 <span class="normal"><a href="#__codelineno-0-598">598</a></span>
-<span class="normal"><a href="#__codelineno-0-599">599</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-581"><a id="__codelineno-0-581" name="__codelineno-0-581"></a><span class="k">def</span><span class="w"> </span><span class="nf">lean_code_is_valid</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-599">599</a></span>
+<span class="normal"><a href="#__codelineno-0-600">600</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-581"><a id="__codelineno-0-581" name="__codelineno-0-581"></a><span class="k">def</span><span class="w"> </span><span class="nf">lean_code_is_valid</span><span class="p">(</span>
 </span><span id="__span-0-582"><a id="__codelineno-0-582" name="__codelineno-0-582"></a>    <span class="bp">self</span><span class="p">,</span>
 </span><span id="__span-0-583"><a id="__codelineno-0-583" name="__codelineno-0-583"></a>    <span class="n">start_pos</span><span class="p">:</span> <span class="n">Pos</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-584"><a id="__codelineno-0-584" name="__codelineno-0-584"></a>    <span class="n">end_pos</span><span class="p">:</span> <span class="n">Pos</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7459,9 +7485,10 @@ It may contain additional information, e.g. <code>Incomplete: contains sorry</co
 </span><span id="__span-0-594"><a id="__codelineno-0-594" name="__codelineno-0-594"></a>    <span class="n">sorries</span> <span class="o">=</span> <span class="p">[</span><span class="n">message</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorries</span> <span class="k">if</span> <span class="n">message_intersects_code</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span>
 </span><span id="__span-0-595"><a id="__codelineno-0-595" name="__codelineno-0-595"></a>        <span class="n">message</span>
 </span><span id="__span-0-596"><a id="__codelineno-0-596" name="__codelineno-0-596"></a>        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span>
-</span><span id="__span-0-597"><a id="__codelineno-0-597" name="__codelineno-0-597"></a>        <span class="k">if</span> <span class="n">message_intersects_code</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">)</span> <span class="ow">and</span> <span class="n">message</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;declaration uses &#39;sorry&#39;&quot;</span>
-</span><span id="__span-0-598"><a id="__codelineno-0-598" name="__codelineno-0-598"></a>    <span class="p">]</span>
-</span><span id="__span-0-599"><a id="__codelineno-0-599" name="__codelineno-0-599"></a>    <span class="k">return</span> <span class="ow">not</span> <span class="n">errors</span> <span class="ow">and</span> <span class="p">(</span><span class="n">allow_sorry</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">sorries</span><span class="p">)</span>
+</span><span id="__span-0-597"><a id="__codelineno-0-597" name="__codelineno-0-597"></a>        <span class="k">if</span> <span class="n">message_intersects_code</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">)</span>
+</span><span id="__span-0-598"><a id="__codelineno-0-598" name="__codelineno-0-598"></a>        <span class="ow">and</span> <span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;declaration uses &#39;sorry&#39;&quot;</span> <span class="ow">or</span> <span class="n">message</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;declaration uses `sorry`&quot;</span><span class="p">)</span>
+</span><span id="__span-0-599"><a id="__codelineno-0-599" name="__codelineno-0-599"></a>    <span class="p">]</span>
+</span><span id="__span-0-600"><a id="__codelineno-0-600" name="__codelineno-0-600"></a>    <span class="k">return</span> <span class="ow">not</span> <span class="n">errors</span> <span class="ow">and</span> <span class="p">(</span><span class="n">allow_sorry</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">sorries</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
