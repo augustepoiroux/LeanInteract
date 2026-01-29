@@ -4,7 +4,7 @@ This guide covers the fundamental operations and command types in LeanInteract.
 
 ## Basic Command Execution
 
-The most common operation in LeanInteract is executing Lean code directly using the `Command` class:
+The most common operation in LeanInteract is executing Lean code directly using the [`Command`](../api/interface.md#lean_interact.interface.Command) class:
 
 ```python exec="on" source="above" session="base" result="python"
 from lean_interact import LeanREPLConfig, LeanServer, Command
@@ -20,11 +20,11 @@ print(server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id")))
 The response contains:
 
 - Messages returned by Lean if any (errors, information, etc.)
-- An environment state (`env`) that can be used for subsequent commands.
+- An environment state ([`env`](../api/interface.md#lean_interact.interface.CommandResponse.env)) that can be used for subsequent commands.
 
 ### Working with Environment States
 
-Each command execution creates a new environment state. You can use this state in subsequent commands:
+Each command execution creates a new environment state. Use this state in subsequent commands:
 
 ```python exec="on" source="above" session="base" result="python"
 # First command creates environment state
@@ -36,7 +36,7 @@ print(server.run(Command(cmd="#check x", env=response1.env)))
 
 ## Processing Lean Files
 
-You can process entire Lean files using the `FileCommand` class:
+Process entire Lean files using the [`FileCommand`](../api/interface.md#lean_interact.interface.FileCommand) class:
 
 ```python
 from lean_interact import FileCommand
@@ -50,15 +50,15 @@ response = server.run(FileCommand(path="myfile.lean", root_goals=True))
 
 ## Available Options
 
-Both `Command` and `FileCommand` support several options:
+Both [`Command`](../api/interface.md#lean_interact.interface.Command) and [`FileCommand`](../api/interface.md#lean_interact.interface.FileCommand) support several options:
 
-- `all_tactics`: Get information about tactics used
-- `declarations`: Extract fine-grained information about declarations in the code
-- `root_goals`: Get information about goals in theorems and definitions
-- `infotree`: Get Lean infotree containing various informations from the Lean syntax tree
-- `incrementality`: Enable or disable incremental elaboration for this specific command.
-- `set_options`: Set Lean options for this command (see [Set Options](set-options.md))
-- `env`: The environment from a previous command to be used as context. If `env = None`, starts from scratch.
+- [`all_tactics`](../api/interface.md#lean_interact.interface.Command.all_tactics): Get information about tactics used
+- [`declarations`](../api/interface.md#lean_interact.interface.Command.declarations): Extract fine-grained information about declarations in the code
+- [`root_goals`](../api/interface.md#lean_interact.interface.Command.root_goals): Get information about goals in theorems and definitions
+- [`infotree`](../api/interface.md#lean_interact.interface.Command.infotree): Get Lean infotree containing various informations from the Lean syntax tree
+- [`incrementality`](../api/interface.md#lean_interact.interface.Command.incrementality): Enable or disable incremental elaboration for this specific command.
+- [`set_options`](../api/interface.md#lean_interact.interface.Command.set_options): Set Lean options for this command (see [Set Options](set-options.md))
+- [`env`](../api/interface.md#lean_interact.interface.Command.env): The environment from a previous command to be used as context. If `env = None`, starts from scratch.
 
 Example with options:
 
@@ -79,11 +79,11 @@ response = server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := sor
 print(response.sorries[0])
 ```
 
-This response will include a list of `Sorry` objects, each containing:
+This response will include a list of [`Sorry`](../api/interface.md#lean_interact.interface.Sorry) objects, each containing:
 
 - Position in the code
 - Goal to be proven
-- Proof state ID (can be used with `ProofStep` commands)
+- Proof state ID ([`proof_state`](../api/interface.md#lean_interact.interface.Sorry.proof_state)) (can be used with [`ProofStep`](../api/interface.md#lean_interact.interface.ProofStep) commands)
 
 ## Error Handling
 

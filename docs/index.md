@@ -38,7 +38,7 @@ Install Lean 4 (if not already installed) using the following command coming wit
 install-lean
 ```
 
-### Start using it in your Python scripts
+### Start using it in Python scripts
 
 ```python
 from lean_interact import LeanREPLConfig, LeanServer, Command

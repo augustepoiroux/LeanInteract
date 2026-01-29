@@ -2,7 +2,7 @@
 
 ## Overview
 
-LeanInteract provides a Python interface to the Lean 4 theorem prover via the Lean REPL (Read-Evaluate-Print Loop). It enables you to:
+LeanInteract provides a Python interface to the Lean 4 theorem prover via the Lean REPL (Read-Evaluate-Print Loop). It enables:
 
 - Execute Lean code from Python
 - Process Lean files
@@ -37,7 +37,7 @@ This will:
 
 ### LeanREPLConfig
 
-`LeanREPLConfig` sets up the Lean environment:
+[`LeanREPLConfig`](../api/config.md#lean_interact.config.LeanREPLConfig) sets up the Lean environment:
 
 ```python
 config = LeanREPLConfig(
@@ -48,13 +48,13 @@ config = LeanREPLConfig(
 
 ### LeanServer
 
-`LeanServer` manages communication with the Lean REPL:
+[`LeanServer`](../api/server.md#lean_interact.server.LeanServer) manages communication with the Lean REPL:
 
 ```python
 server = LeanServer(config)
 ```
 
-A more robust alternative is `AutoLeanServer`, which automatically recovers from (some) crashes:
+A more robust alternative is [`AutoLeanServer`](../api/server.md#lean_interact.server.AutoLeanServer), which automatically recovers from (some) crashes:
 
 ```python
 from lean_interact import AutoLeanServer
@@ -65,9 +65,9 @@ auto_server = AutoLeanServer(config)
 
 LeanInteract provides several types of commands:
 
-- `Command`: Execute Lean code directly
-- `FileCommand`: Process Lean files
-- `ProofStep`: Work with proofs step by step using tactics
+- [`Command`](../api/interface.md#lean_interact.interface.Command): Execute Lean code directly
+- [`FileCommand`](../api/interface.md#lean_interact.interface.FileCommand): Process Lean files
+- [`ProofStep`](../api/interface.md#lean_interact.interface.ProofStep): Work with proofs step by step using tactics
 
 Basic command execution:
 
@@ -78,7 +78,7 @@ server.run(Command(cmd="theorem ex (n : Nat) : n = 5 → n = 5 := id"))
 ## Next Steps
 
 - Learn about [basic usage patterns](basic-usage.md)
-- Explore [tactic mode](tactic-mode.md) for step-by-step proof interaction
+- Explore [performance optimizations](performance.md)
 - Configure [custom Lean environments](custom-lean-configuration.md)
 
 Or check out the [API Reference](../api/config.md) for detailed information on all available classes and methods.

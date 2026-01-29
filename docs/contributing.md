@@ -5,19 +5,19 @@ hide:
 
 # Contributing to LeanInteract
 
-Thank you for your interest in contributing to LeanInteract! This guide will help you get started, follow best practices, and make your contributions easy to review.
+Thank you for contributing to LeanInteract! This guide will help getting started, following best practices, and making contributions easy to review.
 
 ## Pull Request Guidelines
 
-- **Describe your changes** clearly and concisely in the PR description.
+- **Describe changes** clearly and concisely in the PR description.
 - **Link to relevant issues** using `#` (e.g., #42).
 - **Include tests** for new features or bug fixes.
-- **Update documentation** if your change affects usage or APIs.
+- **Update documentation** if changes affect usage or APIs.
 - **Ensure all tests pass** before requesting review.
 
 ## Getting Started
 
-1. **Fork the repository** on GitHub and clone your fork locally.
+1. **Fork the repository** on GitHub and clone the fork locally.
 
 2. **Install development dependencies**: we recommend using [uv](https://docs.astral.sh/uv/).
 
