@@ -579,6 +579,8 @@ class AutoLeanServer(LeanServer):
                 `UnpickleEnvironment`, or `UnpickleProofState`
             verbose: Whether to print additional information
             timeout: The timeout for the request in seconds
+            add_to_session_cache: Whether to add the command to the session cache. \
+                If `True`, the command will be added to the session cache and the response will be updated with the new environment or proof state id.
 
         Returns:
             Depending on the request type, the response will be one of the following:
@@ -653,7 +655,7 @@ class AutoLeanServer(LeanServer):
         return await asyncio.to_thread(
             self.run,
             request,  # type: ignore
-            verbose=verbose,
-            timeout=timeout,
-            add_to_session_cache=add_to_session_cache,
+            verbose=verbose,  # type: ignore
+            timeout=timeout,  # type: ignore
+            add_to_session_cache=add_to_session_cache,  # type: ignore
         )
