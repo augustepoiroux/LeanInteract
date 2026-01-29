@@ -251,6 +251,38 @@ lean_exe "dummy" where
         server.kill()
         self.assertFalse(server.is_alive())
 
+    def test_context_manager_leanserver(self):
+        config = LeanREPLConfig(verbose=True)
+        with LeanServer(config=config) as server:
+            self.assertTrue(server.is_alive())
+            result = server.run(Command(cmd="def x := 1"), verbose=True)
+            self.assertIsInstance(result, CommandResponse)
+        self.assertFalse(server.is_alive())
+        self.assertIsNone(server._proc)
+
+        with self.assertRaises(RuntimeError):
+            with LeanServer(config=config) as server:
+                self.assertTrue(server.is_alive())
+                raise RuntimeError("boom")
+        self.assertFalse(server.is_alive())
+        self.assertIsNone(server._proc)
+
+    def test_context_manager_autoleanserver(self):
+        config = LeanREPLConfig(verbose=True)
+        with AutoLeanServer(config=config) as server:
+            self.assertTrue(server.is_alive())
+            result = server.run(Command(cmd="def x := 1"), verbose=True)
+            self.assertIsInstance(result, CommandResponse)
+        self.assertFalse(server.is_alive())
+        self.assertIsNone(server._proc)
+
+        with self.assertRaises(RuntimeError):
+            with AutoLeanServer(config=config) as server:
+                self.assertTrue(server.is_alive())
+                raise RuntimeError("boom")
+        self.assertFalse(server.is_alive())
+        self.assertIsNone(server._proc)
+
     def test_restart(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
         old_proc = server._proc

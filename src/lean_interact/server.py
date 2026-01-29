@@ -155,6 +155,20 @@ class LeanServer:
     def __del__(self):
         self.kill()
 
+    def __enter__(self):
+        return self
+
+    async def __aenter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.kill()
+        return False
+
+    async def __aexit__(self, exc_type, exc, tb):
+        self.kill()
+        return False
+
     def get_memory_usage(self) -> float:
         """
         Get the memory usage of the Lean REPL server process in MB.
@@ -489,8 +503,6 @@ class AutoLeanServer(LeanServer):
             self.restart()
 
     def __del__(self):
-        # delete the session cache
-        self._session_cache.clear()
         super().__del__()
 
     def _run_dict_backoff(self, request: dict, verbose: bool, timeout: float | None, restart_counter: int = 0) -> dict:
