@@ -225,7 +225,7 @@ lean_exe "dummy" where
                         start_pos=Pos(line=1, column=8),
                         end_pos=Pos(line=1, column=20),
                         severity="warning",
-                        data="declaration uses 'sorry'",
+                        data="declaration uses `sorry`",
                     )
                 ],
                 sorries=[
@@ -322,7 +322,7 @@ lean_exe "dummy" where
                         severity="warning",
                         start_pos=Pos(line=1, column=4),
                         end_pos=Pos(line=1, column=10004),
-                        data="declaration uses 'sorry'",
+                        data="declaration uses `sorry`",
                     )
                 ],
             ),
@@ -381,7 +381,7 @@ lean_exe "dummy" where
                 ],
                 messages=[
                     Message(
-                        data="declaration uses 'sorry'",
+                        data="declaration uses `sorry`",
                         end_pos=Pos(line=1, column=21),
                         start_pos=Pos(line=1, column=8),
                         severity="warning",
