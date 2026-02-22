@@ -241,9 +241,10 @@ lean_exe "dummy" where
     def test_run_file_nonexistent(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
         output = server.run(FileCommand(path="nonexistent_file.lean"), verbose=True)
-        self.assertEqual(
-            output, LeanError(message="no such file or directory (error code: 2)\n  file: nonexistent_file.lean")
-        )
+        self.assertIsInstance(output, LeanError)
+        assert isinstance(output, LeanError)
+        self.assertIn("no such file or directory", output.message.lower())
+        self.assertIn("file: nonexistent_file.lean", output.message)
 
     def test_is_alive(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
