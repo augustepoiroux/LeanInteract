@@ -921,7 +921,7 @@ lean_exe "dummy" where
             self.skipTest("This test is only relevant on Linux")
 
         # Check that the following issue is now solved: https://github.com/leanprover-community/repl/issues/77
-        server = AutoLeanServer(config=LeanREPLConfig(memory_hard_limit_mb=4096, verbose=True))
+        server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
 
         for i in range(1000):
             cmd = Command(cmd=f"theorem womp{i} (a{i} b c : Nat) : (a{i} + b) + c = c + a{i} + b := by sorry")
