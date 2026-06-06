@@ -801,7 +801,11 @@ lean_exe "dummy" where
                     Message(
                         end_pos=Pos(column=15, line=2),
                         severity="warning",
-                        data="unused variable `h`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+                        data=(
+                            "Variable name `h` is not explicitly referenced.\n\n"
+                            "The binding can be removed (if unused) or named `_` (if used implicitly).\n\n"
+                            "Note: This linter can be disabled with `set_option linter.unusedVariables false`"
+                        ),
                         start_pos=Pos(column=14, line=2),
                     )
                 ],
