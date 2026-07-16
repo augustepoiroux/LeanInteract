@@ -304,7 +304,7 @@ lean_exe "dummy" where
     def test_extremely_long_command(self):
         server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
         result = server.run(
-            Command(cmd="def " + "a" * 10000 + " : 1 + 1 = 2 := sorry"), add_to_session_cache=True, verbose=True
+            Command(cmd="theorem " + "a" * 10000 + " : 1 + 1 = 2 := sorry"), add_to_session_cache=True, verbose=True
         )
         self.assertEqual(
             result,
@@ -313,16 +313,16 @@ lean_exe "dummy" where
                 sorries=[
                     Sorry(
                         proof_state=0,
-                        start_pos=Pos(line=1, column=10020),
-                        end_pos=Pos(line=1, column=10025),
+                        start_pos=Pos(line=1, column=10024),
+                        end_pos=Pos(line=1, column=10029),
                         goal="⊢ 1 + 1 = 2",
                     )
                 ],
                 messages=[
                     Message(
                         severity="warning",
-                        start_pos=Pos(line=1, column=4),
-                        end_pos=Pos(line=1, column=10004),
+                        start_pos=Pos(line=1, column=8),
+                        end_pos=Pos(line=1, column=10008),
                         data="declaration uses `sorry`",
                     )
                 ],
@@ -803,7 +803,9 @@ lean_exe "dummy" where
                         severity="warning",
                         data=(
                             "Variable name `h` is not explicitly referenced.\n\n"
-                            "The binding can be removed (if unused) or named `_` (if used implicitly).\n\n"
+                            "Hint: The binding can be removed (if unused) or named `_` (if used implicitly). "
+                            "Alternatively, prefix the name with `_` to silence this warning:\n"
+                            "  [apply] _h\n\n"
                             "Note: This linter can be disabled with `set_option linter.unusedVariables false`"
                         ),
                         start_pos=Pos(column=14, line=2),
