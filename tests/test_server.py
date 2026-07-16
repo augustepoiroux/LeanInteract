@@ -54,13 +54,19 @@ from lean_interact.utils import get_total_memory_usage
 class TestLeanServer(unittest.TestCase):
     maxDiff = None
     oldestVersion = "v4.8.0-rc1"
+    testLegacyLeanVersions = os.environ.get("LEAN_INTERACT_TEST_LEGACY_LEAN", "1").lower() not in {
+        "0",
+        "false",
+        "no",
+    }
+    legacyVersions = [oldestVersion, "v4.14.0"] if testLegacyLeanVersions else []
 
     @classmethod
     def setUpClass(cls):
         # Pre-run configs for all available versions to get the cache
         lean_versions = LeanREPLConfig(verbose=True).get_available_lean_versions()
         cls.mostRecentVersion = lean_versions[-1]
-        for version in [cls.oldestVersion, "v4.14.0", cls.mostRecentVersion]:
+        for version in [*cls.legacyVersions, cls.mostRecentVersion]:
             LeanREPLConfig(lean_version=version, verbose=True)
 
         # (Temporary) Skip mathlib setup on Windows to avoid long path issues in CI
@@ -71,7 +77,7 @@ class TestLeanServer(unittest.TestCase):
         LeanREPLConfig(project=TempRequireProject(lean_version=cls.mostRecentVersion, require="mathlib"), verbose=True)
 
     def test_init_with_lean_version(self):
-        for version in [self.oldestVersion, "v4.14.0", self.mostRecentVersion]:
+        for version in [*self.legacyVersions, self.mostRecentVersion]:
             server = AutoLeanServer(config=LeanREPLConfig(lean_version=version, verbose=True))
             self.assertEqual(server.lean_version, version)
             self.assertEqual(
@@ -144,6 +150,9 @@ class TestLeanServer(unittest.TestCase):
             self.assertIsInstance(response, CommandResponse)
 
     def test_temp_project_creation(self):
+        if not self.testLegacyLeanVersions:
+            self.skipTest("Legacy Lean version tests are disabled in this environment")
+
         # Create a simple temporary project
         temp_content = """
 import Lake
@@ -332,6 +341,9 @@ lean_exe "dummy" where
         self.assertEqual(result, ProofStepResponse(proof_state=1, goals=[], proof_status="Completed"))
 
     def test_lean_version(self):
+        if not self.testLegacyLeanVersions:
+            self.skipTest("Legacy Lean version tests are disabled in this environment")
+
         server = AutoLeanServer(config=LeanREPLConfig(lean_version="v4.14.0", verbose=True))
         result = server.run(Command(cmd="#eval Lean.versionString"), verbose=True)
         self.assertEqual(

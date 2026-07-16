@@ -11,6 +11,13 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.10']
+        include:
+          - os: ubuntu-latest
+            test-legacy-lean: true
+          - os: macos-latest
+            test-legacy-lean: false
+          - os: windows-latest
+            test-legacy-lean: true
 
     steps:
       - name: Configure Windows for long paths
@@ -65,6 +72,7 @@ jobs:
         run: python -m unittest discover -s ./tests
         env:
           PYTHONIOENCODING: utf-8
+          LEAN_INTERACT_TEST_LEGACY_LEAN: ${{ matrix.test-legacy-lean }}
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
@@ -72,6 +80,7 @@ jobs:
         run: python -m unittest discover -s ./tests
         env:
           PYTHONIOENCODING: utf-8
+          LEAN_INTERACT_TEST_LEGACY_LEAN: ${{ matrix.test-legacy-lean }}
 
       - name: Build documentation
         if: runner.os == 'Linux'
