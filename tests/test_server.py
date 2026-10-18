@@ -1232,6 +1232,24 @@ lean_exe "dummy" where
             shutil.rmtree(repl_cache, ignore_errors=True)
             shutil.rmtree(project_cache, ignore_errors=True)
 
+    def test_import_error_not_swallowed_and_not_cached(self):
+        """Test that import errors are reported and failed headers are not cached (Issue #43)."""
+        server = AutoLeanServer(config=LeanREPLConfig(verbose=True))
+        invalid_cmd = Command(cmd="import NonExistentModuleXYZ\ndef foo := 1")
+        result1 = server.run(invalid_cmd, verbose=True)
+        self.assertIsInstance(result1, CommandResponse)
+        self.assertTrue(len(result1.messages) > 0)
+        self.assertTrue(any(m.severity == "error" for m in result1.messages))
+        self.assertTrue(any("NonExistentModuleXYZ" in m.data for m in result1.messages))
+
+        # Running again with the same header should still report the error (not served from faulty cache)
+        result2 = server.run(invalid_cmd, verbose=True)
+        self.assertIsInstance(result2, CommandResponse)
+        self.assertTrue(len(result2.messages) > 0)
+        self.assertTrue(any(m.severity == "error" for m in result2.messages))
+        self.assertTrue(any("NonExistentModuleXYZ" in m.data for m in result2.messages))
+
 
 if __name__ == "__main__":
     unittest.main()
+
