@@ -30,7 +30,7 @@ jobs:
           git config --system core.longpaths true
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Free Disk Space (Ubuntu)
         if: runner.os == 'Linux'
@@ -45,31 +45,34 @@ jobs:
           swap-storage: true
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
       - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install . --group dev
+        run: uv sync --frozen
 
       - name: Install Lean (Linux/macOS)
         if: runner.os != 'Windows'
         run: |
-          install-lean
+          uv run install-lean
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
       - name: Install Lean (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          install-lean
+          uv run install-lean
           echo "$env:USERPROFILE\.elan\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Run tests (Linux/macOS)
         if: runner.os != 'Windows'
-        run: python -m unittest discover -s ./tests
+        run: uv run python -m unittest discover -s ./tests
         env:
           PYTHONIOENCODING: utf-8
           LEAN_INTERACT_TEST_LEGACY_LEAN: ${{ matrix.test-legacy-lean }}
@@ -77,11 +80,11 @@ jobs:
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: python -m unittest discover -s ./tests
+        run: uv run python -m unittest discover -s ./tests
         env:
           PYTHONIOENCODING: utf-8
           LEAN_INTERACT_TEST_LEGACY_LEAN: ${{ matrix.test-legacy-lean }}
 
       - name: Build documentation
         if: runner.os == 'Linux'
-        run: clear-lean-cache && mkdocs build
+        run: uv run clear-lean-cache && uv run mkdocs build

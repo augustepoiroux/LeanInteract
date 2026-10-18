@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.10"
 
 [[package]]
@@ -503,7 +503,7 @@ dev = [
     { name = "mkdocs-material", specifier = ">=9.6.14" },
     { name = "mkdocstrings", specifier = ">=0.29.1" },
     { name = "mkdocstrings-python", specifier = ">=1.16.10" },
-    { name = "pymdown-extensions", specifier = ">=10.15" },
+    { name = "pymdown-extensions", specifier = ">=10.15,<12.0" },
     { name = "ruff", specifier = ">=0.11.10" },
 ]
 
